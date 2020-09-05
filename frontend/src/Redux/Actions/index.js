@@ -38,6 +38,9 @@ export const actions = createActions({
             STORE: null
         }
     },
+    SETTINGS: {
+        STORE: null
+    },
     HOVER_COURSE: null,
     CANCEL_HOVER_COURSE: null,
     GPA: {
@@ -172,4 +175,40 @@ export const fetchGPAData = () => dispatch => {
             last60Credits: last60Credits
         }))
     })
+}
+
+export const loadSavedSettings = () => (dispatch, getState) => {
+    if (window.localStorage && window.localStorage.getItem('course_setting') != null) {
+        let defaults = getState().settings
+        try {
+            let saved = JSON.parse(window.localStorage.getItem('course_setting'))
+            for (let key in defaults) {
+                if (saved[key] != undefined) {
+                    defaults[key] = saved[key]
+                }
+            }
+            window.localStorage.setItem('course_setting', JSON.stringify(defaults))
+        }
+        catch{
+            window.localStorage.setItem('course_setting', JSON.stringify({}))
+        }
+        dispatch(actions.settings.store(defaults))
+    }
+}
+
+export const updateSetting = (key, value) => dispatch => {
+    dispatch(actions.settings.store({ [key]: value }))
+    if (window.localStorage) {
+        try {
+            if (window.localStorage.getItem('course_setting') == null) {
+                window.localStorage.setItem('course_setting', JSON.stringify({}))
+            }
+            let settings = JSON.parse(window.localStorage.getItem('course_setting'))
+            settings[key] = value
+            window.localStorage.setItem('course_setting', JSON.stringify(settings))
+        }
+        catch{
+            window.localStorage.setItem('course_setting', JSON.stringify({}))
+        }
+    }
 }

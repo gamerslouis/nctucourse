@@ -15,14 +15,16 @@ const initialState = {
         categoryMap: {}
     },
     query: {
-        ignoreFreshPhysical: false,
-        ignoreFreshEnglish: false
     },
     collect: {
         courseIds: new Set()
     },
     timetable: {
         courseIds: new Set(),
+    },
+    settings: {
+        ignoreFreshPhysical: false,
+        ignoreFreshEnglish: false,
         extendTimetable: true,
         showWeekend: true,
         hideOverflowText: true
@@ -126,6 +128,14 @@ export default handleActions({
                 }
             })
         }
+    },
+    SETTINGS: {
+        STORE: (state, action) => ({
+            ...state, settings: {
+                ...state.settings,
+                ...action.payload
+            }
+        })
     },
     HOVER_COURSE: (state, action) => ({
         ...state,

@@ -179,9 +179,9 @@ class TimeTable extends React.Component {
 const mapStateToProps = (state) => ({
     courseIds: state.timetable.courseIds,
     allCourses: state.database.courses,
-    extendTimetable: state.timetable.extendTimetable,
-    showWeekend: state.timetable.showWeekend,
-    hideOverflowText: state.timetable.hideOverflowText
+    extendTimetable: state.settings.extendTimetable,
+    showWeekend: state.settings.showWeekend,
+    hideOverflowText: state.settings.hideOverflowText
 })
 
 const mapDispatchToProps = (dispatch) => ({

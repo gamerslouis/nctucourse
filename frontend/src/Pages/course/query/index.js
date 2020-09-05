@@ -193,7 +193,7 @@ const mapStateToProps = (state) => ({
     category: state.database.category,
     categoryMap: state.database.categoryMap,
     selectCourseIds: state.collect.courseIds,
-    queryOptions: state.query
+    queryOptions: state.settings
 })
 
 const mapDispatchToProps = (dispatch) => ({
