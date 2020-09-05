@@ -30,7 +30,7 @@ const theme = createMuiTheme({
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(Reducers, composeEnhancers(applyMiddleware(thunk)))
-// if (isDev) window.store = store;
+if (isDev) window.store = store;
 
 
 function App() {
