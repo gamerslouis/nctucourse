@@ -2,6 +2,7 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
+import Welcome from '../Components/welcome';
 
 const styles = (theme) => ({
     root: {
@@ -23,6 +24,7 @@ const styles = (theme) => ({
 
 const Login = (props) => (
     <div className={props.classes.root}>
+        <Welcome />
         <Typography variant="h4">
             交大課程助理
         </Typography>
