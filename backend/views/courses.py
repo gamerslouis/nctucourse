@@ -1,4 +1,4 @@
-from flask_login import current_user
+from flask_login import current_user, login_required
 from flask_restful import reqparse, marshal_with, Resource, Api, fields
 from flask import Blueprint, request, Response, redirect, current_app, jsonify
 from models.User import UserCollect
@@ -19,12 +19,14 @@ class User(Resource):
         )
     }
 
+    @login_required
     @marshal_with(resource_fileds)
     def get(self):
         courses = UserCollect.query.filter_by(
             uid=current_user.id, sem=current_app.config['SEMESTER']).all()
         return {'courses': courses}
 
+    @login_required
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('courseId')
@@ -38,6 +40,7 @@ class User(Resource):
             pass
         return '', 201
 
+    @login_required
     def delete(self):
         parser = reqparse.RequestParser()
         parser.add_argument('courseId')
@@ -48,6 +51,7 @@ class User(Resource):
             db.session.commit()
         return '', 200
 
+    @login_required
     def put(self):
         parser = reqparse.RequestParser()
         parser.add_argument('courseId')
@@ -60,6 +64,7 @@ class User(Resource):
 
 
 @blueprint.route('/user/clear')
+@login_required
 def clear_user_courses():
     courses = UserCollect.query.filter_by(
         uid=current_user.id, sem=current_app.config['SEMESTER']).delete()
@@ -68,6 +73,7 @@ def clear_user_courses():
 
 
 @blueprint.route('/all')
+@login_required
 def provide_all_courses():
     return jsonify({
         'url': current_app.config['COURSE_FILE_ROOT'] + 'all.json'
