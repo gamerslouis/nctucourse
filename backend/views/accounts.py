@@ -34,9 +34,9 @@ def login():
         if user is None:
             user = User(**data)
             db.session.add(user)
-        login_user(user)
         user.last_login_date = datetime.datetime.utcnow()
         db.session.commit()
+        login_user(user)
         return redirect('/course')
 
 
