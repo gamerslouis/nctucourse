@@ -10,4 +10,6 @@ def setup_app(app):
 
 @login_manager.user_loader
 def load_user(user_id):
+    if user_id == 'None':
+        return None
     return User.query.get(int(user_id))
