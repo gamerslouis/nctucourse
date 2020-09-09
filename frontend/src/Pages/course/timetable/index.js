@@ -71,7 +71,7 @@ const styles = theme => ({
 })
 
 class TimeTable extends React.Component {
-    secs = ['M', 'A', 'B', 'C', 'D', 'X', 'E', 'F', 'G', 'H', 'Y', 'I', 'J', 'K', 'L']
+    secs = ['M', 'N', 'A', 'B', 'C', 'D', 'X', 'E', 'F', 'G', 'H', 'Y', 'I', 'J', 'K', 'L']
 
     constructor(props) {
         super(props)
@@ -85,7 +85,7 @@ class TimeTable extends React.Component {
 
     makeCourseClasses() {
         let credits = 0, hours = 0
-        let classes = [...Array(15)].map(e => [...Array(7)].map(e2 => Array(0)))
+        let classes = [...Array(this.secs.length)].map(e => [...Array(7)].map(e2 => Array(0)))
         let { courseIds, allCourses } = this.props
         for (let course of Array.from(courseIds).map(id => allCourses[id])) {
             credits += Number(course['cos_credit'])
