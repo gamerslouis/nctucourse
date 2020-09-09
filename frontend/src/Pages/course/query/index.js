@@ -101,10 +101,12 @@ class Index extends React.Component {
 
     searchText() {
         if (this.state.searchText == '') return
+        let regString = '^.*' + this.state.searchText.split('').reduce((s, v) => s + '.*' + v) + '.*$'
         this.setCourses(Object.values(this.props.allCourses).filter(course => (
             course.cos_cname.indexOf(this.state.searchText) != -1 ||
             course.teacher.indexOf(this.state.searchText) != -1 ||
-            course.cos_id.split('_')[1] == this.state.searchText
+            course.cos_id.split('_')[1] == this.state.searchText ||
+            (new RegExp(regString)).test(course.cos_cname)
         )))
     }
 
