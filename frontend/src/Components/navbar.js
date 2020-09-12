@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 import { Hidden, Drawer, List, ListItem, Divider } from '@material-ui/core';
+import logo256 from '../Resources/logo256.png'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -15,6 +16,10 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.up('md')]: {
             marginBottom: theme.spacing(2)
         }
+    },
+    logo: {
+        height: 40,
+        marginRight: theme.spacing(1)
     },
     toolbar: {
         alignItems: 'center',
@@ -42,6 +47,7 @@ const Navbar = (props) => {
             <Hidden smDown>
                 <AppBar position="static">
                     <Toolbar className={classes.toolbar}>
+                        <img src={logo256} className={classes.logo} />
                         <Typography variant="h6" className={classes.title}>
                             交大課程助理
                         </Typography>
@@ -58,6 +64,7 @@ const Navbar = (props) => {
             <Hidden mdUp>
                 <AppBar position="static">
                     <Toolbar className={classes.toolbar}>
+                        <img src={logo256} className={classes.logo} />
                         <Typography variant="h6" className={classes.title}>
                             交大課程助理
                         </Typography>
