@@ -162,16 +162,15 @@ class Index extends React.Component {
                             <BottomNavigationAction label="收藏" icon={<FavoriteIcon />} />
                             <BottomNavigationAction label="課表" icon={<DateRangeIcon />} />
                             <BottomNavigationAction label="設定" icon={<SettingsIcon />} onClick={() => this.setState({ mobileSetting: true })} />
-                            <SwipeableDrawer
-                                anchor="right"
-                                open={mobileSetting}
-                                onClose={() => this.setState({ mobileSetting: false })}
-                                onOpen={() => this.setState({ mobileSetting: true })}
-                            >
-                                <Setting mobile />
-                            </SwipeableDrawer>
                         </BottomNavigation>
-
+                        <SwipeableDrawer
+                            anchor="right"
+                            open={mobileSetting}
+                            onClose={() => this.setState({ mobileSetting: false })}
+                            onOpen={() => this.setState({ mobileSetting: true })}
+                        >
+                            <Setting mobile />
+                        </SwipeableDrawer>
                     </div>
                 </Hidden>
             </React.Fragment >

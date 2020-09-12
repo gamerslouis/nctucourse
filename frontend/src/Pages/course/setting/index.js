@@ -15,6 +15,7 @@ import DateRangeIcon from '@material-ui/icons/DateRange';
 import ViewDayIcon from '@material-ui/icons/ViewDay';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
+import RoomIcon from '@material-ui/icons/Room';
 import GetAppIcon from '@material-ui/icons/GetApp';
 import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
@@ -43,10 +44,8 @@ class Setting extends React.Component {
     }
 
     render() {
-        const { classes, ignoreFreshEnglish, ignoreFreshPhysical, extendTimetable, showWeekend,
-            storeTimetable, storeQuery, hideTimetableOverflowText, clearCourse, mobile, saveImage, updateSetting } = this.props
+        const { classes, clearCourse, mobile, settings, updateSetting } = this.props
         const { show } = this.state
-
         const SettingList = () => (
             <div className={classes.listContainer}>
                 <List subheader={<ListSubheader>Settings</ListSubheader>}>
@@ -59,7 +58,7 @@ class Setting extends React.Component {
                             <Switch
                                 edge="end"
                                 onChange={(event, value) => updateSetting('ignoreFreshPhysical', value)}
-                                checked={ignoreFreshPhysical}
+                                checked={settings.ignoreFreshPhysical}
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
@@ -72,7 +71,7 @@ class Setting extends React.Component {
                             <Switch
                                 edge="end"
                                 onChange={(event, value) => updateSetting('ignoreFreshEnglish', value)}
-                                checked={ignoreFreshEnglish}
+                                checked={settings.ignoreFreshEnglish}
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
@@ -85,7 +84,7 @@ class Setting extends React.Component {
                             <Switch
                                 edge="end"
                                 onChange={(event, value) => updateSetting('showWeekend', value)}
-                                checked={showWeekend}
+                                checked={settings.showWeekend}
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
@@ -98,7 +97,20 @@ class Setting extends React.Component {
                             <Switch
                                 edge="end"
                                 onChange={(event, value) => updateSetting('extendTimetable', value)}
-                                checked={extendTimetable}
+                                checked={settings.extendTimetable}
+                            />
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemIcon>
+                            <RoomIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="顯示教室代碼" />
+                        <ListItemSecondaryAction>
+                            <Switch
+                                edge="end"
+                                onChange={(event, value) => updateSetting('showRoomCode', value)}
+                                checked={settings.showRoomCode}
                             />
                         </ListItemSecondaryAction>
                     </ListItem>
@@ -112,7 +124,7 @@ class Setting extends React.Component {
                                 <Switch
                                     edge="end"
                                     onChange={(event, value) => updateSetting('hideOverflowText', value)}
-                                    checked={hideTimetableOverflowText}
+                                    checked={settings.hideOverflowText}
                                 />
                             </ListItemSecondaryAction>
                         </ListItem>}
@@ -124,16 +136,40 @@ class Setting extends React.Component {
                         <ListItemText id="switch-list-label-wifi" primary="清除所有課程" />
                     </ListItem>
                     <ListItem button onClick={() => {
-                        let temp = hideTimetableOverflowText
-                        storeTimetable({ hideOverflowText: false })
+                        let ele = document.getElementById('timetable')
+                        if (ele == null) {
+                            window.alert("請先切至課表頁面，再次點選匯出課表")
+                            return
+                        }
+                        let temp = settings.hideOverflowText
+                        updateSetting('hideOverflowText', false)
+                        window.scrollTo(0, 0);
                         setTimeout(() => {
                             html2canvas(document.getElementById('timetable')).then(canvas => {
-                                let a = document.createElement('a');
-                                a.href = canvas.toDataURL("image/png");
-                                a.download = '課表.png';
-                                a.click();
-                            }).then(() => storeTimetable({ hideOverflowText: temp }))
-
+                                function iOS() {
+                                    return [
+                                        'iPad Simulator',
+                                        'iPhone Simulator',
+                                        'iPod Simulator',
+                                        'iPad',
+                                        'iPhone',
+                                        'iPod'
+                                    ].includes(navigator.platform)
+                                        // iPad on iOS 13 detection
+                                        || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+                                }
+                                if (iOS()) {
+                                    let image = new Image();
+                                    image.src = canvas.toDataURL()
+                                    let w = window.open("");
+                                    w.document.write(image.outerHTML);
+                                } else {
+                                    let a = document.createElement('a');
+                                    a.href = canvas.toDataURL("image/png");
+                                    a.download = '課表.png';
+                                    a.click();
+                                }
+                            }).then(() => updateSetting('hideOverflowText', temp))
                         }, 500)
                     }}>
                         <ListItemIcon>
@@ -171,15 +207,10 @@ class Setting extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    ignoreFreshPhysical: state.settings.ignoreFreshPhysical,
-    ignoreFreshEnglish: state.settings.ignoreFreshEnglish,
-    extendTimetable: state.settings.extendTimetable,
-    showWeekend: state.settings.showWeekend,
-    hideTimetableOverflowText: state.settings.hideOverflowText
+    settings: state.settings
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    storeTimetable: value => dispatch(actions.timetable.store(value)),
     storeQuery: value => dispatch(actions.query.store(value)),
     clearCourse: () => dispatch(clearAllUserCourse()),
     updateSetting: (key, value) => dispatch(updateSetting(key, value)),

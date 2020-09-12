@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import ButtonBase from '@material-ui/core/ButtonBase';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { getCourseTimes } from '../../../Util/dataUtil/course'
+import { getCourseTimesAndRooms } from '../../../Util/dataUtil/course'
 import Tooltip from '@material-ui/core/Tooltip';
 import { CourseTypeColorMap } from '../../../Util/style'
 import { makeInfoPageUrl } from '../../../Util/dataUtil/course'
@@ -89,17 +89,21 @@ class TimeTable extends React.Component {
         let { courseIds, allCourses } = this.props
         for (let course of Array.from(courseIds).map(id => allCourses[id])) {
             credits += Number(course['cos_credit'])
-            let times = getCourseTimes(course)
+            let times = getCourseTimesAndRooms(course)
             hours += times.length
             for (let time of times) {
-                classes[this.secs.indexOf(time[1])][time[0] - 1].push(course)
+                classes[this.secs.indexOf(time[1])][time[0] - 1].push({
+                    course: course,
+                    roomCode: time[2],
+                    roomName: time[3],
+                })
             }
         }
         return [classes, credits, hours]
     }
 
     render() {
-        const { showWeekend, extendTimetable, classes, hideOverflowText } = this.props
+        const { showWeekend, extendTimetable, classes, hideOverflowText, showRoomCode } = this.props
         let [courseClasses, credits, hours] = this.makeCourseClasses()
         let titles = ['一', '二', '三', '四', '五']
         if (showWeekend) titles = titles.concat(['六', '日'])
@@ -121,7 +125,7 @@ class TimeTable extends React.Component {
                             <td className={clsx(classes.td, classes.td1)}>{this.secs[index]}</td>
                             {rowClasses.slice(0, showWeekend ? 7 : 5).map(cellClasses => (
                                 <td className={classes.td}>
-                                    {cellClasses.map(course =>
+                                    {cellClasses.map(({ course, roomCode, roomName }) =>
                                         <ButtonBase style={{
                                             width: '100%',
                                         }} focusRipple
@@ -133,12 +137,13 @@ class TimeTable extends React.Component {
                                             }}
                                             aria-controls="timetable-course-menu" aria-haspopup="true"
                                         >
-                                            <Tooltip title={`${course.cos_cname} ${course.teacher}`} arrow>
+                                            <Tooltip title={`${course.cos_cname} ${course.teacher}/${showRoomCode ? roomCode : roomName}`} arrow>
                                                 <div className={classes.course} style={{ backgroundColor: CourseTypeColorMap[course.cos_type] }}>
                                                     <span className={clsx(classes.textSpan, hideOverflowText && classes.textSpanHide)}>
                                                         <Typography display="inline" variant="body2">{course.cos_cname} </Typography>
                                                         <div className={hideOverflowText && classes.textTeacherHide}>
-                                                            <Typography display="inline" variant="caption">{course.teacher}</Typography>
+                                                            <Typography display="inline" variant="caption">{course.teacher}/</Typography>
+                                                            <Typography display="inline" variant="caption">{showRoomCode ? roomCode : roomName}</Typography>
                                                         </div>
                                                     </span>
                                                 </div>
@@ -181,7 +186,8 @@ const mapStateToProps = (state) => ({
     allCourses: state.database.courses,
     extendTimetable: state.settings.extendTimetable,
     showWeekend: state.settings.showWeekend,
-    hideOverflowText: state.settings.hideOverflowText
+    hideOverflowText: state.settings.hideOverflowText,
+    showRoomCode: state.settings.showRoomCode
 })
 
 const mapDispatchToProps = (dispatch) => ({

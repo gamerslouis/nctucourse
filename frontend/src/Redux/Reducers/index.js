@@ -27,7 +27,8 @@ const initialState = {
         ignoreFreshEnglish: false,
         extendTimetable: true,
         showWeekend: true,
-        hideOverflowText: true
+        hideOverflowText: true,
+        showRoomCode: false
     },
     hoverCourseId: '',
     gpa: {

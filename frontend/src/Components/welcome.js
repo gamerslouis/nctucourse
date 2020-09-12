@@ -6,7 +6,7 @@ export default (props) => {
     //Check localStorage suppert
     if (window.localStorage) {
         //HACK 暫時先直接把更新時間寫死在檔案內
-        const last_update_time = 1599307893019
+        const last_update_time = 1599673223934
         if (Number(window.localStorage.getItem('hideWelcomeTime')) < last_update_time) {
             window.localStorage.setItem('hideWelcome', "")
         }
@@ -33,6 +33,12 @@ export default (props) => {
                     </ul>
                     感謝您的使用，也歡迎推廣給更多需要的朋友們。<br />
                     若使用有任何問題或建議，請點選右下角"意見回饋"按鈕回報。<br /><br />
+                    <b>更新(2020/09/09):</b>
+                    <ul>
+                        <li>縮寫搜尋功能(Ex. 透過"計圖學"搜尋"計算機圖學概論")</li>
+                        <li>修復匯出課表跑版以及IOS系統下無法正常匯出的BUG</li>
+                        <li>優化課表(顯示課堂教室位置)</li>
+                    </ul>
                     <b>更新(2020/09/05):</b>
                     <ul>
                         <li>儲存模擬排課的設定</li>
