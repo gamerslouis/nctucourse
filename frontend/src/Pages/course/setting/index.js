@@ -207,11 +207,11 @@ class Setting extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    settings: state.settings
+    settings: state.courseSim.settings
 })
 
 const mapDispatchToProps = (dispatch) => ({
-    storeQuery: value => dispatch(actions.query.store(value)),
+    storeQuery: value => dispatch(actions.courseSim.query.store(value)),
     clearCourse: () => dispatch(clearAllUserCourse()),
     updateSetting: (key, value) => dispatch(updateSetting(key, value)),
     loadSavedSettings: () => dispatch(loadSavedSettings())

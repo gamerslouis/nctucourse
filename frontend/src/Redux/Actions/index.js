@@ -16,33 +16,35 @@ export const actions = createActions({
     USER: {
         STORE: null
     },
-    DATABASE: {
-        STORE: null
-    },
-    QUERY: {
-        STORE: null
-    },
-    COLLECT: {
-        STORE: null,
-        COURSE_IDS: {
-            ADD: null,
-            REMOVE: null,
+    COURSE_SIM: {
+        DATABASE: {
             STORE: null
-        }
-    },
-    TIMETABLE: {
-        STORE: null,
-        COURSE_IDS: {
-            ADD: null,
-            REMOVE: null,
+        },
+        QUERY: {
             STORE: null
-        }
+        },
+        COLLECT: {
+            STORE: null,
+            COURSE_IDS: {
+                ADD: null,
+                REMOVE: null,
+                STORE: null
+            }
+        },
+        TIMETABLE: {
+            STORE: null,
+            COURSE_IDS: {
+                ADD: null,
+                REMOVE: null,
+                STORE: null
+            }
+        },
+        SETTINGS: {
+            STORE: null
+        },
+        HOVER_COURSE: null,
+        CANCEL_HOVER_COURSE: null,
     },
-    SETTINGS: {
-        STORE: null
-    },
-    HOVER_COURSE: null,
-    CANCEL_HOVER_COURSE: null,
     GPA: {
         STORE: null
     }
@@ -53,7 +55,7 @@ export const fetchDatabase = () => dispatch => {
         .then(res => res.data.url)
         .then(url =>
             axios.get(url).then(res => {
-                dispatch(actions.database.store({
+                dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
                     ...res.data,
                     courses: res.data.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
@@ -63,7 +65,7 @@ export const fetchDatabase = () => dispatch => {
             }))
         .catch(err => {
             if (isDev) {
-                dispatch(actions.database.store({
+                dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
                     ...fakeData,
                     courses: fakeData.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {})
@@ -71,7 +73,7 @@ export const fetchDatabase = () => dispatch => {
                 dispatch(fetchUserCollect())
             }
             else {
-                dispatch(actions.database.store({
+                dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.FAIL
                 }))
             }
@@ -102,59 +104,59 @@ export const fetchUserCollect = () => dispatch => {
                 collect.push(course['courseId'])
                 if (course['visible']) { timetable.push(course['courseId']) }
             }
-            dispatch(actions.collect.courseIds.store(collect))
-            dispatch(actions.timetable.courseIds.store(timetable))
+            dispatch(actions.courseSim.collect.courseIds.store(collect))
+            dispatch(actions.courseSim.timetable.courseIds.store(timetable))
         }).catch(err => console.log)
 }
 
 export const addColeectCourse = (courseId, visible) => dispatch => {
     axios.post('/api/courses/user', { courseId, visible }).then(() => {
-        dispatch(actions.collect.courseIds.add(courseId))
-        dispatch(actions.timetable.courseIds.add(courseId))
+        dispatch(actions.courseSim.collect.courseIds.add(courseId))
+        dispatch(actions.courseSim.timetable.courseIds.add(courseId))
     }).catch(err => {
         console.log(err)
         if (isDev) {
-            dispatch(actions.collect.courseIds.add(courseId))
-            dispatch(actions.timetable.courseIds.add(courseId))
+            dispatch(actions.courseSim.collect.courseIds.add(courseId))
+            dispatch(actions.courseSim.timetable.courseIds.add(courseId))
         }
     })
 }
 
 export const removeCollectCourse = (courseId) => dispatch => {
     axios.delete('/api/courses/user', { data: { courseId } }).then(() => {
-        dispatch(actions.collect.courseIds.remove(courseId))
-        dispatch(actions.timetable.courseIds.remove(courseId))
+        dispatch(actions.courseSim.collect.courseIds.remove(courseId))
+        dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
     }).catch(err => {
         console.log(err)
         if (isDev) {
-            dispatch(actions.collect.courseIds.remove(courseId))
-            dispatch(actions.timetable.courseIds.remove(courseId))
+            dispatch(actions.courseSim.collect.courseIds.remove(courseId))
+            dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
         }
     })
 }
 
 export const toggleCollectCourseVisible = (courseId, visible) => dispatch => {
     axios.put('/api/courses/user', { courseId, visible }).then(() => {
-        if (visible) dispatch(actions.timetable.courseIds.add(courseId))
-        else dispatch(actions.timetable.courseIds.remove(courseId))
+        if (visible) dispatch(actions.courseSim.timetable.courseIds.add(courseId))
+        else dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
     }).catch(err => {
         console.log(err)
         if (isDev) {
-            if (visible) dispatch(actions.timetable.courseIds.add(courseId))
-            else dispatch(actions.timetable.courseIds.remove(courseId))
+            if (visible) dispatch(actions.courseSim.timetable.courseIds.add(courseId))
+            else dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
         }
     })
 }
 
 export const clearAllUserCourse = () => dispatch => {
     axios.get('/api/courses/user/clear').then(() => {
-        dispatch(actions.timetable.courseIds.store([]))
-        dispatch(actions.collect.courseIds.store([]))
+        dispatch(actions.courseSim.timetable.courseIds.store([]))
+        dispatch(actions.courseSim.collect.courseIds.store([]))
     }).catch(err => {
         console.log(err)
         if (isDev) {
-            dispatch(actions.timetable.courseIds.store([]))
-            dispatch(actions.collect.courseIds.store([]))
+            dispatch(actions.courseSim.timetable.courseIds.store([]))
+            dispatch(actions.courseSim.collect.courseIds.store([]))
         }
     })
 }
@@ -189,15 +191,15 @@ export const loadSavedSettings = () => (dispatch, getState) => {
             }
             window.localStorage.setItem('course_setting', JSON.stringify(defaults))
         }
-        catch{
+        catch {
             window.localStorage.setItem('course_setting', JSON.stringify({}))
         }
-        dispatch(actions.settings.store(defaults))
+        dispatch(actions.courseSim.settings.store(defaults))
     }
 }
 
 export const updateSetting = (key, value) => dispatch => {
-    dispatch(actions.settings.store({ [key]: value }))
+    dispatch(actions.courseSim.settings.store({ [key]: value }))
     if (window.localStorage) {
         try {
             if (window.localStorage.getItem('course_setting') == null) {
@@ -207,7 +209,7 @@ export const updateSetting = (key, value) => dispatch => {
             settings[key] = value
             window.localStorage.setItem('course_setting', JSON.stringify(settings))
         }
-        catch{
+        catch {
             window.localStorage.setItem('course_setting', JSON.stringify({}))
         }
     }

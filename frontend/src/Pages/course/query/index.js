@@ -191,11 +191,11 @@ class Index extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    allCourses: state.database.courses,
-    category: state.database.category,
-    categoryMap: state.database.categoryMap,
-    selectCourseIds: state.collect.courseIds,
-    queryOptions: state.settings
+    allCourses: state.courseSim.database.courses,
+    category: state.courseSim.database.category,
+    categoryMap: state.courseSim.database.categoryMap,
+    selectCourseIds: state.courseSim.collect.courseIds,
+    queryOptions: state.courseSim.settings
 })
 
 const mapDispatchToProps = (dispatch) => ({

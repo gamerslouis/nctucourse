@@ -115,9 +115,9 @@ class CollectList extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-    courseIds: state.collect.courseIds,
-    timetableIds: state.timetable.courseIds,
-    allCourses: state.database.courses
+    courseIds: state.courseSim.collect.courseIds,
+    timetableIds: state.courseSim.timetable.courseIds,
+    allCourses: state.courseSim.database.courses
 })
 
 const mapDispatchToProps = (dispatch) => ({
