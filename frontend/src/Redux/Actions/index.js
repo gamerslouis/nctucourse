@@ -3,7 +3,7 @@ import axios from 'axios'
 import fakeData from '../../Resources/fake_data'
 import { makeCourseObject, makeObjFromArray } from '../../Util/dataUtil/course'
 import { isDev } from '../../Util/dev'
-import * as gpaTool from '../../Util/dataUtil/gpa'
+
 
 export const FETCH_STATUS = {
     IDEL: 1,
@@ -44,9 +44,6 @@ export const actions = createActions({
         },
         HOVER_COURSE: null,
         CANCEL_HOVER_COURSE: null,
-    },
-    GPA: {
-        STORE: null
     }
 })
 
@@ -158,24 +155,6 @@ export const clearAllUserCourse = () => dispatch => {
             dispatch(actions.courseSim.timetable.courseIds.store([]))
             dispatch(actions.courseSim.collect.courseIds.store([]))
         }
-    })
-}
-
-export const fetchGPAData = () => dispatch => {
-    axios.get('/api/gpa/me').then((res) => {
-        let courses = JSON.parse(res.data['data']).filter(gpaTool.filterNotCourse)
-        let credits = gpaTool.getCredits(courses)
-        let [last60Courses, last60Credits] = gpaTool.getLast60Courses(courses)
-        let sum = (a, b) => a + b
-
-        dispatch(actions.gpa.store({
-            courses: courses,
-            overall40GPA: courses.map(c => gpaTool.courseTo40Point(c) * c.cos_credit).reduce(sum) / credits,
-            overall43GPA: courses.map(c => gpaTool.courseTo43Point(c) * c.cos_credit).reduce(sum) / credits,
-            last6040GPA: last60Courses.map(c => gpaTool.courseTo40Point(c) * c.cos_credit).reduce(sum) / last60Credits,
-            last6043GPA: last60Courses.map(c => gpaTool.courseTo43Point(c) * c.cos_credit).reduce(sum) / last60Credits,
-            last60Credits: last60Credits
-        }))
     })
 }
 

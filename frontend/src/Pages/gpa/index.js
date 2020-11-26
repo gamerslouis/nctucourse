@@ -1,8 +1,8 @@
 import React from 'react';
 import { Container, Typography, Button, Paper, Grid } from '@material-ui/core';
-import { connect } from 'react-redux';
-import { fetchGPAData } from '../../Redux/Actions'
 import nctu_gpa_rule from '../../Resources/nctu_gpa_rule.PNG'
+import * as gpaTool from '../../Util/dataUtil/gpa'
+import axios from 'axios';
 
 const ScorePapar = (props) => {
     return <Grid item xs={12} md={6}>
@@ -18,11 +18,38 @@ const ScorePapar = (props) => {
 }
 
 class Index extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            overall40GPA: 0.00,
+            overall43GPA: 0.00,
+            last6040GPA: 0.00,
+            last6043GPA: 0.00,
+            last60Credits: 0
+        }
+    }
     componentDidMount() {
-        this.props.fetchGPAData()
+        this.fetchGPAData()
+    }
+    fetchGPAData(){
+        axios.get('/api/gpa/me').then((res) => {
+            let courses = JSON.parse(res.data['data']).filter(gpaTool.filterNotCourse)
+            let credits = gpaTool.getCredits(courses)
+            let [last60Courses, last60Credits] = gpaTool.getLast60Courses(courses)
+            const sum = (a, b) => a + b
+            if(credits != 0) {
+                this.setState({
+                    overall40GPA: courses.map(c => gpaTool.courseTo40Point(c) * c.cos_credit).reduce(sum) / credits,
+                    overall43GPA: courses.map(c => gpaTool.courseTo43Point(c) * c.cos_credit).reduce(sum) / credits,
+                    last6040GPA: last60Courses.map(c => gpaTool.courseTo40Point(c) * c.cos_credit).reduce(sum) / last60Credits,
+                    last6043GPA: last60Courses.map(c => gpaTool.courseTo43Point(c) * c.cos_credit).reduce(sum) / last60Credits,
+                    last60Credits: last60Credits
+                })
+            }
+        })
     }
     render() {
-        const { gpa } = this.props
+        const { overall40GPA, overall43GPA, last6040GPA, last6043GPA, last60Credits } = this.state
         return <Container>
             <Typography variant="h4" gutterBottom >GPA 計算機</Typography>
             <div style={{ marginBottom: 20 }}>
@@ -35,10 +62,10 @@ class Index extends React.Component {
             </div>
             <div style={{ padding: '0 45px' }}>
                 <Grid container spacing={6} >
-                    <ScorePapar title="Overall 4.0" score={gpa.overall40GPA.toFixed(2)} />
-                    <ScorePapar title="Overall 4.3" score={gpa.overall43GPA.toFixed(2)} />
-                    <ScorePapar title={`Last 60 Credits 4.0 (${gpa.last60Credits})`} score={gpa.last6040GPA.toFixed(2)} />
-                    <ScorePapar title={`Last 60 Credits 4.3 (${gpa.last60Credits})`} score={gpa.last6043GPA.toFixed(2)} />
+                    <ScorePapar title="Overall 4.0" score={overall40GPA.toFixed(2)} />
+                    <ScorePapar title="Overall 4.3" score={overall43GPA.toFixed(2)} />
+                    <ScorePapar title={`Last 60 Credits 4.0 (${last60Credits})`} score={last6040GPA.toFixed(2)} />
+                    <ScorePapar title={`Last 60 Credits 4.3 (${last60Credits})`} score={last6043GPA.toFixed(2)} />
                 </Grid>
             </div>
             <div style={{ paddingTop: 20 }}>
@@ -50,13 +77,5 @@ class Index extends React.Component {
     }
 
 }
-const mapStateToProps = (state) => ({
-    gpa: state.gpa
-})
 
-const mapDispatchToProps = (dispatch) => ({
-    fetchGPAData: () => dispatch(fetchGPAData())
-})
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(Index)
+export default Index
