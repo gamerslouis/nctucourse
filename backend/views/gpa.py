@@ -2,7 +2,6 @@ from flask_login import current_user, login_required
 from flask_restful import reqparse
 from flask import Blueprint, request, Response
 import datetime
-from auth import nctu
 from models.User import UserCourseHistory
 from models.base import db
 from sqlalchemy.orm.exc import NoResultFound

@@ -1,7 +1,8 @@
 import os
 from flask import Flask, send_from_directory, request, jsonify
+from flask_login import LoginManager
 import models
-import services
+from models.User import User
 import views
 from configs import setup_config, load_sql_config
 
@@ -11,7 +12,16 @@ setup_config(app)
 db = models.setup_app(app)
 if app.config['PRODUCTION_ENV']:
     load_sql_config(app, db)
-services.setup_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    if user_id == 'None':
+        return None
+    return User.query.get(int(user_id))
+
 views.setup_app(app)
 
 

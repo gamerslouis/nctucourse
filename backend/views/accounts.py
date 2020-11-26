@@ -3,7 +3,7 @@ from flask_restful import reqparse, marshal_with, Resource, Api, fields
 from flask import Blueprint, request, Response, redirect
 import datetime
 from utilities.auth import superuser_required
-from auth import nctu
+from utilities import nctu_auth
 from models.User import User
 from models.base import db
 
@@ -26,10 +26,10 @@ def hack_login():
 def login():
     code = request.args.get('code', default='*', type=str)
     if code == '*':
-        return redirect(nctu.get_oauth_url())
+        return redirect(nctu_auth.get_oauth_url())
     else:
-        token = nctu.auth_step1(code)
-        data = nctu.auth_step2(token)
+        token = nctu_auth.auth_step1(code)
+        data = nctu_auth.auth_step2(token)
         user = User.query.filter_by(username=data['username']).first()
         if user is None:
             user = User(**data)
