@@ -55,6 +55,7 @@ export const fetchDatabase = (semester) => dispatch => {
     axios.get(url)
         .then(res => res.data)
         .then(({url, sem}) => {
+            if(!window.localStorage) return {url, sem}
             let mapp
             if(window.localStorage.getItem('database_map') != null){
                 try {
@@ -97,7 +98,9 @@ export const fetchDatabase = (semester) => dispatch => {
                     courses: res.data.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
                     categoryMap: res.data.category_map
                 }))
-                window.localStorage.setItem(`db_cache_${sem}`, JSON.stringify(res.data))
+                if(window.localStorage) {
+                    window.localStorage.setItem(`db_cache_${sem}`, JSON.stringify(res.data))
+                }
                 dispatch(fetchUserCollect(semester))
             })
         })
@@ -209,7 +212,7 @@ export const clearAllUserCourse = (semester) => dispatch => {
 
 export const loadSavedSettings = () => (dispatch, getState) => {
     if (window.localStorage && window.localStorage.getItem('course_setting') != null) {
-        let defaults = getState().settings
+        let defaults = getState().courseSim.settings
         try {
             let saved = JSON.parse(window.localStorage.getItem('course_setting'))
             for (let key in defaults) {
