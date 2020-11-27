@@ -114,7 +114,7 @@ export const fetchUserCollect = (semester) => dispatch => {
         }).catch(err => console.log)
 }
 
-export const addColeectCourse = (courseId, visible) => dispatch => {
+export const addCollectCourse = (courseId, visible) => dispatch => {
     axios.post('/api/courses/user', { courseId, visible }).then(() => {
         dispatch(actions.courseSim.collect.courseIds.add(courseId))
         dispatch(actions.courseSim.timetable.courseIds.add(courseId))

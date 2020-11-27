@@ -15,7 +15,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import CourseList from '../../../Components/CourseList'
 import { getCoursesIdByDepId, getCoursesFromIds } from '../../../Util/dataUtil/course'
 import CourseListItem from '../../../Components/CourseListItem'
-import { addColeectCourse, removeCollectCourse } from '../../../Redux/Actions/index'
+import { addCollectCourse, removeCollectCourse } from '../../../Redux/Actions/index'
 
 
 const styles = (theme) => ({
@@ -100,12 +100,12 @@ class Index extends React.Component {
     }
 
     searchText() {
-        if (this.state.searchText == '') return
+        if (this.state.searchText === '') return
         let regString = '^.*' + this.state.searchText.split('').reduce((s, v) => s + '.*' + v) + '.*$'
         this.setCourses(Object.values(this.props.allCourses).filter(course => (
-            course.cos_cname.indexOf(this.state.searchText) != -1 ||
-            course.teacher.indexOf(this.state.searchText) != -1 ||
-            course.cos_id.split('_')[1] == this.state.searchText ||
+            course.cos_cname.indexOf(this.state.searchText) !== -1 ||
+            course.teacher.indexOf(this.state.searchText) !== -1 ||
+            course.cos_id.split('_')[1] === this.state.searchText ||
             (new RegExp(regString)).test(course.cos_cname)
         )))
     }
@@ -127,7 +127,7 @@ class Index extends React.Component {
                             <InputBase
                                 className={classes.input}
                                 placeholder="課名/課號/老師"
-                                onKeyDown={e => { if (e.keyCode == 13) this.searchText() }}
+                                onKeyDown={e => { if (e.keyCode === 13) this.searchText() }}
                                 onChange={e => this.setState({ searchText: e.target.value })}
                             />
                             <div>
@@ -200,7 +200,7 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
     addCourse: (courseId) => {
-        dispatch(addColeectCourse(courseId, true))
+        dispatch(addCollectCourse(courseId, true))
     },
     removeCourse: (courseId) => {
         dispatch(removeCollectCourse(courseId))
