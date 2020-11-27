@@ -47,8 +47,12 @@ export const actions = createActions({
     }
 })
 
-export const fetchDatabase = () => dispatch => {
-    axios.get('/api/courses/all')
+export const fetchDatabase = (semester) => dispatch => {
+    let url = '/api/courses/all'
+    if(semester != undefined){
+        url += `?sem=${semester}`
+    }
+    axios.get(url)
         .then(res => res.data.url)
         .then(url =>
             axios.get(url).then(res => {
@@ -58,7 +62,7 @@ export const fetchDatabase = () => dispatch => {
                     courses: res.data.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
                     categoryMap: res.data.category_map
                 }))
-                dispatch(fetchUserCollect())
+                dispatch(fetchUserCollect(semester))
             }))
         .catch(err => {
             if (isDev) {
@@ -67,7 +71,7 @@ export const fetchDatabase = () => dispatch => {
                     ...fakeData,
                     courses: fakeData.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {})
                 }))
-                dispatch(fetchUserCollect())
+                dispatch(fetchUserCollect(semester))
             }
             else {
                 dispatch(actions.courseSim.database.store({
@@ -91,8 +95,12 @@ export const fetchUserInfo = () => dispatch => {
         })
 }
 
-export const fetchUserCollect = () => dispatch => {
-    axios.get('/api/courses/user')
+export const fetchUserCollect = (semester) => dispatch => {
+    let url = '/api/courses/user'
+    if(semester != undefined){
+        url += `?sem=${semester}`
+    }
+    axios.get(url)
         .then(res => {
             const { courses } = res.data
             let collect = []
@@ -145,8 +153,12 @@ export const toggleCollectCourseVisible = (courseId, visible) => dispatch => {
     })
 }
 
-export const clearAllUserCourse = () => dispatch => {
-    axios.get('/api/courses/user/clear').then(() => {
+export const clearAllUserCourse = (semester) => dispatch => {
+    let url = '/api/courses/user/clear'
+    if(semester != undefined){
+        url += `?sem=${semester}`
+    }
+    axios.get(url).then(() => {
         dispatch(actions.courseSim.timetable.courseIds.store([]))
         dispatch(actions.courseSim.collect.courseIds.store([]))
     }).catch(err => {

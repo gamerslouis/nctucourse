@@ -181,8 +181,8 @@ class Index extends React.Component {
 const mapStateToProps = (state) => ({
 })
 
-const mapDispatchToProps = (dispatch) => ({
-    fetchDatabase: () => dispatch(fetchDatabase())
+const mapDispatchToProps = (dispatch, ownProps) => ({
+    fetchDatabase: () => dispatch(fetchDatabase(ownProps.semester))
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Index))
