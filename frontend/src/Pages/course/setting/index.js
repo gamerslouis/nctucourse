@@ -210,9 +210,9 @@ const mapStateToProps = (state) => ({
     settings: state.courseSim.settings
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch, ownProps) => ({
     storeQuery: value => dispatch(actions.courseSim.query.store(value)),
-    clearCourse: () => dispatch(clearAllUserCourse()),
+    clearCourse: () => dispatch(clearAllUserCourse(ownProps.semester)),
     updateSetting: (key, value) => dispatch(updateSetting(key, value)),
     loadSavedSettings: () => dispatch(loadSavedSettings())
 })

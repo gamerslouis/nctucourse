@@ -84,7 +84,7 @@ class Index extends React.Component {
         this.state = {
             tabIndex: 0,
             selectCourses: {},
-            mobileIndex: 0,
+            mobileIndex: props.semester === undefined ? 0 : 2,
             mobileSetting: false
         }
         this.handleTabSwitch = this.handleTabSwitch.bind(this)
@@ -108,7 +108,7 @@ class Index extends React.Component {
         return (
             <React.Fragment>
                 <Hidden mdDown>
-                    <Setting />
+                    <Setting semester={this.props.semester} />
                     <Container maxWidth={false} className={classes.root}>
                         <Grid container spacing={2} className={classes.gridout}>
                             <Grid item xs={12} lg={4} className={classes.grid}>
@@ -138,7 +138,7 @@ class Index extends React.Component {
                             </Grid>
                             <Grid item xs={12} lg={8} className={classes.grid}>
                                 <Paper className={classes.paper}>
-                                    <TimeTable />
+                                    <TimeTable semester={this.props.semester} />
                                 </Paper>
                             </Grid>
                         </Grid>
@@ -148,7 +148,7 @@ class Index extends React.Component {
                     <div className={classes.mobileRoot} style={{ backgroundColor: 'white' }}>
                         <Hidden xlDown={mobileIndex != 0}><QueryPage /></Hidden>
                         <Hidden xlDown={mobileIndex != 1}><CollectList /></Hidden>
-                        <Hidden xlDown={mobileIndex != 2}><TimeTable /></Hidden>
+                        <Hidden xlDown={mobileIndex != 2}><TimeTable semester={this.props.semester} /></Hidden>
                         <BottomNavigation
                             value={mobileIndex}
                             onChange={(event, newValue) => {
@@ -169,7 +169,7 @@ class Index extends React.Component {
                             onClose={() => this.setState({ mobileSetting: false })}
                             onOpen={() => this.setState({ mobileSetting: true })}
                         >
-                            <Setting mobile />
+                            <Setting mobile semester={this.props.semester} />
                         </SwipeableDrawer>
                     </div>
                 </Hidden>

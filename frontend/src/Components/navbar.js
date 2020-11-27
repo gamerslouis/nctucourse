@@ -53,6 +53,7 @@ const Navbar = (props) => {
                         </Typography>
                         <Button color="inherit" href="/course">模擬排課</Button>
                         <Button color="inherit" href="/gpa">GPA計算機</Button>
+                        <Button color="inherit" href="/history">歷年課程</Button>
                         <div className={classes.grow} />
                         <Typography variant="body2">
                             Hi, {user.username}.
@@ -86,6 +87,7 @@ const Navbar = (props) => {
                             <Divider />
                             <ListItem button onClick={() => window.location.href = "/course"}>模擬排課</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"} > GPA計算機</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/history"} > 歷年課程</ListItem>
                             <ListItem button onClick={() => window.location.href = "/api/accounts/logout"} > Logout</ListItem>
                         </List>
                     </div>

@@ -11,7 +11,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { CourseTypeColorMap } from '../../../Util/style'
 import { makeInfoPageUrl } from '../../../Util/dataUtil/course'
 import { removeCollectCourse, toggleCollectCourseVisible } from '../../../Redux/Actions/index'
-
+import semesterMap from '../../../Util/semesterMap'
 
 const styles = theme => ({
     root: {
@@ -111,6 +111,7 @@ class TimeTable extends React.Component {
         return (<div className={classes.root}>
             <div className={classes.tableContainer}>
                 <div>
+                    { this.props.semester && <Typography variant="h4">歷年課程：{semesterMap[this.props.semester]}</Typography>}
                     <Typography>總計: {credits}學分/{hours}小時</Typography>
                 </div>
                 <table className={classes.table} border={1} id="timetable">
