@@ -53,17 +53,54 @@ export const fetchDatabase = (semester) => dispatch => {
         url += `?sem=${semester}`
     }
     axios.get(url)
-        .then(res => res.data.url)
-        .then(url =>
-            axios.get(url).then(res => {
+        .then(res => res.data)
+        .then(({url, sem}) => {
+            let mapp
+            if(window.localStorage.getItem('database_map') != null){
+                try {
+                    mapp = JSON.parse(window.localStorage.getItem('database_map'))
+                }
+                catch {
+                    mapp = {[sem]:0}
+                }
+            }
+            else{
+                mapp = {[sem]:0}
+            }
+            let cacheUrl = mapp[sem]
+            if(cacheUrl == url){
+                try{
+                    let cache = JSON.parse(window.localStorage.getItem(`db_cache_${sem}`))
+                    dispatch(actions.courseSim.database.store({
+                        status: FETCH_STATUS.SUCCESS,
+                        ...cache,
+                        courses: cache.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
+                        categoryMap: cache.category_map
+                    }))
+                    dispatch(fetchUserCollect(semester))
+                    return {sem: null, url: null}    
+                }
+                catch {}
+            }
+            mapp[sem] = url
+            
+            
+            window.localStorage.setItem('database_map', JSON.stringify(mapp))
+            return {url, sem}
+        })
+        .then(({url, sem}) => {
+            if(url == null) return
+            return axios.get(url).then(res => {
                 dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
                     ...res.data,
                     courses: res.data.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
                     categoryMap: res.data.category_map
                 }))
+                window.localStorage.setItem(`db_cache_${sem}`, JSON.stringify(res.data))
                 dispatch(fetchUserCollect(semester))
-            }))
+            })
+        })
         .catch(err => {
             if (isDev) {
                 dispatch(actions.courseSim.database.store({

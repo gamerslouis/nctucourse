@@ -89,6 +89,7 @@ def provide_all_courses():
         sem=args['sem']
     ).first().file
     return jsonify({
+        'sem': args['sem'],
         'url': current_app.config['COURSE_FILE_ROOT'] + file
     })
 
