@@ -1,7 +1,7 @@
 import { createActions } from 'redux-actions'
 import axios from 'axios'
 import fakeData from '../../Resources/fake_data'
-import { makeCourseObject, makeObjFromArray } from '../../Util/dataUtil/course'
+import { makeCourseObject, makeObjFromArray, getCourseTimesAndRooms, filterCommonCourses } from '../../Util/dataUtil/course'
 import { isDev } from '../../Util/dev'
 
 
@@ -244,4 +244,17 @@ export const updateSetting = (key, value) => dispatch => {
             window.localStorage.setItem('course_setting', JSON.stringify({}))
         }
     }
+}
+
+export const searchTimeCourses = (time, commonOnly) => (dispatch, getState) => {
+    const { category, categoryMap } = getState().courseSim.database
+    let allCourses = Object.values(getState().courseSim.database.courses)
+    if(commonOnly) allCourses = filterCommonCourses(allCourses, categoryMap, category)
+    const courses = allCourses
+        .filter(course=>getCourseTimesAndRooms(course).find(ctime=>ctime[0]==time[0]&&ctime[1]==time[1]))
+    dispatch(setSearchCourseList(courses))
+}
+
+export const setSearchCourseList = (courses) => dispatch => {
+    dispatch(actions.courseSim.query.store({courseSearchList: courses}))
 }

@@ -15,7 +15,7 @@ import RemoveIcon from '@material-ui/icons/Remove';
 import CourseList from '../../../Components/CourseList'
 import { getCoursesIdByDepId, getCoursesFromIds } from '../../../Util/dataUtil/course'
 import CourseListItem from '../../../Components/CourseListItem'
-import { addCollectCourse, removeCollectCourse } from '../../../Redux/Actions/index'
+import { addCollectCourse, removeCollectCourse, setSearchCourseList } from '../../../Redux/Actions/index'
 
 
 const styles = (theme) => ({
@@ -102,18 +102,12 @@ class Index extends React.Component {
     searchText() {
         if (this.state.searchText === '') return
         let regString = '^.*' + this.state.searchText.split('').reduce((s, v) => s + '.*' + v) + '.*$'
-        this.setCourses(Object.values(this.props.allCourses).filter(course => (
+        this.props.setCourses(Object.values(this.props.allCourses).filter(course => (
             course.cos_cname.indexOf(this.state.searchText) !== -1 ||
             course.teacher.indexOf(this.state.searchText) !== -1 ||
             course.cos_id.split('_')[1] === this.state.searchText ||
             (new RegExp(regString)).test(course.cos_cname)
         )))
-    }
-
-    setCourses(courses) {
-        this.setState({
-            courseList: courses
-        })
     }
 
     render() {
@@ -158,7 +152,7 @@ class Index extends React.Component {
                             })}
                             <FormControl className={classes.formControl}>
                                 <Button variant="outlined" color="primary" disabled={!this.state.enableSelectSearch}
-                                    onClick={() => this.setCourses(getCoursesFromIds(allCourses, getCoursesIdByDepId(category, this.state.depId)))}>
+                                    onClick={() => this.props.setCourses(getCoursesFromIds(allCourses, getCoursesIdByDepId(category, this.state.depId)))}>
                                     搜尋
                         </Button>
                             </FormControl>
@@ -166,7 +160,7 @@ class Index extends React.Component {
                     }
                 </div>
                 <div className={classes.list}>
-                    <CourseList courseListItems={this.state.courseList
+                    <CourseList courseListItems={this.props.courseList
                         .filter(course => ((course.cos_cname.indexOf('大一英文') == -1) || (!this.props.queryOptions.ignoreFreshEnglish)))
                         .filter(course => ((course.cos_cname.indexOf('大一體育') == -1) || (!this.props.queryOptions.ignoreFreshPhysical)))
                         .map(ele =>
@@ -195,7 +189,8 @@ const mapStateToProps = (state) => ({
     category: state.courseSim.database.category,
     categoryMap: state.courseSim.database.categoryMap,
     selectCourseIds: state.courseSim.collect.courseIds,
-    queryOptions: state.courseSim.settings
+    queryOptions: state.courseSim.settings,
+    courseList: state.courseSim.query.courseSearchList,
 })
 
 const mapDispatchToProps = (dispatch) => ({
@@ -204,7 +199,10 @@ const mapDispatchToProps = (dispatch) => ({
     },
     removeCourse: (courseId) => {
         dispatch(removeCollectCourse(courseId))
-    }
+    },
+    setCourses: (courses) => {
+        dispatch(setSearchCourseList(courses))
+    },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(Index))

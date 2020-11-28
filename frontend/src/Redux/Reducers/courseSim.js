@@ -9,6 +9,7 @@ const initialState = {
         categoryMap: {}
     },
     query: {
+        courseSearchList: []
     },
     collect: {
         courseIds: new Set()

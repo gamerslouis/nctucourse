@@ -10,7 +10,7 @@ import { getCourseTimesAndRooms } from '../../../Util/dataUtil/course'
 import Tooltip from '@material-ui/core/Tooltip';
 import { CourseTypeColorMap } from '../../../Util/style'
 import { makeInfoPageUrl } from '../../../Util/dataUtil/course'
-import { removeCollectCourse, toggleCollectCourseVisible } from '../../../Redux/Actions/index'
+import { removeCollectCourse, toggleCollectCourseVisible, searchTimeCourses } from '../../../Redux/Actions/index'
 import semesterMap from '../../../Util/semesterMap'
 
 const styles = theme => ({
@@ -43,6 +43,24 @@ const styles = theme => ({
         width: '2.5rem',
         whiteSpace: 'nowrap'
     },
+    tdx: {
+        padding: 0
+    },
+    courseContainer: {
+        height: "100%",
+        width: "100%",
+        padding: '2px 3px',
+        border:"2px #ffffff solid",
+        '&:hover': {
+            border:"2px #81C4FF solid",
+            boxSizing: "border-box",
+            cursor: "pointer",
+            // boxShadow: "rgba(0,0,0,0.4) 3px 3px 3px 0px inset",  
+         },
+    }
+})
+
+const courseStyles = theme => ({
     course: {
         width: '100%',
         margin: '1px 0',
@@ -65,9 +83,39 @@ const styles = theme => ({
             display: 'inline'
         },
     },
-    xd: {
-        q: '#fbfbfb'
-    }
+})
+
+const TimeTableCourse = withStyles(courseStyles)((props)=> {
+    const { course, roomCode, roomName, time, showRoomCode, hideOverflowText, classes, setAnchor } = props
+    return (
+        <ButtonBase 
+            style={{width: '100%'}} 
+            focusRipple
+            onClick={(event) => {
+                setAnchor({
+                    menuAnchorEl: event.currentTarget,
+                    menuTarget: course.cos_id,
+                    menuTargetTime: time,
+                    menuTargetIsCourse: true
+                })
+                event.stopPropagation()
+            }}
+            aria-controls="timetable-course-menu" 
+            aria-haspopup="true"
+        >
+            <Tooltip title={`${course.cos_cname} ${course.teacher}/${showRoomCode ? roomCode : roomName}`} arrow>
+                <div className={classes.course} style={{ backgroundColor: CourseTypeColorMap[course.cos_type] }}>
+                    <span className={clsx(classes.textSpan, hideOverflowText ? classes.textSpanHide : "")}>
+                        <Typography display="inline" variant="body2">{course.cos_cname} </Typography>
+                        <div className={hideOverflowText ? classes.textTeacherHide : ""}>
+                            <Typography display="inline" variant="caption">{course.teacher}/</Typography>
+                            <Typography display="inline" variant="caption">{showRoomCode ? roomCode : roomName}</Typography>
+                        </div>
+                    </span>
+                </div>
+            </Tooltip>
+        </ButtonBase>
+    )
 })
 
 class TimeTable extends React.Component {
@@ -75,8 +123,10 @@ class TimeTable extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = { menuAnchorEl: null, menuTarget: '' }
+        this.state = { menuAnchorEl: null, menuTarget: '', menuTargetTime: '', menuTargetIsCourse: true }
         this.closeMenu = this.closeMenu.bind(this)
+        this.setAnchor = this.setAnchor.bind(this)
+        this.handleCourseSpaceClick = this.handleCourseSpaceClick.bind(this)
     }
 
     closeMenu() {
@@ -96,10 +146,21 @@ class TimeTable extends React.Component {
                     course: course,
                     roomCode: time[2],
                     roomName: time[3],
+                    time: time.slice(0, 2),
                 })
             }
         }
         return [classes, credits, hours]
+    }
+    handleCourseSpaceClick(e, time){
+        this.setState({
+            menuAnchorEl: e.currentTarget,
+            menuTargetTime: time,
+            menuTargetIsCourse: false
+        })
+    }
+    setAnchor(archorMeta){
+        this.setState(archorMeta)
     }
 
     render() {
@@ -118,39 +179,25 @@ class TimeTable extends React.Component {
                     <thead>
                         <tr>
                             <td className={clsx(classes.td, classes.td1)}>節數</td>
-                            {titles.map(text => <td className={classes.td}>{text}</td>)}
+                            {titles.map(text => <td className={classes.td} key={text}>{text}</td>)}
                         </tr>
                     </thead>
                     <tbody>
                         {courseClasses.map((rowClasses, index) => (<tr key={index}>
                             <td className={clsx(classes.td, classes.td1)}>{this.secs[index]}</td>
-                            {rowClasses.slice(0, showWeekend ? 7 : 5).map(cellClasses => (
-                                <td className={classes.td}>
-                                    {cellClasses.map(({ course, roomCode, roomName }) =>
-                                        <ButtonBase style={{
-                                            width: '100%',
-                                        }} focusRipple
-                                            onClick={(event) => {
-                                                this.setState({
-                                                    menuAnchorEl: event.currentTarget,
-                                                    menuTarget: course.cos_id
-                                                })
-                                            }}
-                                            aria-controls="timetable-course-menu" aria-haspopup="true"
-                                        >
-                                            <Tooltip title={`${course.cos_cname} ${course.teacher}/${showRoomCode ? roomCode : roomName}`} arrow>
-                                                <div className={classes.course} style={{ backgroundColor: CourseTypeColorMap[course.cos_type] }}>
-                                                    <span className={clsx(classes.textSpan, hideOverflowText && classes.textSpanHide)}>
-                                                        <Typography display="inline" variant="body2">{course.cos_cname} </Typography>
-                                                        <div className={hideOverflowText && classes.textTeacherHide}>
-                                                            <Typography display="inline" variant="caption">{course.teacher}/</Typography>
-                                                            <Typography display="inline" variant="caption">{showRoomCode ? roomCode : roomName}</Typography>
-                                                        </div>
-                                                    </span>
-                                                </div>
-                                            </Tooltip>
-                                        </ButtonBase>
+                            {rowClasses.slice(0, showWeekend ? 7 : 5).map((cellClasses, index2) => (
+                                <td className={clsx(classes.td, classes.tdx)} key={index2}> 
+                                    <div className={classes.courseContainer} 
+                                        onClick={e=>this.handleCourseSpaceClick(e, [index2+1, this.secs[index]])}>
+                                    {cellClasses.map(courseData =>
+                                        <TimeTableCourse {...courseData} 
+                                            hideOverflowText={hideOverflowText} 
+                                            showRoomCode={showRoomCode}
+                                            setAnchor={this.setAnchor}
+                                            key={courseData.course.cos_id} />
+                                 
                                     )}
+                                   </div>
                                 </td>
                             ))}
                         </tr>)).splice(extendTimetable ? 0 : 1, this.secs.length - (extendTimetable ? 0 : 2))}
@@ -165,18 +212,32 @@ class TimeTable extends React.Component {
                 open={Boolean(this.state.menuAnchorEl)}
                 onClose={this.closeMenu}
             >
+                { this.state.menuTargetIsCourse &&
+                    <MenuItem onClick={() => {
+                        this.closeMenu()
+                        this.props.setTimetableVisible(this.state.menuTarget, false)
+                    }}>隱藏</MenuItem>
+                }
+                { this.state.menuTargetIsCourse &&
+                    <MenuItem onClick={() => {
+                        this.closeMenu()
+                        this.props.removeCourse(this.state.menuTarget)
+                    }}>移除</MenuItem>
+                }
+                { this.state.menuTargetIsCourse &&
+                    <MenuItem onClick={() => {
+                        this.closeMenu()
+                        window.open(makeInfoPageUrl(this.state.menuTarget))
+                    }}>詳細資訊</MenuItem>
+                }
                 <MenuItem onClick={() => {
                     this.closeMenu()
-                    this.props.setTimetableVisible(this.state.menuTarget, false)
-                }}>隱藏</MenuItem>
+                    this.props.searchTimeCourses(this.state.menuTargetTime, true)
+                }}>找通識</MenuItem>
                 <MenuItem onClick={() => {
                     this.closeMenu()
-                    this.props.removeCourse(this.state.menuTarget)
-                }}>移除</MenuItem>
-                <MenuItem onClick={() => {
-                    this.closeMenu()
-                    window.open(makeInfoPageUrl(this.state.menuTarget))
-                }}>詳細資訊</MenuItem>
+                    this.props.searchTimeCourses(this.state.menuTargetTime)
+                }}>找所有課</MenuItem>
             </Menu>
         </div >)
     }
@@ -197,7 +258,10 @@ const mapDispatchToProps = (dispatch) => ({
     },
     setTimetableVisible: (courseId, visible) => {
         dispatch(toggleCollectCourseVisible(courseId, visible))
-    }
+    },
+    searchTimeCourses: (time, commonOnly) => {
+        dispatch(searchTimeCourses(time, commonOnly))
+    },
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(withStyles(styles)(TimeTable))
