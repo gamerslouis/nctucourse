@@ -55,6 +55,8 @@ class Me(Resource):
 
     @marshal_with(resource_fields)
     def get(self, **kwargs):
+        current_user.last_login_date = datetime.datetime.utcnow()
+        db.session.commit()
         return current_user
 
 
