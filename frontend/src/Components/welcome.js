@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControlLabel, Checkbox, Button, Typography } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, FormControlLabel, Checkbox, Button } from '@material-ui/core';
 
 export default (props) => {
     let defaultShow
@@ -48,7 +48,7 @@ export default (props) => {
                 <DialogActions>
                     {window.localStorage &&
                         <FormControlLabel label="我知道了，不要再顯示。"
-                            control={<Checkbox onChange
+                            control={<Checkbox
                                 onChange={(e) => {
                                     window.localStorage.setItem('hideWelcome', e.target.checked ? "true" : "")
                                     window.localStorage.setItem('hideWelcomeTime', Date.now())

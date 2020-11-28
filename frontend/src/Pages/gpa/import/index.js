@@ -40,7 +40,7 @@ export default (props) => {
                         if (!window.confirm('本平台提供之結果僅供參考，不保證其正確性。')) return
                         let data
                         try {
-                            if (text == '') throw Error
+                            if (text === '') throw Error
                             data = parse(text)
                         }
                         catch (e) {

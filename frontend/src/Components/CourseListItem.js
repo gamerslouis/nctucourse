@@ -44,7 +44,7 @@ const CourseListItem = (props) => {
     if (!onClick) realOnClick = (courseId) => { window.open(makeInfoPageUrl(courseId)) }
     else { realOnClick = onClick }
     return (<ListItem dense button onClick={e => realOnClick(course.cos_id)}
-        className={multiAction == 2 ? classes.twoAction : multiAction == 3 ? classes.threeAction : undefined}
+        className={multiAction === 2 ? classes.twoAction : multiAction === 3 ? classes.threeAction : undefined}
     >
         <ListItemText
             primary={
@@ -63,10 +63,10 @@ const CourseListItem = (props) => {
                         <Chip className={classes.cardRoot} size="small" label={course.cos_type}
                             style={{ backgroundColor: CourseTypeColorMap[course.cos_type] }} />
                         {Object.keys(briefMap)
-                            .filter(key => course.brief_code.indexOf(key) != -1)
+                            .filter(key => course.brief_code.indexOf(key) !== -1)
                             .map(key => <Chip key={key} className={classes.cardRoot} size="small" label={briefMap[key][1]}
                                 style={{ backgroundColor: begdeClasses[briefMap[key][0]] }} />)}
-                        {course.lang == "1" && <Chip className={classes.cardRoot} size="small" label="英文授課"
+                        {course.lang === "1" && <Chip className={classes.cardRoot} size="small" label="英文授課"
                             style={{ backgroundColor: begdeClasses[0] }} />}
                     </div>
                 </React.Fragment>

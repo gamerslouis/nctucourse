@@ -161,8 +161,8 @@ class Index extends React.Component {
                 </div>
                 <div className={classes.list}>
                     <CourseList courseListItems={this.props.courseList
-                        .filter(course => ((course.cos_cname.indexOf('大一英文') == -1) || (!this.props.queryOptions.ignoreFreshEnglish)))
-                        .filter(course => ((course.cos_cname.indexOf('大一體育') == -1) || (!this.props.queryOptions.ignoreFreshPhysical)))
+                        .filter(course => ((course.cos_cname.indexOf('大一英文') === -1) || (!this.props.queryOptions.ignoreFreshEnglish)))
+                        .filter(course => ((course.cos_cname.indexOf('大一體育') === -1) || (!this.props.queryOptions.ignoreFreshPhysical)))
                         .map(ele =>
                             <CourseListItem
                                 key={ele.cos_id}

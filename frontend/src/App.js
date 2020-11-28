@@ -11,7 +11,6 @@ import AuthenticationProvider from './Components/AuthenticationProvider'
 import { isDev } from './Util/dev'
 
 import Footer from './Components/footer'
-import { Snackbar } from '@material-ui/core';
 
 const theme = createMuiTheme({
   breakpoints: { // use bootstrap breakpoint value

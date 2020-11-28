@@ -11,7 +11,6 @@ import Course from './Pages/course'
 import GPA from './Pages/gpa'
 import GPAImport from './Pages/gpa/import'
 import History from './Pages/history/index'
-import { FETCH_STATUS } from './Redux/Actions'
 
 const Router = (props) => {
     if (isMaintaining) return <Maintain />

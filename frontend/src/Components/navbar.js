@@ -47,7 +47,7 @@ const Navbar = (props) => {
             <Hidden smDown>
                 <AppBar position="static">
                     <Toolbar className={classes.toolbar}>
-                        <img src={logo256} className={classes.logo} />
+                        <img src={logo256} className={classes.logo} alt="" />
                         <Typography variant="h6" className={classes.title}>
                             交大課程助理
                         </Typography>
@@ -65,7 +65,7 @@ const Navbar = (props) => {
             <Hidden mdUp>
                 <AppBar position="static">
                     <Toolbar className={classes.toolbar}>
-                        <img src={logo256} className={classes.logo} />
+                        <img src={logo256} className={classes.logo} alt="" />
                         <Typography variant="h6" className={classes.title}>
                             交大課程助理
                         </Typography>

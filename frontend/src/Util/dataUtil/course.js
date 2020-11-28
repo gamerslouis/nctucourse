@@ -21,7 +21,7 @@ function onlyUnique(value, index, self) {
 }
 
 export function getCoursesIdByDepId(category, depId) {
-    return category.filter(value => value[0] == depId).map(value => value[2]).filter(onlyUnique)
+    return category.filter(value => value[0] === depId).map(value => value[2]).filter(onlyUnique)
     // type of value and depId are different
 }
 
@@ -49,13 +49,13 @@ export function getCourseTimesAndRooms(course) {
     let times = []
     for (let [unit, roomCode] of cos_time.split(',').map(e => e.split('-'))) {
         let roomName = ""
-        if(roomCode==undefined){
+        if(roomCode === undefined){
             
         }
-        else if (Object.keys(roomCodeMap).indexOf(roomCode.slice(0, 2)) != -1) {
+        else if (Object.keys(roomCodeMap).indexOf(roomCode.slice(0, 2)) !== -1) {
             roomName = roomCodeMap[roomCode.slice(0, 2)] + roomCode.slice(2)
         }
-        else if (Object.keys(roomCodeMap).indexOf(roomCode.slice(0, 1)) != -1) {
+        else if (Object.keys(roomCodeMap).indexOf(roomCode.slice(0, 1)) !== -1) {
             roomName = roomCodeMap[roomCode.slice(0, 1)] + roomCode.slice(1)
         }
         else {
@@ -84,6 +84,6 @@ export function makeInfoPageUrl(courseId) {
 
 export function filterCommonCourses(allCourses, categoryMap, category){
     let commonIds = Object.values(categoryMap['通識'])
-    let courseIds = category.filter(c=>commonIds.indexOf(Number(c[0]))!=-1).map(c=>c[2])
-    return allCourses.filter(c=>courseIds.indexOf(c.cos_id)!=-1)
+    let courseIds = category.filter(c=>commonIds.indexOf(Number(c[0]))!==-1).map(c=>c[2])
+    return allCourses.filter(c=>courseIds.indexOf(c.cos_id)!==-1)
 }

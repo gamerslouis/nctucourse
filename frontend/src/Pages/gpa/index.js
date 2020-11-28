@@ -37,7 +37,7 @@ class Index extends React.Component {
             let credits = gpaTool.getCredits(courses)
             let [last60Courses, last60Credits] = gpaTool.getLast60Courses(courses)
             const sum = (a, b) => a + b
-            if(credits != 0) {
+            if(credits !== 0) {
                 this.setState({
                     overall40GPA: courses.map(c => gpaTool.courseTo40Point(c) * c.cos_credit).reduce(sum) / credits,
                     overall43GPA: courses.map(c => gpaTool.courseTo43Point(c) * c.cos_credit).reduce(sum) / credits,
@@ -70,7 +70,7 @@ class Index extends React.Component {
             </div>
             <div style={{ paddingTop: 20 }}>
                 <Typography variant="caption">
-                    註：此計算參考 <a href={nctu_gpa_rule} target='blank'>等級制與百分制及GP對照表-交通大學</a> 與 <a href='http://intra.tpml.edu.tw/study/upload/downloads/GPA.htm' target='_blank'> 美國大學四點制的算法</a>，採計百分法評分方式成績計算，Last 60 Credits 採由後往前計算至大於等於 60 學分為止，也就是可能超過 60 學分 (呈現於括號內)，實際成績以學校成績單為準。
+                    註：此計算參考 <a href={nctu_gpa_rule} target='_blank' rel='noopener noreferrer'>等級制與百分制及GP對照表-交通大學</a> 與 <a href='http://intra.tpml.edu.tw/study/upload/downloads/GPA.htm' target='_blank'  rel='noopener noreferrer'> 美國大學四點制的算法</a>，採計百分法評分方式成績計算，Last 60 Credits 採由後往前計算至大於等於 60 學分為止，也就是可能超過 60 學分 (呈現於括號內)，實際成績以學校成績單為準。
                 </Typography>
             </div >
         </Container >

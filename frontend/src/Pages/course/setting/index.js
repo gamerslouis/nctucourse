@@ -20,7 +20,7 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
 import html2canvas from 'html2canvas';
-import { actions, clearAllUserCourse, saveImage, updateSetting, loadSavedSettings } from '../../../Redux/Actions/index'
+import { actions, clearAllUserCourse, updateSetting, loadSavedSettings } from '../../../Redux/Actions/index'
 
 const styles = theme => ({
     fab: {

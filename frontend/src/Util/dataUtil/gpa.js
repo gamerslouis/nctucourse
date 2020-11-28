@@ -50,7 +50,7 @@ export const courseTo40Point = (course) => {
 }
 
 export const filterNotCourse = (course) => {
-    return course.cos_credit > 0 && course.levelScore != 'W' && course.scoreType == '百分法' && course.state == '已送註冊組'
+    return course.cos_credit > 0 && course.levelScore !== 'W' && course.scoreType === '百分法' && course.state === '已送註冊組'
 }
 
 export const getCredits = (courses) => {
@@ -62,7 +62,7 @@ export const getLast60Courses = (courses) => {
     let sem = null
     let newCourses = []
     for (let c of courses.reverse()) {
-        if (sem != null && c.sem != sem) break
+        if (sem !== null && c.sem !== sem) break
         credits += c.cos_credit
         newCourses.push(c)
         if (credits >= 60) sem = c.sem
