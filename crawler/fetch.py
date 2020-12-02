@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import api
+import logging
 
 
 def list_to_dict(l, key):
@@ -14,7 +15,7 @@ def list_to_dict(l, key):
 def save_json_file(root, fname, obj):
     with open(os.path.join(root, fname), 'w') as f:
         json.dump(obj, f)
-    print("Fetch success:", fname)
+    logging.debug("Fetch success:" + fname)
 
 
 def work_type_category(t, lang, sem, category):
@@ -29,7 +30,7 @@ def work_type_category(t, lang, sem, category):
 
     for collage, collage_name in collages.items():
         data[collage_name] = {}
-        print(collage_name)
+        logging.debug("Fetch " + collage_name)
         deps = api.get_dep(
             t,
             lang,
@@ -40,7 +41,7 @@ def work_type_category(t, lang, sem, category):
 
         for dep, dep_name in deps.items():
             data[collage_name][dep_name] = {}
-            print(dep_name)
+            logging.debug("Fetch " + dep_name)
             grades = api.get_grade(
                 t,
                 lang,
@@ -73,7 +74,7 @@ def work_common_class(t, lang, sem, category):
     data = {}
     deps = api.get_dep(t, lang, sem, category, '*')
     for dep, dep_name in deps.items():
-        print(dep_name)
+        logging.debug("Fetch " + dep_name)
         courses = api.get_cos_list(sem, dep)
         courses = api.course_id_pipe(courses)
         data[dep_name] = courses

@@ -6,7 +6,7 @@ import code
 
 
 def load_json(root, fname):
-    with open(os.path.join(root, fname), 'r') as f:
+    with open(os.path.join(root, fname), 'r', encoding="utf-8") as f:
         data = json.load(f)
     return data
 
@@ -31,7 +31,7 @@ def work(sem, root):
         del c['cos_type_e']
         del c['cos_ename']
 
-    with open(os.path.join(root, 'courses.csv'), 'w', newline='') as csvfile:
+    with open(os.path.join(root, 'courses.csv'), 'w', newline='', encoding="utf-8") as csvfile:
         keys = ['cos_id', 'TURL', 'cos_cname', 'cos_code', 'cos_credit',
                 'cos_hours', 'cos_type', 'memo', 'num_limit',
                 'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang']
@@ -43,7 +43,7 @@ def work(sem, root):
     graduateds = []
     category_map = OrderedDict()
 
-    with open(os.path.join(root, 'category.csv'), 'w', newline='')as csvfile:
+    with open(os.path.join(root, 'category.csv'), 'w', newline='', encoding="utf-8")as csvfile:
         writer = csv.writer(csvfile, delimiter=',')
 
         # 學士班課程
@@ -128,5 +128,5 @@ def work(sem, root):
     #     writer = csv.writer(csvfile, delimiter=',')
     #     writer.writerows(list(enumerate(graduateds)))
 
-    with open(os.path.join(root, 'category_map.json'), 'w') as f:
+    with open(os.path.join(root, 'category_map.json'), 'w', encoding="utf-8") as f:
         json.dump(category_map, f, indent=4, ensure_ascii=False)
