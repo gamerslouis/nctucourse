@@ -54,6 +54,8 @@ const Navbar = (props) => {
                         <Button color="inherit" href="/course">模擬排課</Button>
                         <Button color="inherit" href="/gpa">GPA計算機</Button>
                         <Button color="inherit" href="/history">歷年課程</Button>
+                        <Button color="inherit" href="https://timetable.nctu.edu.tw/">交大課程時間表</Button>
+                        <Button color="inherit" href="https://course.nctu.edu.tw/">交大選課系統</Button>
                         <div className={classes.grow} />
                         <Typography variant="body2">
                             Hi, {user.username}.
@@ -88,6 +90,8 @@ const Navbar = (props) => {
                             <ListItem button onClick={() => window.location.href = "/course"}>模擬排課</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"} > GPA計算機</ListItem>
                             <ListItem button onClick={() => window.location.href = "/history"} > 歷年課程</ListItem>
+                            <ListItem button onClick={() => window.location.href = "https://timetable.nctu.edu.tw/"} > 交大課程時間表</ListItem>
+                            <ListItem button onClick={() => window.location.href = "https://course.nctu.edu.tw/"} > 交大選課系統</ListItem>
                             <ListItem button onClick={() => window.location.href = "/api/accounts/logout"} > Logout</ListItem>
                         </List>
                     </div>

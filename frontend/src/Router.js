@@ -5,6 +5,8 @@ import Authentication from './Components/Authentication'
 import Navbar from './Components/navbar'
 import { isMaintaining } from './Util/dev'
 import Maintain from './Components/Maintain'
+import FullLoading from './Components/FullLoading'
+import { FETCH_STATUS } from './Redux/Actions/index'
 
 import Login from './Pages/login'
 import Course from './Pages/course'
@@ -15,40 +17,43 @@ import History from './Pages/history/index'
 const Router = (props) => {
     if (isMaintaining) return <Maintain />
     else return (
-        <BrowserRouter>
-            <div>
-                <Route render={({ location }) =>
-                    location.pathname !== "/login" ? <Navbar /> : null
-                }
-                />
-                <Authentication anonymous>
-                    <Redirect to="/login" />
-                </Authentication>
-
-                <Switch>
-                    <Route exact path='/login' render={() => (
-                        <React.Fragment>
-                            <Authentication><Redirect to="/course" /></Authentication>
-                            <Authentication anonymous><Login /></Authentication>
-                        </React.Fragment>
-                    )} />
-                    <Route exact path='/course' render={() => {
-                        let urlParams = new URLSearchParams(window.location.search);
-                        if(urlParams.has('sem')){
-                            return <Course semester={urlParams.get('sem')} />
-                        } else {
-                            return <Course />
-                        }
-                    }} />
-                    <Route exact path='/gpa' component={GPA} />
-                    <Route exact path='/gpa/import' component={GPAImport} />
-                    <Route exact path='/history' component={History} />
-                    <Authentication >
-                        <Route render={() => <Redirect to="/course" />} />
+        <React.Fragment>
+            {FETCH_STATUS.FETCHING == props.userFetchStatus && <FullLoading show /> }
+            <BrowserRouter>
+                <div>
+                    <Route render={({ location }) =>
+                        location.pathname !== "/login" ? <Navbar /> : null
+                    }
+                    />
+                    <Authentication anonymous>
+                        <Redirect to="/login" />
                     </Authentication>
-                </Switch>
-            </div>
-        </BrowserRouter>
+
+                    <Switch>
+                        <Route exact path='/login' render={() => (
+                            <React.Fragment>
+                                <Authentication><Redirect to="/course" /></Authentication>
+                                <Authentication anonymous><Login /></Authentication>
+                            </React.Fragment>
+                        )} />
+                        <Route exact path='/course' render={() => {
+                            let urlParams = new URLSearchParams(window.location.search);
+                            if(urlParams.has('sem')){
+                                return <Course semester={urlParams.get('sem')} />
+                            } else {
+                                return <Course />
+                            }
+                        }} />
+                        <Route exact path='/gpa' component={GPA} />
+                        <Route exact path='/gpa/import' component={GPAImport} />
+                        <Route exact path='/history' component={History} />
+                        <Authentication >
+                            <Route render={() => <Redirect to="/course" />} />
+                        </Authentication>
+                    </Switch>
+                </div>
+            </BrowserRouter>
+        </React.Fragment>
     )
 }
 
