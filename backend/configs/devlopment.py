@@ -10,4 +10,4 @@ class Configs(_Configs):
     NCTU_OAUTH_CLIENT_SECRET =  os.environ.get('NCTU_OAUTH_CLIENT_SECRET')
     NCTU_OAUTH_REDIRECT_URL = 'http://127.0.0.1/api/accounts/login'
     SEMESTER = '1091'
-    COURSE_FILE_ROOT = 'http://127.0.0.1:8000/'
+    COURSE_FILE_ROOT = 'https://gamerslouis.github.io/nctucourse/coursedata/'
