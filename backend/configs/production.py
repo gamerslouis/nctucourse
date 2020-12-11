@@ -1,19 +1,10 @@
 from .default import Configs as _Configs
-from google.cloud import ndb
+from dotenv import dotenv_values
 
-class Setting(ndb.Model):
-    name = ndb.StringProperty()
-    value = ndb.StringProperty()
-
-
-class NDBConfigLoader(type):
+class DotenvConfigLoader(type):
     def __new__(mcls, name, base, attribs):
-        client = ndb.Client()
-        with client.context():
-            for s in Setting.query():
-                attribs[s.name] = s.value
+        attribs.update(dotenv_values())
         return super().__new__(mcls, name, base, attribs)
 
-
-class Configs(_Configs, metaclass=NDBConfigLoader):
+class Configs(_Configs, metaclass=DotenvConfigLoader):
     pass
