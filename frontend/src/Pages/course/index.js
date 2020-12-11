@@ -148,7 +148,12 @@ class Index extends React.Component {
                     <div className={classes.mobileRoot} style={{ backgroundColor: 'white' }}>
                         <Hidden xlDown={mobileIndex !== 0}><QueryPage /></Hidden>
                         <Hidden xlDown={mobileIndex !== 1}><CollectList /></Hidden>
-                        <Hidden xlDown={mobileIndex !== 2}><TimeTable semester={this.props.semester} /></Hidden>
+                        <Hidden xlDown={mobileIndex !== 2}>
+                            <TimeTable 
+                                semester={this.props.semester}
+                                changeTabIndex={(newIndex) => this.setState({ mobileIndex: newIndex })}
+                            />
+                        </Hidden>
                         <BottomNavigation
                             value={mobileIndex}
                             onChange={(event, newValue) => {

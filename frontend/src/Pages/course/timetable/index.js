@@ -252,7 +252,7 @@ const mapStateToProps = (state) => ({
     showRoomCode: state.courseSim.settings.showRoomCode
 })
 
-const mapDispatchToProps = (dispatch) => ({
+const mapDispatchToProps = (dispatch, props) => ({
     removeCourse: (courseId) => {
         dispatch(removeCollectCourse(courseId))
     },
@@ -261,6 +261,9 @@ const mapDispatchToProps = (dispatch) => ({
     },
     searchTimeCourses: (time, commonOnly) => {
         dispatch(searchTimeCourses(time, commonOnly))
+        if(props.changeTabIndex) {
+            props.changeTabIndex(0)
+        }
     },
 })
 
