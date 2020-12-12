@@ -20,3 +20,4 @@ urllib3==1.25.10
 Werkzeug==1.0.1
 gunicorn>=19.5.0
 python-dotenv
+sentry-sdk[flask]==0.10.2

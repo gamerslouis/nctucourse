@@ -12,6 +12,12 @@ setup_config(app)
 db = models.setup_app(app)
 if app.config['PRODUCTION_ENV']:
     load_sql_config(app, db)
+    import sentry_sdk
+    from sentry_sdk.integrations.flask import FlaskIntegration
+    sentry_sdk.init(
+        dsn=app.config['SENTRY_DSN'],
+        integrations=[FlaskIntegration()]
+    )
 
 login_manager = LoginManager()
 login_manager.init_app(app)
