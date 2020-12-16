@@ -106,7 +106,7 @@ class Index extends React.Component {
             course.cos_cname.indexOf(this.state.searchText) !== -1 ||
             course.teacher.indexOf(this.state.searchText) !== -1 ||
             course.cos_id.split('_')[1] === this.state.searchText ||
-            (new RegExp(regString)).test(course.cos_cname)
+            (new RegExp(regString, "i")).test(course.cos_cname)
         )))
     }
 
