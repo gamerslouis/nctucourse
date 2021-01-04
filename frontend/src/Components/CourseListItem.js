@@ -29,6 +29,14 @@ const useStyles = makeStyles((theme) => ({
     }
 }));
 
+function begdeLebalPipe(key, course, briefMap) {
+    let label = briefMap[key][1]
+    if(key == 'A504' && course['meta'] != undefined && course['meta']['geci'] != undefined) {
+        return [key, `[${course['meta']['geci']}]${label}`]
+    }
+    return [key, label]
+}
+
 const CourseListItem = (props) => {
     const classes = useStyles();
     const { course, onClick, actions, multiAction } = props
@@ -64,7 +72,8 @@ const CourseListItem = (props) => {
                             style={{ backgroundColor: CourseTypeColorMap[course.cos_type] }} />
                         {Object.keys(briefMap)
                             .filter(key => course.brief_code.indexOf(key) !== -1)
-                            .map(key => <Chip key={key} className={classes.cardRoot} size="small" label={briefMap[key][1]}
+                            .map(key => begdeLebalPipe(key, course, briefMap))
+                            .map(([key, realLabel]) => <Chip key={key} className={classes.cardRoot} size="small" label={realLabel}
                                 style={{ backgroundColor: begdeClasses[briefMap[key][0]] }} />)}
                         {course.lang === "1" && <Chip className={classes.cardRoot} size="small" label="英文授課"
                             style={{ backgroundColor: begdeClasses[0] }} />}

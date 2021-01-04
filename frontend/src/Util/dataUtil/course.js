@@ -1,10 +1,13 @@
 export function makeCourseObject(row) {
     const keys = ['cos_id', 'TURL', 'cos_cname', 'cos_code', 'cos_credit',
         'cos_hours', 'cos_type', 'memo', 'num_limit',
-        'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang']
+        'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang', 'meta']
     let obj = {}
     for (let i in keys) {
         obj[keys[i]] = row[i]
+        if(keys[i]==='meta'){
+            obj[keys[i]] = JSON.parse(row[i])
+        }
     }
     return obj
 }

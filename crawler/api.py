@@ -127,11 +127,18 @@ def course_pipe(_data):
                     'reg_num', 'teacher', 'cos_time']
             for cid in cs:
                 obj = {}
+                meta = {}
                 for k in keys:
                     obj[k] = cs[cid][k]
                 obj['cos_id'] = cs[cid]['acy'] + cs[cid]['sem'] + '_' + cs[cid]['cos_id']
                 obj['brief_code'] = list(data['brief'][cid])[0]
                 obj['lang'] = data['language'][cid]['授課語言代碼'] 
+                try:
+                    geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院']['GECIName']
+                    meta['geci'] = geci_name
+                except KeyError:
+                    pass
+                obj['meta'] = json.dumps(meta)
                 #
                 courses.append(obj)
             i += 1

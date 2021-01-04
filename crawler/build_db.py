@@ -54,7 +54,7 @@ def work(sem, root):
     with open(os.path.join(root, 'courses.csv'), 'w', newline='', encoding="utf-8") as csvfile:
         keys = ['cos_id', 'TURL', 'cos_cname', 'cos_code', 'cos_credit',
                 'cos_hours', 'cos_type', 'memo', 'num_limit',
-                'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang']
+                'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang', 'meta']
 
         writer = csv.DictWriter(csvfile, delimiter=',', fieldnames=keys)
         writer.writeheader()

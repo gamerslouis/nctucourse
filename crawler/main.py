@@ -9,6 +9,7 @@ from git import Repo
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import logging
+import json
 
 FORMAT = '%(asctime)s %(levelname)s: %(message)s'
 logging.basicConfig(level=logging.INFO, filename='crawler.log', format=FORMAT)
@@ -54,7 +55,26 @@ if __name__ == "__main__":
         class SemesterMapping(db.Model):
             sem = db.Column(db.String(50), primary_key=True)
             file = db.Column(db.Text)
+        class UserCollect(db.Model):
+            id = db.Column(db.Integer, primary_key=True)
+            uid = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+            courseId = db.Column(db.String(20), nullable=False)
+            sem = db.Column(db.String(5), nullable=False)
+            visible = db.Column(db.Boolean, nullable=False)
+            __table_args__ = (
+                db.UniqueConstraint('uid', 'courseId'),
+            )
         with app.app_context():
+            ids = set(list(map(lambda v:v[0], UserCollect.query.with_entities(UserCollect.courseId).filter_by(sem=sem).all())))
+            with open(spath) as f:
+                dids = set(list(map(lambda v:v[0],json.load(f)['courses'])))
+            deletedIds = ids.difference(dids)
+            if len(deletedIds) > 0:
+                UserCollect.query.filter(UserCollect.courseId.in_(deletedIds)).delete(synchronize_session='evaluate')
+                logging.info("delete courses: " + str(deletedIds))
+            else:
+                logging.info("no course deleted")
+
             semmap = SemesterMapping.query.filter_by(sem=sem).first()
             if semmap is not None:
                 semmap.file = f'{sem}/{timestamp}/all.json'
