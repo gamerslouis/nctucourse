@@ -1,0 +1,13 @@
+asgiref==3.3.1
+certifi==2020.12.5
+chardet==4.0.0
+Django==3.1.5
+djangorestframework==3.12.2
+idna==2.10
+PyMySQL==0.10.1
+python-dotenv==0.15.0
+pytz==2020.5
+requests==2.25.1
+sqlparse==0.4.1
+urllib3==1.26.2
+gunicorn>=19.5.0

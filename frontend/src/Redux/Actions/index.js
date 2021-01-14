@@ -1,9 +1,18 @@
 import { createActions } from 'redux-actions'
-import axios from 'axios'
+import axios_api from 'axios'
 import fakeData from '../../Resources/fake_data'
 import { makeCourseObject, makeObjFromArray, getCourseTimesAndRooms, filterCommonCourses } from '../../Util/dataUtil/course'
 import { isDev } from '../../Util/dev'
 
+let axiosConfig = {
+    // `xsrfCookieName` is the name of the cookie to use as a value for xsrf token
+    xsrfCookieName: 'csrftoken', // default
+
+    // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
+    xsrfHeaderName: 'X-XSRF-TOKEN', // default
+}
+
+let axios = axios_api.create(axiosConfig)
 
 export const FETCH_STATUS = {
     IDEL: 1,
@@ -48,7 +57,7 @@ export const actions = createActions({
 })
 
 export const fetchDatabase = (semester) => dispatch => {
-    let url = '/api/courses/all'
+    let url = '/api/simulation/all/'
     if(semester !== undefined){
         url += `?sem=${semester}`
     }
@@ -124,7 +133,7 @@ export const fetchDatabase = (semester) => dispatch => {
 
 export const fetchUserInfo = () => dispatch => {
     dispatch(actions.user.store({ status: FETCH_STATUS.FETCHING }))
-    axios.get('/api/accounts/me')
+    axios.get('/api/accounts/me/')
         .then(res => {
             dispatch(actions.user.store({ ...res.data, status: FETCH_STATUS.SUCCESS }))
         }).catch(err => {
@@ -137,7 +146,7 @@ export const fetchUserInfo = () => dispatch => {
 }
 
 export const fetchUserCollect = (semester) => dispatch => {
-    let url = '/api/courses/user'
+    let url = '/api/simulation/user/'
     if(semester !== undefined){
         url += `?sem=${semester}`
     }
@@ -147,8 +156,8 @@ export const fetchUserCollect = (semester) => dispatch => {
             let collect = []
             let timetable = []
             for (let course of courses) {
-                collect.push(course['courseId'])
-                if (course['visible']) { timetable.push(course['courseId']) }
+                collect.push(course['course_id'])
+                if (course['visible']) { timetable.push(course['course_id']) }
             }
             dispatch(actions.courseSim.collect.courseIds.store(collect))
             dispatch(actions.courseSim.timetable.courseIds.store(timetable))
@@ -156,7 +165,7 @@ export const fetchUserCollect = (semester) => dispatch => {
 }
 
 export const addCollectCourse = (courseId, visible) => dispatch => {
-    axios.post('/api/courses/user', { courseId, visible }).then(() => {
+    axios.post('/api/simulation/user/', { course_id: courseId, visible }).then(() => {
         dispatch(actions.courseSim.collect.courseIds.add(courseId))
         dispatch(actions.courseSim.timetable.courseIds.add(courseId))
     }).catch(err => {
@@ -169,7 +178,7 @@ export const addCollectCourse = (courseId, visible) => dispatch => {
 }
 
 export const removeCollectCourse = (courseId) => dispatch => {
-    axios.delete('/api/courses/user', { data: { courseId } }).then(() => {
+    axios.delete('/api/simulation/user/', { data: { course_id: courseId } }).then(() => {
         dispatch(actions.courseSim.collect.courseIds.remove(courseId))
         dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
     }).catch(err => {
@@ -182,7 +191,7 @@ export const removeCollectCourse = (courseId) => dispatch => {
 }
 
 export const toggleCollectCourseVisible = (courseId, visible) => dispatch => {
-    axios.put('/api/courses/user', { courseId, visible }).then(() => {
+    axios.post('/api/simulation/user/', { course_id: courseId, visible }).then(() => {
         if (visible) dispatch(actions.courseSim.timetable.courseIds.add(courseId))
         else dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
     }).catch(err => {
@@ -195,7 +204,7 @@ export const toggleCollectCourseVisible = (courseId, visible) => dispatch => {
 }
 
 export const clearAllUserCourse = (semester) => dispatch => {
-    let url = '/api/courses/user/clear'
+    let url = '/api/simulation/user/clear/'
     if(semester !== undefined){
         url += `?sem=${semester}`
     }
