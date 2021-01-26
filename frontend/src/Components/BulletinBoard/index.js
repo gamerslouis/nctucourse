@@ -4,6 +4,7 @@ import { Typography, withStyles, Collapse } from '@material-ui/core';
 import { KeyboardArrowDown, LabelImportant } from '@material-ui/icons';
 import ReactMarkdown from 'react-markdown';
 import React from 'react'
+import axios from 'axios'
 
 const BOARD_TYPES = ['通知', '更新', '錯誤', '修復']
 const BOARD_CONTENT = [
@@ -183,9 +184,12 @@ class Board extends React.Component {
             }
             return -1
         }
-        setInterval(() => {
-            this.setState({ loading: false, content: BOARD_CONTENT.map((cont, idx) => ({ idx, cont })).sort(CMP) })
-        }, 1000)
+        
+        axios.get('/api/bulletins/').then(r => r.data['bulletins']).then(bulletins =>
+            this.setState({ loading: false, content: bulletins.map((cont, idx) => ({ idx, cont })).sort(CMP) }))
+        // setInterval(() => {
+        //     this.setState({ loading: false, content: BOARD_CONTENT.map((cont, idx) => ({ idx, cont })).sort(CMP) })
+        // }, 1000)
         // ajax to get the posts
     }
 
