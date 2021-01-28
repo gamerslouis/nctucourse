@@ -1,6 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { FETCH_STATUS } from '../Redux/Actions/index'
+import { Route } from 'react-router-dom'
 
 
 const Authentication = (props) => {
@@ -13,7 +14,9 @@ const Authentication = (props) => {
             </React.Fragment>
         )
     }
-    return null
+    return <Route render={() => {
+        window.location.pathname = '/login'
+    }} />
 }
 
 const mapStateToProps = (state) => ({

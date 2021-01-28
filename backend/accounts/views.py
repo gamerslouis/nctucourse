@@ -35,7 +35,7 @@ def nctu_login(request, code):
         user = User.objects.create_user(data['username'], data['email'], '')
 
     if user is not None and user.is_active:
-        auth.login(request, user)
+        auth.login(request, user, backend='django.contrib.auth.backends.ModelBackend')
         return http.HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
     else:
         return http.HttpResponseRedirect(settings.LOGIN_FAIL_REDIRECT_URL)
@@ -58,7 +58,13 @@ class MeView(View):
             return http.JsonResponse({
                 'is_anonymous': False,
                 'username': request.user.username,
-                'email': request.user.email
+                'email': request.user.email,
+                'social': [
+                    {
+                        'id': social.id,
+                        'uid': social.uid
+                    } for social in request.user.social_auth.all()
+                ]
             })
 
 

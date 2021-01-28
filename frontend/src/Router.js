@@ -13,42 +13,39 @@ import Course from './Pages/course'
 import GPA from './Pages/gpa'
 import GPAImport from './Pages/gpa/import'
 import History from './Pages/history/index'
+import Profile from './Pages/profile'
 
 const Router = (props) => {
     if (isMaintaining) return <Maintain />
     else return (
         <React.Fragment>
-            {FETCH_STATUS.FETCHING == props.userFetchStatus && <FullLoading show /> }
+            {FETCH_STATUS.FETCHING == props.userFetchStatus && <FullLoading show />}
             <BrowserRouter>
                 <div>
                     <Route render={({ location }) =>
                         location.pathname !== "/login" ? <Navbar /> : null
                     }
                     />
-                    <Authentication anonymous>
-                        <Redirect to="/login" />
-                    </Authentication>
-
                     <Switch>
-                        <Route exact path='/login' render={() => (
-                            <React.Fragment>
-                                <Authentication><Redirect to="/course" /></Authentication>
-                                <Authentication anonymous><Login /></Authentication>
-                            </React.Fragment>
-                        )} />
-                        <Route exact path='/course' render={() => {
-                            let urlParams = new URLSearchParams(window.location.search);
-                            if(urlParams.has('sem')){
-                                return <Course semester={urlParams.get('sem')} />
-                            } else {
-                                return <Course />
-                            }
-                        }} />
-                        <Route exact path='/gpa' component={GPA} />
-                        <Route exact path='/gpa/import' component={GPAImport} />
-                        <Route exact path='/history' component={History} />
+                        <Route exact path='/login' component={Login} />
                         <Authentication >
-                            <Route render={() => <Redirect to="/course" />} />
+                            <Switch>
+                                <Route exact path='/course' render={() => {
+                                    let urlParams = new URLSearchParams(window.location.search);
+                                    if (urlParams.has('sem')) {
+                                        return <Course semester={urlParams.get('sem')} />
+                                    } else {
+                                        return <Course />
+                                    }
+                                }} />
+                                <Route exact path='/gpa' component={GPA} />
+                                <Route exact path='/gpa/import' component={GPAImport} />
+                                <Route exact path='/history' component={History} />
+                                <Route exact path='/profile' component={Profile} />
+                                <Route render={() => {
+                                    window.location.pathname = '/login'
+                                }} />
+                            </Switch>
                         </Authentication>
                     </Switch>
                 </div>

@@ -2,11 +2,13 @@ import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Welcome from '../Components/welcome';
 import { Divider, Hidden } from '@material-ui/core';
 import Board from '../Components/BulletinBoard'
 import GoogleLogo from '../Components/GoogleLogo'
 import { useState } from 'react';
+import { connect } from 'react-redux'
+import { FETCH_STATUS } from '../Redux/Actions'
+import { withSnackbar } from 'notistack';
 
 
 const styles = (theme) => ({
@@ -84,42 +86,102 @@ const GoogleButton = withStyles((theme) => ({
     )
 });
 
-const Login = ({ classes }) => {
-    const logged = false
-    const [mobileBoardVisible, setMobileBoardVisible] = useState(false)
-    return (
-        <>
-            <Welcome />
-            <Hidden mdDown>
-                <div className={classes.root}>
-                    <div className={classes.mdRoot}>
-                        <div className={classes.mdCont}>
-                            <div className={classes.mdTitle}>
-                                <img src='/logo256.png' alt='logo' width='192px' />
-                                <Typography variant="h3">交大課程助理</Typography>
+class Login extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            mobile: false
+        }
+    }
+
+
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.user.status !== FETCH_STATUS.SUCCESS &&
+            this.props.user.status === FETCH_STATUS.SUCCESS) {
+            if (new URLSearchParams(window.location.search).get('login') === '1' &&
+                this.props.user.is_anonymous === true
+            ) {
+                const message = "Google 登入僅供已啟用會員使用，請先以交大單一入口登入後，至會員頁綁定 Google 帳號。"
+                this.props.enqueueSnackbar(message, {
+                    variant: 'info',
+                    persist: true,
+                });
+            }
+        }
+    }
+
+    render() {
+        const { classes, user } = this.props
+        const logged = user.status === FETCH_STATUS.SUCCESS && user.is_anonymous === false
+        return (
+            <>
+                <Hidden mdDown>
+                    <div className={classes.root}>
+                        <div className={classes.mdRoot}>
+                            <div className={classes.mdCont}>
+                                <div className={classes.mdTitle}>
+                                    <img src='/logo256.png' alt='logo' width='192px' />
+                                    <Typography variant="h3">交大課程助理</Typography>
+                                </div>
+                            </div>
+                            <div className={classes.mdCont}>
+                                <Board />
+                                {
+                                    logged ?     // logged in?
+                                        <div className={classes.loginout}>
+                                            <Button variant="contained" color="primary"
+                                                className={classes.button} href="/course">Enter</Button>
+                                            <Button variant="contained" className={classes.button}
+                                                href="/api/accounts/logout/">Logout</Button>
+                                        </div> :
+                                        <div style={{ alignItems: 'center', width: 'fit-content', marginTop: '-15px' }}>
+                                            <Typography variant='h5' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 21px)', background: '#fafafa' }}>Login</Typography>
+                                            <Divider style={{ background: '#999999', margin: '8px 0px' }} />
+                                            <div className={classes.loginout}>
+                                                <Button variant="contained" color="primary"
+                                                    className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
+                                                <GoogleButton variant="contained" color="primary"
+                                                    href="/api/login/google-oauth2"
+                                                    className={classes.button}
+                                                    style={{
+                                                        padding: '0px 1px',
+                                                        justifyContent: 'start',
+                                                        overflow: 'hidden'
+                                                    }}>
+                                                    <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
+                                                </GoogleButton>
+                                            </div>
+                                        </div>
+                                }
                             </div>
                         </div>
-                        <div className={classes.mdCont}>
-                            <Board />
+                    </div>
+                </Hidden>
+                <Hidden lgUp>
+                    <div className={classes.lgRoot}>
+                        <div className={classes.lgTitle}>
+                            <img src='/logo256.png' alt='logo' width='72px' />
+                            <Typography variant="h4">
+                                交大課程助理
+                        </Typography>
+                        </div>
+                        <div style={{ flexShrink: 0 }}>
                             {
                                 logged ?     // logged in?
-                                    <div className={classes.loginout}>
+                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <Button variant="contained" color="primary"
                                             className={classes.button} href="/course">Enter</Button>
                                         <Button variant="contained" className={classes.button}
-                                            onClick={
-                                                evt => {
-                                                    // Redux logout
-                                                }
-                                            }>Logout</Button>
+                                            href="/api/accounts/logout/">Logout</Button>
                                     </div> :
-                                    <div style={{ alignItems: 'center', width: 'fit-content', marginTop: '-15px' }}>
-                                        <Typography variant='h5' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 21px)', background: '#fafafa' }}>Login</Typography>
-                                        <Divider style={{ background: '#999999', margin: '8px 0px' }} />
-                                        <div className={classes.loginout}>
+                                    <div style={{ alignItems: 'center', width: '80vw', marginTop: '-15px' }}>
+                                        <Typography variant='subtitle1' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 18px)', background: '#fafafa' }}>Login</Typography>
+                                        <Divider style={{ background: '#999999', margin: '4px 0px' }} />
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
+                                                className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
                                             <GoogleButton variant="contained" color="primary"
+                                                href="/api/login/google-oauth2"
                                                 className={classes.button}
                                                 style={{
                                                     padding: '0px 1px',
@@ -128,62 +190,24 @@ const Login = ({ classes }) => {
                                                 }}>
                                                 <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
                                             </GoogleButton>
+                                            <Button variant="outlined" style={{ marginTop: '20px' }} onClick={evt => this.setState({ mobile: !this.state.mobile })}>{this.state.mobile ? '隱藏' : '顯示'}公告欄</Button>
                                         </div>
                                     </div>
                             }
                         </div>
-                    </div>
-                </div>
-            </Hidden>
-            <Hidden lgUp>
-                <div className={classes.lgRoot}>
-                    <div className={classes.lgTitle}>
-                        <img src='/logo256.png' alt='logo' width='72px' />
-                        <Typography variant="h4">
-                            交大課程助理
-                        </Typography>
-                    </div>
-                    <div style={{ flexShrink: 0 }}>
                         {
-                            logged ?     // logged in?
-                                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                    <Button variant="contained" color="primary"
-                                        className={classes.button} href="/course">Enter</Button>
-                                    <Button variant="contained" className={classes.button}
-                                        onClick={
-                                            evt => {
-                                                // Redux logout
-                                            }
-                                        }>Logout</Button>
-                                </div> :
-                                <div style={{ alignItems: 'center', width: '80vw', marginTop: '-15px' }}>
-                                    <Typography variant='subtitle1' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 18px)', background: '#fafafa' }}>Login</Typography>
-                                    <Divider style={{ background: '#999999', margin: '4px 0px' }} />
-                                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                        <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
-                                        <GoogleButton variant="contained" color="primary"
-                                            className={classes.button}
-                                            style={{
-                                                padding: '0px 1px',
-                                                justifyContent: 'start',
-                                                overflow: 'hidden'
-                                            }}>
-                                            <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                        </GoogleButton>
-                                        <Button variant="outlined" style={{ marginTop: '20px' }} onClick={evt => setMobileBoardVisible(!mobileBoardVisible)}>{mobileBoardVisible ? '隱藏' : '顯示'}公告欄</Button>
-                                    </div>
-                                </div>
+                            this.state.mobile &&
+                            <Board mobile />
                         }
                     </div>
-                    {
-                        mobileBoardVisible &&
-                        <Board mobile />
-                    }
-                </div>
-            </Hidden>
-        </>
-    )
+                </Hidden>
+            </>
+        )
+    }
 }
 
-export default withStyles(styles)(Login)
+const mapStateToProps = (state) => ({
+    user: state.user
+})
+
+export default withSnackbar(connect(mapStateToProps)(withStyles(styles)(Login)))
