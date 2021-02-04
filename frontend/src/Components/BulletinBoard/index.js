@@ -7,84 +7,84 @@ import React from 'react'
 import axios from 'axios'
 
 const BOARD_TYPES = ['通知', '更新', '錯誤', '修復']
-const BOARD_CONTENT = [
-    {
-        timestamp: '21/01/17',
-        type: 0,
-        title: '第三次選課時間 (開學加退選)',
-        content: '第三次選課時間為02/22上午11點至03/08上午9點，請同學不要忘記選課！',
-        priority: 2
-    },
-    {
-        timestamp: '21/01/15',
-        type: 1,
-        title: '更改首頁配置，加入公告欄',
-        priority: 0
-    },
-    {
-        timestamp: '21/01/05',
-        type: 1,
-        title: '增加若選修可做為跨院通識時的提示',
-        priority: 0
-    },
-    {
-        timestamp: '20/12/28',
-        type: 0,
-        title: '第二次選課至12/31上午9點',
-        priority: 0
-    },
-    {
-        timestamp: '20/12/14',
-        type: 3,
-        title: '某些情況會導致同學無法正常使用',
-        content: '若教授從課程時間表上刪除課程，在課程助理內已排入該課程的同學會無法正常顯示頁面\n\n12/17 已修復',
-        priority: 0
-    },
-    {
-        timestamp: '20/12/14',
-        type: 0,
-        title: '第一次選課時間',
-        content: '12/21上午11點至12/24上午9點，同學記得要填教學反映問卷喔',
-        priority: 0
-    },
-    {
-        timestamp: '20/12/14',
-        type: 0,
-        title: '新學期課程時間表上線！',
-        priority: 0
-    },
-    {
-        timestamp: '20/12/08',
-        type: 1,
-        title: '課程助理支援使用舊制時間格式！',
-        priority: 1
-    },
-    {
-        timestamp: '20/09/09',
-        type: 1,
-        title: '加入數項功能優化',
-        content: ' - 縮寫搜尋功能\n\n - 優化課表(顯示課堂教室位置)',
-        priority: 0
-    },
-    {
-        timestamp: '20/09/09',
-        type: 3,
-        title: '匯出課表跑版以及iOS系統下無法正常匯出',
-        priority: 0
-    },
-    {
-        timestamp: '20/09/05',
-        type: 1,
-        title: '儲存模擬排課的設定',
-        priority: 0
-    },
-    {
-        timestamp: '20/09/05',
-        type: 3,
-        title: '新用戶無法登入',
-        priority: 0
-    }
-]
+// const BOARD_CONTENT = [
+//     {
+//         timestamp: '21/01/17',
+//         type: 0,
+//         title: '第三次選課時間 (開學加退選)',
+//         content: '第三次選課時間為02/22上午11點至03/08上午9點，請同學不要忘記選課！',
+//         priority: 2
+//     },
+//     {
+//         timestamp: '21/01/15',
+//         type: 1,
+//         title: '更改首頁配置，加入公告欄',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '21/01/05',
+//         type: 1,
+//         title: '增加若選修可做為跨院通識時的提示',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/12/28',
+//         type: 0,
+//         title: '第二次選課至12/31上午9點',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/12/14',
+//         type: 3,
+//         title: '某些情況會導致同學無法正常使用',
+//         content: '若教授從課程時間表上刪除課程，在課程助理內已排入該課程的同學會無法正常顯示頁面\n\n12/17 已修復',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/12/14',
+//         type: 0,
+//         title: '第一次選課時間',
+//         content: '12/21上午11點至12/24上午9點，同學記得要填教學反映問卷喔',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/12/14',
+//         type: 0,
+//         title: '新學期課程時間表上線！',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/12/08',
+//         type: 1,
+//         title: '課程助理支援使用舊制時間格式！',
+//         priority: 1
+//     },
+//     {
+//         timestamp: '20/09/09',
+//         type: 1,
+//         title: '加入數項功能優化',
+//         content: ' - 縮寫搜尋功能\n\n - 優化課表(顯示課堂教室位置)',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/09/09',
+//         type: 3,
+//         title: '匯出課表跑版以及iOS系統下無法正常匯出',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/09/05',
+//         type: 1,
+//         title: '儲存模擬排課的設定',
+//         priority: 0
+//     },
+//     {
+//         timestamp: '20/09/05',
+//         type: 3,
+//         title: '新用戶無法登入',
+//         priority: 0
+//     }
+// ]
 
 export const Post = withStyles((theme) => ({
     post: {

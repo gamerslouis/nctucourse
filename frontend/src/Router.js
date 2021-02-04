@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
 import Authentication from './Components/Authentication'
 import Navbar from './Components/navbar'
@@ -21,7 +21,7 @@ const Router = (props) => {
     else return (
         <ErrorBoundary>
             <React.Fragment>
-                {FETCH_STATUS.FETCHING == props.userFetchStatus && <FullLoading show />}
+                {FETCH_STATUS.FETCHING === props.userFetchStatus && <FullLoading show />}
                 <BrowserRouter>
                     <div>
                         <Route render={({ location }) =>
