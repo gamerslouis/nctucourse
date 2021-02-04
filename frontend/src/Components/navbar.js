@@ -54,7 +54,7 @@ const Navbar = (props) => {
                             </Typography>
                         </ButtonBase>
                         <Button color="inherit" href="/login">首頁</Button>
-                        <Button color="inherit" href="/course">模擬排課</Button>
+                        <Button color="inherit" href="/simulation">模擬排課</Button>
                         <Button color="inherit" href="/gpa">GPA計算機</Button>
                         <Button color="inherit" href="/history">歷年課程</Button>
                         <Button color="inherit" href="https://timetable.nctu.edu.tw/">交大課程時間表</Button>
@@ -91,7 +91,7 @@ const Navbar = (props) => {
                             </ListItem>
                             <Divider />
                             <ListItem button onClick={() => window.location.href = "/login"}>首頁</ListItem>
-                            <ListItem button onClick={() => window.location.href = "/course"}>模擬排課</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/simulation"}>模擬排課</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"} > GPA計算機</ListItem>
                             <ListItem button onClick={() => window.location.href = "/history"} > 歷年課程</ListItem>
                             <ListItem button onClick={() => window.location.href = "https://timetable.nctu.edu.tw/"} > 交大課程時間表</ListItem>

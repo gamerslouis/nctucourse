@@ -21,7 +21,7 @@ const History = (props) => {
       <Typography variant="h4" gutterBottom>
         歷年課程
       </Typography>
-      <HistoryLink text={semesterMap['1091']} href="/course?sem=1091" />
+      <HistoryLink text={semesterMap['1091']} href="/simulation?sem=1091" />
     </Container>
   );
 };

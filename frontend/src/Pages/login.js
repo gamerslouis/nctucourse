@@ -130,7 +130,7 @@ class Login extends React.Component {
                                     logged ?     // logged in?
                                         <div className={classes.loginout}>
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/course">Enter</Button>
+                                                className={classes.button} href="/simulation">Enter</Button>
                                             <Button variant="contained" className={classes.button}
                                                 href="/api/accounts/logout/">Logout</Button>
                                         </div> :
@@ -170,7 +170,7 @@ class Login extends React.Component {
                                 logged ?     // logged in?
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <Button variant="contained" color="primary"
-                                            className={classes.button} href="/course">Enter</Button>
+                                            className={classes.button} href="/simulation">Enter</Button>
                                         <Button variant="contained" className={classes.button}
                                             href="/api/accounts/logout/">Logout</Button>
                                     </div> :

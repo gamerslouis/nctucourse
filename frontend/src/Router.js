@@ -10,7 +10,7 @@ import { FETCH_STATUS } from './Redux/Actions/index'
 import ErrorBoundary from './Components/ErrorBoundary'
 
 import Login from './Pages/login'
-import Course from './Pages/course'
+import Simulation from './Pages/simulation'
 import GPA from './Pages/gpa'
 import GPAImport from './Pages/gpa/import'
 import History from './Pages/history/index'
@@ -33,12 +33,12 @@ const Router = (props) => {
                                 <Route exact path='/login' component={Login} />
                                 <Authentication >
                                     <Switch>
-                                        <Route exact path='/course' render={() => {
+                                        <Route exact path='/simulation' render={() => {
                                             let urlParams = new URLSearchParams(window.location.search);
                                             if (urlParams.has('sem')) {
-                                                return <Course semester={urlParams.get('sem')} />
+                                                return <Simulation semester={urlParams.get('sem')} />
                                             } else {
-                                                return <Course />
+                                                return <Simulation />
                                             }
                                         }} />
                                         <Route exact path='/gpa' component={GPA} />
