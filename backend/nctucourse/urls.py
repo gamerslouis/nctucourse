@@ -22,4 +22,5 @@ urlpatterns = [
     path('api/', include('social_django.urls', namespace='social')),
     path('api/accounts/', include('accounts.urls')),
     path('api/simulation/', include('simulation.urls')),
+    path('api/courses/', include('courses.urls')),
 ]

@@ -19,9 +19,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'rest_framework',
+    'django_filters',
     'core',
     'accounts',
     'simulation',
+    'courses',
 ]
 
 MIDDLEWARE = [
@@ -156,3 +158,7 @@ SOCIAL_AUTH_PIPELINE = (
 )
 
 SOCIAL_AUTH_LOGIN_ERROR_URL  = '/login?login=1'
+
+REST_FRAMEWORK = {
+    'PAGE_SIZE': 100
+}
