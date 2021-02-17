@@ -96,7 +96,7 @@ class Login extends React.Component {
 
     componentDidMount() {
         if (new URLSearchParams(window.location.search).get('info') === '1') {
-            this.props.enqueueSnackbar("請先登入使用該功能",
+            this.props.enqueueSnackbar("請先登入以使用該功能",
                 { variant: 'info' }
             )
         }

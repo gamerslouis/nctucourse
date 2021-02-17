@@ -1,13 +1,13 @@
 import React from 'react'
 import { BrowserRouter, Switch, Route } from 'react-router-dom'
 import { connect } from 'react-redux'
-import Authentication from './Components/Authentication'
 import Navbar from './Components/navbar'
 import { isMaintaining } from './Util/dev'
 import Maintain from './Components/Maintain'
 import FullLoading from './Components/FullLoading'
 import { FETCH_STATUS } from './Redux/Actions/index'
 import ErrorBoundary from './Components/ErrorBoundary'
+import AuthRoute from './Components/AuthRoute'
 
 import Login from './Pages/login'
 import Simulation from './Pages/simulation'
@@ -37,25 +37,21 @@ const Router = (props) => {
                                 <Route exact path='/feedbacks' component={FeedbackList} />
                                 <Route exact path='/feedbacks/edit' component={NewFeedback} />
                                 <Route exact path='/feedbacks/edit/:fid' component={NewFeedback} />
-                                <Authentication >
-                                    <Switch>
-                                        <Route exact path='/simulation' render={() => {
-                                            let urlParams = new URLSearchParams(window.location.search);
-                                            if (urlParams.has('sem')) {
-                                                return <Simulation semester={urlParams.get('sem')} />
-                                            } else {
-                                                return <Simulation />
-                                            }
-                                        }} />
-                                        <Route exact path='/gpa' component={GPA} />
-                                        <Route exact path='/gpa/import' component={GPAImport} />
-                                        <Route exact path='/simulation/history' component={SimulationHistory} />
-                                        <Route exact path='/profile' component={Profile} />
-                                        <Route render={() => {
-                                            window.location.pathname = '/login'
-                                        }} />
-                                    </Switch>
-                                </Authentication>
+                                <AuthRoute exact path='/simulation' render={() => {
+                                    let urlParams = new URLSearchParams(window.location.search);
+                                    if (urlParams.has('sem')) {
+                                        return <Simulation semester={urlParams.get('sem')} />
+                                    } else {
+                                        return <Simulation />
+                                    }
+                                }} />
+                                <AuthRoute exact path='/gpa' component={GPA} />
+                                <AuthRoute exact path='/gpa/import' component={GPAImport} />
+                                <AuthRoute exact path='/simulation/history' component={SimulationHistory} />
+                                <AuthRoute exact path='/profile' component={Profile} />
+                                <Route render={() => {
+                                    window.location.pathname = '/login'
+                                }} />
                             </Switch>
                         </ErrorBoundary>
                     </div>
