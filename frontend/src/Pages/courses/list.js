@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container, Paper, Table, TableContainer, TableRow, TableCell, TableHead, TableBody, TablePagination, InputBase, Typography, Link } from '@material-ui/core'
+import { Container, Paper, Table, TableContainer, TableRow, TableCell, TableHead, TableBody, Typography, Link } from '@material-ui/core'
 import SearchBar from '../../Components/SearchBar'
 import axios from 'axios'
 import Pagination from '@material-ui/lab/Pagination';
@@ -26,7 +26,7 @@ class CourseList extends React.Component {
         const query = new URLSearchParams(window.location.search);
         const search = query.get('search') || ''
         const page = parseInt(query.get('page')) || 1
-        let res = await axios.get(`/api/courses/?limit=${10}&offset=${10 * (page - 1)}&search=${search}`)
+        let res = await axios.get(`/api/courses/courses/?limit=${10}&offset=${10 * (page - 1)}&search=${search}`)
         this.setState({
             search: search,
             page: page,
@@ -86,6 +86,7 @@ class CourseList extends React.Component {
                     <div style={{ width: 'fit-content', margin: '0 auto', padding: '10px 0' }}>
                         <Pagination
                             page={page}
+                            size="small"
                             count={Math.ceil(count / 10)}
                             renderItem={(item) => (
                                 <PaginationItem

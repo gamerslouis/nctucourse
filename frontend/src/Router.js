@@ -13,7 +13,7 @@ import Login from './Pages/login'
 import Simulation from './Pages/simulation'
 import GPA from './Pages/gpa'
 import GPAImport from './Pages/gpa/import'
-import History from './Pages/history/index'
+import SimulationHistory from './Pages/simulation/history'
 import Profile from './Pages/profile'
 import CourseList from './Pages/courses/list'
 import CoursePage from './Pages/courses/single'
@@ -28,10 +28,7 @@ const Router = (props) => {
                 {FETCH_STATUS.FETCHING === props.userFetchStatus && <FullLoading show />}
                 <BrowserRouter>
                     <div>
-                        <Route render={({ location }) =>
-                            location.pathname !== "/login" ? <Navbar /> : null
-                        }
-                        />
+                        <Navbar />
                         <ErrorBoundary>
                             <Switch>
                                 <Route exact path='/login' component={Login} />
@@ -52,7 +49,7 @@ const Router = (props) => {
                                         }} />
                                         <Route exact path='/gpa' component={GPA} />
                                         <Route exact path='/gpa/import' component={GPAImport} />
-                                        <Route exact path='/history' component={History} />
+                                        <Route exact path='/simulation/history' component={SimulationHistory} />
                                         <Route exact path='/profile' component={Profile} />
                                         <Route render={() => {
                                             window.location.pathname = '/login'

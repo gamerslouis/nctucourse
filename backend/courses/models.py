@@ -28,6 +28,17 @@ class Course(models.Model):
             self.cos_id
         )
 
+    @property
+    def related_feedbacks(self):
+        return Feedback.objects.filter(draft=False, course__perm_id=self.perm_id)
+
+    @property
+    def history_courses(self):
+        return Course.objects.filter(perm_id=self.perm_id)
+
+    class Meta:
+        unique_together = (("ayc", "sem", "cos_id"),)
+
 
 class Feedback(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)

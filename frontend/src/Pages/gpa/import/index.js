@@ -44,7 +44,6 @@ export default (props) => {
                             data = parse(text)
                         }
                         catch (e) {
-                            console.log(e)
                             enqueueSnackbar("無效的成績紀錄!", { variant: 'error' })
                             return
                         }

@@ -28,6 +28,7 @@ class SemesterSerializer(serializers.Serializer):
 
 class FeedBackSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
+    owned = serializers.SerializerMethodField()
     course = CourseSerializer()
 
     def get_owner(self, obj):
@@ -35,6 +36,9 @@ class FeedBackSerializer(serializers.ModelSerializer):
             return '匿名'
         else:
             return obj.owner.username
+
+    def get_owned(self, obj):
+        return obj.owner == self.context['request'].user
 
     class Meta:
         model = models.Feedback
@@ -45,6 +49,7 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
     owner = serializers.SlugRelatedField(slug_field='username', read_only=True)
     course = RelatedFieldAlternative(
         queryset=models.Course.objects.all(), serializer=CourseSerializer)
+    owned = serializers.SerializerMethodField()
 
     def validate(self, data):
         data = super().validate(data)
@@ -56,6 +61,9 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError()
         return data
 
+    def get_owned(self, obj):
+        return True
+
     class Meta:
         model = models.Feedback
         fields = '__all__'
@@ -65,3 +73,8 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
             'title': {'allow_blank': True},
             'content': {'allow_blank': True},
         }
+
+
+class CourseFeedbackSerializer(CourseSerializer):
+    feedbacks = FeedBackSerializer(many=True, source='related_feedbacks')
+    history = CourseSerializer(many=True, source='history_courses')

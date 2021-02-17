@@ -8,3 +8,10 @@ class CoursesHistory(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     data = models.TextField()
     last_updated_time = models.DateTimeField(auto_now=True)
+
+
+class TrialSimulationData(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    data = models.TextField(default="")
+    imported_courses = models.TextField(default="")
+    last_updated_time = models.DateTimeField(blank=True, null=True) # last update imported courses time

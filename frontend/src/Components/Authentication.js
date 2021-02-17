@@ -15,7 +15,7 @@ const Authentication = (props) => {
         )
     }
     return <Route render={() => {
-        window.location.pathname = '/login'
+        window.location.href = '/login?info=1'
     }} />
 }
 

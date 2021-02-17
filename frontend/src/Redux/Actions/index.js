@@ -266,6 +266,5 @@ export const searchTimeCourses = (time, commonOnly) => (dispatch, getState) => {
 }
 
 export const setSearchCourseList = (courses) => dispatch => {
-    console.log(courses)
     dispatch(actions.courseSim.query.store({courseSearchList: courses}))
 }

@@ -16,14 +16,19 @@ from . import models
 
 
 class CourseViewSet(mixins.ListModelMixin,
-                      mixins.RetrieveModelMixin,
-                      viewsets.GenericViewSet):
+                    mixins.RetrieveModelMixin,
+                    viewsets.GenericViewSet):
     queryset = models.Course.objects.all()
     serializer_class = serializers.CourseSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['ayc', 'sem']
     search_fields = ['cname', 'ename', 'teacher_name']
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve' and self.request.query_params.get('detail', False):
+            return serializers.CourseFeedbackSerializer
+        return super().get_serializer_class()
 
 
 class SupportSemesterView(generics.ListAPIView):

@@ -1,10 +1,14 @@
 import React from 'react'
-import { Container, Paper, Table, TableContainer, TableRow, TableCell, Chip, TableHead, TableBody, Button, TablePagination, InputBase, Typography, Link } from '@material-ui/core'
+import {
+    Container, Paper, Table, TableContainer, TableRow, TableCell,
+    Chip, TableHead, TableBody, Button, Dialog, Typography, Link
+} from '@material-ui/core'
 import SearchBar from '../../../Components/SearchBar'
 import axios from 'axios'
 import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
 import { Feedback } from './single'
+
 
 class FeedbackList extends React.Component {
     constructor(props) {
@@ -14,7 +18,8 @@ class FeedbackList extends React.Component {
             page: 0,
             rows: [],
             count: [],
-            my: Boolean(new URLSearchParams(window.location.search).get('my'))
+            my: Boolean(new URLSearchParams(window.location.search).get('my')),
+            dialog: null
         }
         this.updateContent = this.updateContent.bind(this)
         this.handleSearch = this.handleSearch.bind(this)
@@ -63,9 +68,9 @@ class FeedbackList extends React.Component {
     }
 
     render() {
-        const { page, count, rows, search, my } = this.state
+        const { page, count, rows, search, my, dialog } = this.state
         return (
-            <Container>                
+            <Container>
                 <Typography variant="h4" gutterBottom >心得</Typography>
                 <div style={{ marginBottom: 20 }}>
                     <Button variant="contained" color="primary" href="/feedbacks/edit">
@@ -95,16 +100,20 @@ class FeedbackList extends React.Component {
                                 {rows.map((row) => (
                                     <TableRow key={row.id} hover
                                         style={{ cursor: "pointer" }}
-                                        onClick={() => { window.location.href = this.makeFeedbackUrl(row) }}>
+                                        onClick={() => {
+                                            if (row.draft) {
+                                                window.location.href = `/feedbacks/edit/${row.id}`
+                                            } else {
+                                                this.setState({ dialog: row })
+                                            }
+                                        }}>
                                         <TableCell component="th" scope="row">
                                             {row.course.sem_name}
                                         </TableCell>
                                         <TableCell> {this.makeCourseName(row.course)}</TableCell>
                                         <TableCell>
-                                            <Link href={this.makeFeedbackUrl(row)} underline="none" color="textPrimary">
-                                                {row.title}
-                                                {(my && row.draft) && <Chip size="small" label="草稿" style={{ marginLeft: 5 }} />}
-                                            </Link>
+                                            {row.title}
+                                            {(my && row.draft) && <Chip size="small" label="草稿" style={{ marginLeft: 5 }} />}
                                         </TableCell>
                                         <TableCell align="right">{row.owner}</TableCell>
                                         <TableCell align="right">{row.updated_at}</TableCell>
@@ -116,6 +125,7 @@ class FeedbackList extends React.Component {
                     <div style={{ width: 'fit-content', margin: '0 auto', padding: '10px 0' }}>
                         <Pagination
                             page={page}
+                            size="small"
                             count={Math.ceil(count / 10)}
                             renderItem={(item) => (
                                 <PaginationItem
@@ -127,7 +137,27 @@ class FeedbackList extends React.Component {
                         />
                     </div>
                 </Paper>
-                {rows.length > 0 && <Feedback feedback={rows[0]} />}
+                <Dialog onClose={() => this.setState({ dialog: null })} open={dialog !== null} scroll="body" maxWidth='md'>
+                    {dialog !== null &&
+                        <Feedback feedback={dialog}
+                            renderActions={f => (
+                                <>
+                                    {
+                                        f.owned &&
+                                        <Button variant="outlined" color="primary" size="small" style={{ marginRight: 5 }}
+                                            href={`/feedbacks/edit/${f.id}`}
+                                        >
+                                            編輯
+                                        </Button>
+                                    }
+                                    <Button variant="outlined" color="primary" href={`/courses/${f.course.id}`} size="small">
+                                        更多
+                                    </Button>
+                                </>
+                            )}
+                        />
+                    }
+                </Dialog>
             </Container >
         )
     }

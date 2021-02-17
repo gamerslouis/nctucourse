@@ -1,20 +1,14 @@
 import React from 'react'
 import {
-    Container, Paper, Table, TableContainer, TableRow, TableCell, Chip, TableHead,
-    TableBody, Button, TablePagination, InputBase, Typography, Link, Box, Divider
+    Paper, Typography, Box, Divider, Hidden
 } from '@material-ui/core'
-import axios from 'axios'
-
-const makeCourseName = (course) => {
-    return `${course.cos_id} ${course.cname}（${course.teacher_name}）`
-}
 
 const makeFeedbackContent = (feedback) => {
     let content = feedback.content
     let paragraphs = []
     let p = { title: '', content: [] }
     for (let line of content.split('\n')) {
-        if (line[0] == '+') {
+        if (line[0] === '+') {
             if (!(p.title === '' && p.content.length === 0)) {
                 paragraphs.push(p)
             }
@@ -31,26 +25,53 @@ const makeFeedbackContent = (feedback) => {
     return paragraphs
 }
 
+const Paragraph = (props) => {
+    const { title, children } = props
+    return (
+        <>
+            {(title !== undefined && title !== '') && <Typography style={{ marginBottom: 5 }} variant="h6">{title}</Typography>}
+            <Typography paragraph>{children}</Typography>
+        </>
+    )
+}
+
 export const FeedbackBody = (props) => {
     const { feedback } = props
+
     return (
         <Box>
-            {makeFeedbackContent(feedback).map(p => <>
-                {p.title !== '' && <Typography style={{ marginBottom: 5 }} variant="h6">{p.title}</Typography>}
-                <Typography paragraph>{p.content}</Typography>
-            </>)}
+            <Paragraph title="⊕課名⊕" >{feedback.course.cname}</Paragraph>
+            <Paragraph title="▲教授▲" >{feedback.course.teacher_name}</Paragraph>
+            <Paragraph title="★修課年度★" >{feedback.course.sem_name}</Paragraph>
+            {makeFeedbackContent(feedback).map(p => <Paragraph title={p.title}>{p.content}</Paragraph>)}
         </Box>
     )
 }
 
 export const Feedback = (props) => {
-    const { feedback, subtitle, buttons } = props
+    const { feedback, renderActions, ...others } = props
     return (
-        <Box component={Paper} paddingY={3} paddingX={5}>
-            <Box>
-                <Typography variant="h5">{feedback.title}</Typography>
-                <Typography variant="subtitle1">{`${feedback.owner} ${feedback.updated_at}  `}<Link>{makeCourseName(feedback.course)}</Link></Typography>
-            </Box>
+        <Box component={Paper} paddingY={3} paddingX={5} {...others}>
+            <div style={{ display: 'flex' }}>
+                <div style={{ width: 'fit-content' }}>
+                    <Typography variant="h5">{feedback.title}</Typography>
+                    <Typography variant="subtitle1">
+                        <span style={{ marginRight: 20 }}>{`作者： ${feedback.owner}`}</span>
+                        <span style={{ display: "inline-block" }}>{`更新時間：${feedback.updated_at}`}</span>
+                    </Typography>
+                </div>
+                <div style={{ flex: "1 1 auto" }}></div>
+                <Hidden smDown>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                        {renderActions && renderActions(feedback)}
+                    </div>
+                </Hidden>
+            </div>
+            <Hidden mdUp>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {renderActions && renderActions(feedback)}
+                </div>
+            </Hidden>
             <Box marginY={2}>
                 <Divider />
             </Box>

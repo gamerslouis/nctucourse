@@ -94,6 +94,13 @@ class Login extends React.Component {
         }
     }
 
+    componentDidMount() {
+        if (new URLSearchParams(window.location.search).get('info') === '1') {
+            this.props.enqueueSnackbar("請先登入使用該功能",
+                { variant: 'info' }
+            )
+        }
+    }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.user.status !== FETCH_STATUS.SUCCESS &&
@@ -127,31 +134,25 @@ class Login extends React.Component {
                             <div className={classes.mdCont}>
                                 <Board />
                                 {
-                                    logged ?     // logged in?
+                                    !logged &&
+                                    <div style={{ alignItems: 'center', width: 'fit-content', marginTop: '-15px' }}>
+                                        <Typography variant='h5' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 21px)', background: '#fafafa' }}>Login</Typography>
+                                        <Divider style={{ background: '#999999', margin: '8px 0px' }} />
                                         <div className={classes.loginout}>
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/simulation">Enter</Button>
-                                            <Button variant="contained" className={classes.button}
-                                                href="/api/accounts/logout/">Logout</Button>
-                                        </div> :
-                                        <div style={{ alignItems: 'center', width: 'fit-content', marginTop: '-15px' }}>
-                                            <Typography variant='h5' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 21px)', background: '#fafafa' }}>Login</Typography>
-                                            <Divider style={{ background: '#999999', margin: '8px 0px' }} />
-                                            <div className={classes.loginout}>
-                                                <Button variant="contained" color="primary"
-                                                    className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
-                                                <GoogleButton variant="contained" color="primary"
-                                                    href="/api/login/google-oauth2"
-                                                    className={classes.button}
-                                                    style={{
-                                                        padding: '0px 1px',
-                                                        justifyContent: 'start',
-                                                        overflow: 'hidden'
-                                                    }}>
-                                                    <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                                </GoogleButton>
-                                            </div>
+                                                className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
+                                            <GoogleButton variant="contained" color="primary"
+                                                href="/api/login/google-oauth2"
+                                                className={classes.button}
+                                                style={{
+                                                    padding: '0px 1px',
+                                                    justifyContent: 'start',
+                                                    overflow: 'hidden'
+                                                }}>
+                                                <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
+                                            </GoogleButton>
                                         </div>
+                                    </div>
                                 }
                             </div>
                         </div>
@@ -167,36 +168,30 @@ class Login extends React.Component {
                         </div>
                         <div style={{ flexShrink: 0 }}>
                             {
-                                logged ?     // logged in?
+                                !logged &&
+                                <div style={{ alignItems: 'center', width: '80vw', marginTop: '-15px' }}>
+                                    <Typography variant='subtitle1' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 18px)', background: '#fafafa' }}>Login</Typography>
+                                    <Divider style={{ background: '#999999', margin: '4px 0px' }} />
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <Button variant="contained" color="primary"
-                                            className={classes.button} href="/simulation">Enter</Button>
-                                        <Button variant="contained" className={classes.button}
-                                            href="/api/accounts/logout/">Logout</Button>
-                                    </div> :
-                                    <div style={{ alignItems: 'center', width: '80vw', marginTop: '-15px' }}>
-                                        <Typography variant='subtitle1' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 18px)', background: '#fafafa' }}>Login</Typography>
-                                        <Divider style={{ background: '#999999', margin: '4px 0px' }} />
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                            <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
-                                            <GoogleButton variant="contained" color="primary"
-                                                href="/api/login/google-oauth2"
-                                                className={classes.button}
-                                                style={{
-                                                    padding: '0px 1px',
-                                                    justifyContent: 'start',
-                                                    overflow: 'hidden'
-                                                }}>
-                                                <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                            </GoogleButton>
-                                            <Button variant="outlined" style={{ marginTop: '20px' }} onClick={evt => this.setState({ mobile: !this.state.mobile })}>{this.state.mobile ? '隱藏' : '顯示'}公告欄</Button>
-                                        </div>
+                                            className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
+                                        <GoogleButton variant="contained" color="primary"
+                                            href="/api/login/google-oauth2"
+                                            className={classes.button}
+                                            style={{
+                                                padding: '0px 1px',
+                                                justifyContent: 'start',
+                                                overflow: 'hidden'
+                                            }}>
+                                            <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
+                                        </GoogleButton>
+                                        <Button variant="outlined" style={{ marginTop: '20px' }} onClick={evt => this.setState({ mobile: !this.state.mobile })}>{this.state.mobile ? '隱藏' : '顯示'}公告欄</Button>
                                     </div>
+                                </div>
                             }
                         </div>
                         {
-                            this.state.mobile &&
+                            (logged || this.state.mobile) &&
                             <Board mobile />
                         }
                     </div>

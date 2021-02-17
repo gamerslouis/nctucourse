@@ -160,5 +160,6 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_LOGIN_ERROR_URL  = '/login?login=1'
 
 REST_FRAMEWORK = {
-    'PAGE_SIZE': 100
+    'DATETIME_FORMAT': "%Y/%m/%d %H:%M",
+    'PAGE_SIZE': 20
 }

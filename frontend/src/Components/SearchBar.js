@@ -17,7 +17,7 @@ const SearchBar = ({ className, style, onChange, onSearch, classes, value }) =>
         <InputBase
             className={classes.input}
             placeholder="課名/課號/老師"
-            onKeyDown={(e) => { if (e.keyCode == 13) onSearch(e) }}
+            onKeyDown={(e) => { if (e.keyCode === 13) onSearch(e) }}
             onChange={onChange}
             value={value}
         />
