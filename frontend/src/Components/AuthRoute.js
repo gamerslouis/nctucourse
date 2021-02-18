@@ -14,7 +14,7 @@ const AuthRoute = (props) => {
             return <Route {...props} />
         }
         else {
-            window.location.href = '/login?info=1'
+            window.location.href = '/?info=1'
             return <div></div>
         }
     }} />

@@ -31,7 +31,7 @@ const Router = (props) => {
                         <Navbar />
                         <ErrorBoundary>
                             <Switch>
-                                <Route exact path='/login' component={Login} />
+                                <Route exact path='/' component={Login} />
                                 <Route exact path='/courses' component={CourseList} />
                                 <Route exact path='/courses/:cid' component={CoursePage} />
                                 <Route exact path='/feedbacks' component={FeedbackList} />
@@ -50,7 +50,7 @@ const Router = (props) => {
                                 <AuthRoute exact path='/simulation/history' component={SimulationHistory} />
                                 <AuthRoute exact path='/profile' component={Profile} />
                                 <Route render={() => {
-                                    window.location.pathname = '/login'
+                                    window.location.pathname = '/'
                                 }} />
                             </Switch>
                         </ErrorBoundary>

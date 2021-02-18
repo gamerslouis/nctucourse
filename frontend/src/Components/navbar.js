@@ -106,13 +106,13 @@ const Navbar = (props) => {
             <Hidden smDown>
                 <AppBar position="static">
                     <Toolbar className={classes.toolbar}>
-                        <ButtonBase href="/login">
+                        <ButtonBase href="/">
                             <img src={logo256} className={classes.logo} alt="" />
                             <Typography variant="h6" className={classes.title}>
                                 交大課程助理
                             </Typography>
                         </ButtonBase>
-                        <Button color="inherit" href="/login">首頁</Button>
+                        <Button color="inherit" href="/">首頁</Button>
                         <NavMenu text="模擬排課">
                             <NavMemuItem href="/simulation">當期排課</NavMemuItem>
                             <NavMemuItem href="/simulation/history">歷年課程</NavMemuItem>
@@ -129,7 +129,7 @@ const Navbar = (props) => {
                         <div className={classes.grow} />
                         {
                             user.is_anonymous ? (
-                                <Button color="inherit" href="/login">Login</Button>
+                                <Button color="inherit" href="/">Login</Button>
                             ) : (<>
                                 <Typography variant="body2">
                                     Hi, {user.username}.
@@ -170,7 +170,7 @@ const Navbar = (props) => {
                                 </>
 
                             }
-                            <ListItem button onClick={() => window.location.href = "/login"}>首頁</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/"}>首頁</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"} > GPA計算機</ListItem>
                         </List>
                         <Divider />
@@ -194,7 +194,7 @@ const Navbar = (props) => {
                         <List>
                             {
                                 user.is_anonymous ? (
-                                    <ListItem button onClick={() => window.location.href = "/login"} > Login</ListItem>
+                                    <ListItem button onClick={() => window.location.href = "/"} > Login</ListItem>
                                 ) : (
                                         <ListItem button onClick={() => window.location.href = "/api/accounts/logout"} > Logout</ListItem>
                                     )

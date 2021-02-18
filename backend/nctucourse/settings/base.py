@@ -105,9 +105,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LOGIN_REDIRECT_URL = '/login'
+LOGIN_REDIRECT_URL = '/'
 LOGIN_FAIL_REDIRECT_URL = '/?fail=1'
-LOGOUT_REDIRECT_URL = '/login'
+LOGOUT_REDIRECT_URL = '/'
 
 CSRF_HEADER_NAME = 'HTTP_X_XSRF_TOKEN'
 
@@ -157,7 +157,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
 )
 
-SOCIAL_AUTH_LOGIN_ERROR_URL  = '/login?login=1'
+SOCIAL_AUTH_LOGIN_ERROR_URL  = '/?login=1'
 
 REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%Y/%m/%d %H:%M",
