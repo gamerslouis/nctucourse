@@ -18,7 +18,7 @@ const HistoryLink = (props) => (
 const toText = sem => {
   let s = sem[sem.length - 1]
   let mapp = { '1': '上學期', '2': '下學期', 'X': '暑期' }
-  return`${sem}學年度${mapp[s]}`
+  return`${sem.substr(0, 3)}學年度${mapp[s]}`
 }
 
 const History = (props) => {

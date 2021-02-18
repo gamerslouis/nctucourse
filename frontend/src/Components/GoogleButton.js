@@ -1,6 +1,7 @@
+import { Button, withStyles } from '@material-ui/core';
 import React from 'react'
 
-export default ({pressed}) => (
+const GoogleLogo = ({ pressed }) => (
     <svg width="46px" height="46px" viewBox="0 0 46 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" xmlnsSketch="http://www.bohemiancoding.com/sketch/ns">
         <title>btn_google_dark_ios</title>
         <desc>Created with Sketch.</desc>
@@ -50,3 +51,25 @@ export default ({pressed}) => (
         </g>
     </svg>
 )
+
+export default withStyles((theme) => ({
+    root: {
+        padding: '7px 12px 6px 1px',
+        height: '40px',
+        justifyContent: 'start',
+        overflow: 'hidden',
+        fontFamily: "'Roboto', 'Noto Sans TC', sans-serif",
+        fontSize: '14px !important',
+        color: 'white',
+        backgroundColor: '#4285f4',
+        '&:hover': {
+            backgroundColor: '#3367d6'
+        }
+    }
+}))(({ classes, ...otherProps }) => {
+    const [hover, setHover] = React.useState(false)
+    return (
+        <Button className={classes.root} startIcon={<GoogleLogo pressed={hover} />} {...otherProps}
+            onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} />
+    )
+});

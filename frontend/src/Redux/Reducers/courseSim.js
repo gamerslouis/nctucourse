@@ -3,7 +3,7 @@ import { FETCH_STATUS } from '../Actions'
 
 const initialState = {
     database: {
-        status: FETCH_STATUS.IDEL,
+        status: FETCH_STATUS.IDLE,
         category: [],
         courses: {},
         categoryMap: {}

@@ -15,7 +15,7 @@ let axiosConfig = {
 let axios = axios_api.create(axiosConfig)
 
 export const FETCH_STATUS = {
-    IDEL: 1,
+    IDLE: 1,
     FETCHING: 2,
     SUCCESS: 3,
     FAIL: 4
@@ -58,56 +58,56 @@ export const actions = createActions({
 
 export const fetchDatabase = (semester) => dispatch => {
     let url = '/api/simulation/all/'
-    if(semester !== undefined){
+    if (semester !== undefined) {
         url += `?sem=${semester}`
     }
     axios.get(url)
         .then(res => res.data)
-        .then(({url, sem}) => {
-            if(!window.localStorage) return {url, sem}
+        .then(({ url, sem }) => {
+            if (!window.localStorage) return { url, sem }
             let mapp
-            if(window.localStorage.getItem('database_map') != null){
+            if (window.localStorage.getItem('database_map') != null) {
                 try {
                     mapp = JSON.parse(window.localStorage.getItem('database_map'))
                 }
                 catch {
-                    mapp = {[sem]:0}
+                    mapp = { [sem]: 0 }
                 }
             }
-            else{
-                mapp = {[sem]:0}
+            else {
+                mapp = { [sem]: 0 }
             }
             let cacheUrl = mapp[sem]
-            if(cacheUrl === url){
-                try{
+            if (cacheUrl === url) {
+                try {
                     let cache = JSON.parse(window.localStorage.getItem(`db_cache_${sem}`))
                     dispatch(actions.courseSim.database.store({
                         status: FETCH_STATUS.SUCCESS,
-                        category: cache.category.map(c=>{c[0]=Number(c[0]);return c}),
+                        category: cache.category.map(c => { c[0] = Number(c[0]); return c }),
                         courses: cache.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
                         categoryMap: cache.category_map
                     }))
                     dispatch(fetchUserCollect(semester))
-                    return {sem: null, url: null}    
+                    return { sem: null, url: null }
                 }
-                catch {}
+                catch { }
             }
             mapp[sem] = url
-            
-            
+
+
             window.localStorage.setItem('database_map', JSON.stringify(mapp))
-            return {url, sem}
+            return { url, sem }
         })
-        .then(({url, sem}) => {
-            if(url == null) return
+        .then(({ url, sem }) => {
+            if (url == null) return
             return axios.get(url).then(res => {
                 dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
-                    category: res.data.category.map(c=>{c[0]=Number(c[0]);return c}),
+                    category: res.data.category.map(c => { c[0] = Number(c[0]); return c }),
                     courses: res.data.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {}),
                     categoryMap: res.data.category_map
                 }))
-                if(window.localStorage) {
+                if (window.localStorage) {
                     window.localStorage.setItem(`db_cache_${sem}`, JSON.stringify(res.data))
                 }
                 dispatch(fetchUserCollect(semester))
@@ -118,7 +118,7 @@ export const fetchDatabase = (semester) => dispatch => {
                 dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
                     ...fakeData,
-                    category: fakeData.data.category.map(c=>{c[0]=Number(c[0]);return c}),
+                    category: fakeData.data.category.map(c => { c[0] = Number(c[0]); return c }),
                     courses: fakeData.courses.map(makeCourseObject).reduce(makeObjFromArray('cos_id'), {})
                 }))
                 dispatch(fetchUserCollect(semester))
@@ -147,7 +147,7 @@ export const fetchUserInfo = () => dispatch => {
 
 export const fetchUserCollect = (semester) => dispatch => {
     let url = '/api/simulation/user/'
-    if(semester !== undefined){
+    if (semester !== undefined) {
         url += `?sem=${semester}`
     }
     axios.get(url)
@@ -205,7 +205,7 @@ export const toggleCollectCourseVisible = (courseId, visible) => dispatch => {
 
 export const clearAllUserCourse = (semester) => dispatch => {
     let url = '/api/simulation/user/clear/'
-    if(semester !== undefined){
+    if (semester !== undefined) {
         url += `?sem=${semester}`
     }
     axios.get(url).then(() => {
@@ -259,12 +259,16 @@ export const updateSetting = (key, value) => dispatch => {
 export const searchTimeCourses = (time, commonOnly) => (dispatch, getState) => {
     const { category, categoryMap } = getState().courseSim.database
     let allCourses = Object.values(getState().courseSim.database.courses)
-    if(commonOnly) allCourses = filterCommonCourses(allCourses, categoryMap, category)
+    if (commonOnly) allCourses = filterCommonCourses(allCourses, categoryMap, category)
     const courses = allCourses
-        .filter(course=>getCourseTimesAndRooms(course).find(ctime=>ctime[0]===time[0]&&ctime[1]===time[1]))
+        .filter(course => getCourseTimesAndRooms(course).find(ctime => ctime[0] === time[0] && ctime[1] === time[1]))
     dispatch(setSearchCourseList(courses))
 }
 
 export const setSearchCourseList = (courses) => dispatch => {
-    dispatch(actions.courseSim.query.store({courseSearchList: courses}))
+    dispatch(actions.courseSim.query.store({ courseSearchList: courses }))
+}
+
+export const setNickname = (nick) => dispatch => {
+    dispatch(actions.user.store({ nickname: nick }))
 }
