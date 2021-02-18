@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
 
 function begdeLebalPipe(key, course, briefMap) {
     let label = briefMap[key][1]
-    if(key == 'A504' && course['meta'] != undefined && course['meta']['geci'] != undefined) {
+    if(key === 'A504' && course['meta'] !== undefined && course['meta']['geci'] !== undefined) {
         return [key, `[${course['meta']['geci']}]${label}`]
     }
     return [key, label]

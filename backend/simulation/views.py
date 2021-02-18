@@ -37,7 +37,8 @@ class UserCourseCollectView(LoginRequiredMixin, View):
         if course_id is None:
             return http.HttpResponseBadRequest()
         try:
-            course = models.SimCollect.objects.get(user=request.user, course_id=course_id)
+            course = models.SimCollect.objects.get(
+                user=request.user, course_id=course_id)
             course.delete()
         except ObjectDoesNotExist:
             pass
@@ -59,7 +60,8 @@ class AllCoursesUrlView(View):
         semester = request.GET.get('sem', settings.SEMESTER)
 
         try:
-            mapping = models.SemesterCoursesMapping.objects.get(semester=semester)
+            mapping = models.SemesterCoursesMapping.objects.get(
+                semester=semester)
         except ObjectDoesNotExist:
             return http.HttpResponseNotFound()
 
@@ -67,3 +69,10 @@ class AllCoursesUrlView(View):
             'sem': semester,
             'url': settings.COURSE_FILE_ROOT + mapping.file
         })
+
+
+class SemesterListView(View):
+    def get(self, request):
+        sems = models.SemesterCoursesMapping.objects.values(
+            'semester').distinct()
+        return http.JsonResponse([s['semester'] for s in sems], safe=False)

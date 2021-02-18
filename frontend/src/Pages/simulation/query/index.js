@@ -1,9 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles';
-import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/Search';
-import Paper from '@material-ui/core/Paper';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import FormControl from '@material-ui/core/FormControl';
@@ -16,6 +13,7 @@ import CourseList from '../../../Components/CourseList'
 import { getCoursesIdByDepId, getCoursesFromIds } from '../../../Util/dataUtil/course'
 import CourseListItem from '../../../Components/CourseListItem'
 import { addCollectCourse, removeCollectCourse, setSearchCourseList } from '../../../Redux/Actions/index'
+import SearchBar from '../../../Components/SearchBar'
 
 
 const styles = (theme) => ({
@@ -42,16 +40,12 @@ const styles = (theme) => ({
             overflowY: 'scroll'
         }
     },
-    input: {
-        marginLeft: theme.spacing(1),
-        flex: 1,
-    },
     inputContainerOut: {
         width: '100%',
         display: 'flex',
         alignItems: 'center'
     },
-    inputContainer: {
+    input: {
         flex: 1,
         display: 'flex',
         marginRight: 10
@@ -117,20 +111,10 @@ class Index extends React.Component {
             <div className={classes.root}>
                 <div className={classes.selectContainer}>
                     <div className={classes.inputContainerOut}>
-                        <Paper className={classes.inputContainer}>
-                            <InputBase
-                                className={classes.input}
-                                placeholder="課名/課號/老師"
-                                onKeyDown={e => { if (e.keyCode === 13) this.searchText() }}
-                                onChange={e => this.setState({ searchText: e.target.value })}
-                            />
-                            <div>
-                                <IconButton type="submit" className={classes.iconButton} aria-label="search" color="secondary"
-                                    onClick={() => this.searchText()}>
-                                    <SearchIcon />
-                                </IconButton>
-                            </div>
-                        </Paper>
+                        <SearchBar className={classes.input}
+                            onChange={e => this.setState({ searchText: e.target.value })}
+                            onSearch={() => this.searchText()}
+                        />
                         <FormControlLabel
                             control={<Switch name="checkedA"
                                 checked={this.state.showCategorySearch}

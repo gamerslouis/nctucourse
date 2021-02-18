@@ -5,6 +5,7 @@ const initialState = {
     username: '',
     email: '',
     is_anonymous: true,
+    social: [],
     status: FETCH_STATUS.IDEL
 }
 

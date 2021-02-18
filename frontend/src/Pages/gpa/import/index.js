@@ -11,7 +11,7 @@ import FullLoading from '../../../Components/FullLoading'
 import axios from 'axios';
 
 export default (props) => {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme()
     const [text, setText] = useState('')
     const [loading, setLoading] = useState(false)
@@ -44,7 +44,6 @@ export default (props) => {
                             data = parse(text)
                         }
                         catch (e) {
-                            console.log(e)
                             enqueueSnackbar("無效的成績紀錄!", { variant: 'error' })
                             return
                         }
