@@ -54,7 +54,7 @@ const GoogleLogo = ({ pressed }) => (
 
 export default withStyles((theme) => ({
     root: {
-        padding: '7px 12px 6px 1px',
+        padding: '7px 12px 7px 1px',
         height: '40px',
         justifyContent: 'start',
         overflow: 'hidden',

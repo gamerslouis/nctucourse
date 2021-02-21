@@ -1,7 +1,7 @@
 import React from 'react'
 import axios from 'axios'
-import { Button, Collapse, Divider, FormControlLabel, IconButton, Link, Menu, MenuItem, Paper, Switch, Typography, withStyles } from '@material-ui/core';
-import { Cancel, Clear, DragHandle, Edit, Info, KeyboardArrowDown, MoreVert, Warning } from '@material-ui/icons';
+import { Button, Collapse, Divider, FormControlLabel, IconButton, Menu, MenuItem, Paper, Switch, Typography, withStyles } from '@material-ui/core';
+import { Cancel, Clear, DragHandle, Edit, Info, KeyboardArrowDown, Link, MoreVert, Warning } from '@material-ui/icons';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import Category from '../../Components/Simulator/Category'
 import Course from '../../Components/Simulator/Course'
@@ -432,6 +432,7 @@ class Desktop extends React.Component {
           <Typography style={{ marginBottom: '6px' }}>在這裡你可以輕鬆的察看自己各類別的學分/門數</Typography>
           <Typography style={{ marginBottom: '6px' }}>點擊選單中右上角的齒輪可以開啟<strong>目標設定對話框</strong>，設定各個類別的目標學分/門數</Typography>
           <Typography style={{ marginBottom: '6px' }}>有設定目標的類別將會在選單中顯示目標以及進度條</Typography>
+          <Typography style={{ marginBottom: '6px' }}>軍訓學分不會被計算在總學分中</Typography>
         </>
       )
     }
@@ -577,7 +578,7 @@ class Desktop extends React.Component {
               </div>
               <Divider style={{ margin: '8px 0px' }} />
 
-              <Button variant='contained' color='primary' href="/gpa/import?redir=sim" fullWidth>匯入歷史成績</Button>
+              <Button variant='contained' color='primary' href="/gpa/import?redir=simulator" fullWidth>匯入歷史成績</Button>
               <Divider style={{ margin: '8px 0px' }} />
 
               {/* Category Settings */}

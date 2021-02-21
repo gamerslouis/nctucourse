@@ -99,7 +99,7 @@ class _DialogLoadTemplate extends React.Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:8000/template').then(res => res.data).then(templates => this.setState(templates))
+        // axios.get('http://localhost:8000/template').then(res => res.data).then(templates => this.setState(templates))
     }
 
     render() {
