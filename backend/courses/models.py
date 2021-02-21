@@ -44,7 +44,6 @@ class Feedback(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, null=True, blank=True)
-    title = models.CharField(max_length=100)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

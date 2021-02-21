@@ -4,6 +4,11 @@ from django.contrib.auth import get_user_model
 # Create your models here.
 
 
+class Profile(models.Model):
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    nickname = models.CharField(default="", max_length=50)
+
+
 class CoursesHistory(models.Model):
     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
     data = models.TextField()

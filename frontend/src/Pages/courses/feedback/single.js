@@ -54,10 +54,9 @@ export const Feedback = (props) => {
         <Box component={Paper} paddingY={3} paddingX={5} {...others}>
             <div style={{ display: 'flex' }}>
                 <div style={{ width: 'fit-content' }}>
-                    <Typography variant="h5">{feedback.title}</Typography>
                     <Typography variant="subtitle1">
                         <span style={{ marginRight: 20 }}>{`作者： ${feedback.owner}`}</span>
-                        <span style={{ display: "inline-block" }}>{`更新時間：${feedback.updated_at}`}</span>
+                        <span style={{ display: "inline-block", marginRight: 20 }}>{`更新時間：${feedback.updated_at}`}</span>
                     </Typography>
                 </div>
                 <div style={{ flex: "1 1 auto" }}></div>

@@ -21,7 +21,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'django_filters',
     'core',
-    'accounts',
+    'accounts.apps.AccountsConfig',
     'simulation',
     'courses',
 ]
@@ -160,6 +160,9 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_LOGIN_ERROR_URL  = '/?login=1'
 
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
     'DATETIME_FORMAT': "%Y/%m/%d %H:%M",
     'PAGE_SIZE': 20
 }

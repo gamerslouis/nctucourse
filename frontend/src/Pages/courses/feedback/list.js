@@ -3,12 +3,16 @@ import {
     Container, Paper, Table, TableContainer, TableRow, TableCell,
     Chip, TableHead, TableBody, Button, Dialog, Typography, Link
 } from '@material-ui/core'
+import { connect } from 'react-redux'
 import SearchBar from '../../../Components/SearchBar'
 import axios from 'axios'
 import Pagination from '@material-ui/lab/Pagination';
 import PaginationItem from '@material-ui/lab/PaginationItem';
 import { Feedback } from './single'
 
+const mapStateToProps = (state) => ({
+    user: state.user
+})
 
 class FeedbackList extends React.Component {
     constructor(props) {
@@ -69,19 +73,24 @@ class FeedbackList extends React.Component {
 
     render() {
         const { page, count, rows, search, my, dialog } = this.state
+        const { user } = this.props
         return (
             <Container>
                 <Typography variant="h4" gutterBottom >心得</Typography>
-                <div style={{ marginBottom: 20 }}>
-                    <Button variant="contained" color="primary" href="/feedbacks/edit">
-                        新增心得
-                    </Button>
-                    <Button variant="contained" color="secondary" style={{ marginLeft: 5 }}
-                        href={my ? '/feedbacks' : '/feedbacks?my=true'}
-                    >
-                        {my ? '所有文章' : '我的文章'}
-                    </Button>
-                </div>
+                {
+                    user.is_anonymous == false && (
+                        <div style={{ marginBottom: 20 }}>
+                            <Button variant="contained" color="primary" href="/feedbacks/edit">
+                                新增心得
+                            </Button>
+                            <Button variant="contained" color="secondary" style={{ marginLeft: 5 }}
+                                href={my ? '/feedbacks' : '/feedbacks?my=true'}
+                            >
+                                {my ? '所有文章' : '我的文章'}
+                            </Button>
+                        </div>
+                    )
+                }
                 <SearchBar style={{ marginBottom: 20 }} value={search}
                     onChange={e => this.setState({ 'search': e.target.value })} onSearch={this.handleSearch} />
                 <Paper>
@@ -91,7 +100,6 @@ class FeedbackList extends React.Component {
                                 <TableRow>
                                     <TableCell>學期</TableCell>
                                     <TableCell>課程</TableCell>
-                                    <TableCell>標題</TableCell>
                                     <TableCell align="right">作者</TableCell>
                                     <TableCell align="right">更新時間</TableCell>
                                 </TableRow>
@@ -110,9 +118,8 @@ class FeedbackList extends React.Component {
                                         <TableCell component="th" scope="row">
                                             {row.course.sem_name}
                                         </TableCell>
-                                        <TableCell> {this.makeCourseName(row.course)}</TableCell>
-                                        <TableCell>
-                                            {row.title}
+                                        <TableCell> 
+                                            {this.makeCourseName(row.course)}
                                             {(my && row.draft) && <Chip size="small" label="草稿" style={{ marginLeft: 5 }} />}
                                         </TableCell>
                                         <TableCell align="right">{row.owner}</TableCell>
@@ -163,4 +170,4 @@ class FeedbackList extends React.Component {
     }
 }
 
-export default FeedbackList
+export default connect(mapStateToProps)(FeedbackList)

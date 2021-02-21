@@ -12,7 +12,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withSnackbar } from 'notistack';
 
 
-const defaultText = '★修課年度★\n\n￡教了什麼￡\n\n◆上課方式◆\n\n▼考試作業▼\n\n￥其他￥\n\n＆誰適合修這門課＆\n\n'
+const defaultText = '+★修課年度★\n\n+￡教了什麼￡\n\n+◆上課方式◆\n\n+▼考試作業▼\n\n+￥其他￥\n\n+＆誰適合修這門課＆\n\n'
 
 class NewFeedback extends React.Component {
     constructor(props) {
@@ -23,9 +23,8 @@ class NewFeedback extends React.Component {
             enableCourseSearch: false,
             courses: [],
             course: null,
-            title: '',
             content: defaultText,
-            anonymous: false,
+            // anonymous: false,
             draft: true,
             expanded: 'panel1',
         }
@@ -63,9 +62,8 @@ class NewFeedback extends React.Component {
             let res = await axios.get(`/api/courses/feedbacks/my/${fid}`)
             this.setState({
                 course: res.data.course,
-                title: res.data.title,
                 content: res.data.content,
-                anonymous: res.data.anonymous,
+                // anonymous: res.data.anonymous,
                 draft: res.data.draft,
                 expanded: res.data.course === null ? 'panel1' : 'panel2',
             })
@@ -118,11 +116,7 @@ class NewFeedback extends React.Component {
             if (this.state.course === null) {
                 this.props.enqueueSnackbar(`請選擇課程`, { variant: 'warning' })
                 return
-            }
-            if (this.state.title === "") {
-                this.props.enqueueSnackbar(`請填寫標題`, { variant: 'warning' })
-                return
-            }
+            } 
             if (this.state.content === "") {
                 this.props.enqueueSnackbar(`請填寫內文`, { variant: 'warning' })
                 return
@@ -130,9 +124,8 @@ class NewFeedback extends React.Component {
         }
 
         const data = {
-            title: this.state.title,
             content: this.state.content,
-            anonymous: this.state.anonymous,
+            // anonymous: this.state.anonymous,
             draft: draft,
         }
         if (this.state.course !== null) {
@@ -236,11 +229,6 @@ class NewFeedback extends React.Component {
                                     課程: {this.state.course === null ? '未選取' : this.makeCourseName(this.state.course)}
                                 </Typography>
                             </Box>
-                            <Box marginBottom={2}>
-                                <TextField id="title" name="title" label="標題" color="secondary" fullWidth
-                                    value={this.state.title} onChange={e => this.setState({ title: e.target.value })}
-                                />
-                            </Box>
                             <TextField
                                 id="content"
                                 name="content"
@@ -253,12 +241,12 @@ class NewFeedback extends React.Component {
                                 onChange={e => this.setState({ content: e.target.value })}
                             />
                             {"Ps. 行首加號表示該行為段落標題。"}
-                            <Box>
+                            {/* <Box>
                                 <FormControlLabel control={<Checkbox name="checkedC"
                                     checked={this.state.anonymous} onChange={e => this.setState({ anonymous: e.target.checked })} />}
                                     label="匿名"
                                 />
-                            </Box>
+                            </Box> */}
                             <Box style={{ display: "flex", justifyContent: "center" }} marginBottom={2}>
                                 <Box marginX={1}>
                                     <Button variant="contained" color="primary" onClick={() => this.handleSubmit(false)} >{this.state.draft ? '發布' : '更新'}</Button>

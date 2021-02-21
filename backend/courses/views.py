@@ -7,6 +7,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework import filters
 from rest_framework import viewsets
 from rest_framework import mixins
+from rest_framework.permissions import IsAuthenticated
 from django.conf import settings
 
 from . import serializers
@@ -23,7 +24,7 @@ class CourseViewSet(mixins.ListModelMixin,
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['ayc', 'sem']
-    search_fields = ['cname', 'ename', 'teacher_name']
+    search_fields = ['cname', 'ename', 'teacher_name', 'cos_id']
 
     def get_serializer_class(self):
         if self.action == 'retrieve' and self.request.query_params.get('detail', False):
@@ -32,7 +33,7 @@ class CourseViewSet(mixins.ListModelMixin,
 
 
 class SupportSemesterView(generics.ListAPIView):
-    queryset = models.Course.objects.values('ayc', 'sem').distinct()
+    queryset = models.Course.objects.values('ayc', 'sem').distinct().order_by('-ayc', '-sem')
     serializer_class = serializers.SemesterSerializer
 
 
@@ -44,8 +45,7 @@ class FeedBackViewSet(mixins.ListModelMixin,
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     filterset_fields = ['course__ayc', 'course__sem']
-    search_fields = ['title', 'course__cname',
-                     'course__ename', 'course__teacher_name']
+    search_fields = ['course__cname', 'course__ename', 'course__teacher_name', 'course__cos_id']
 
 
 class MyFeedBackViewSet(mixins.ListModelMixin,
@@ -58,9 +58,9 @@ class MyFeedBackViewSet(mixins.ListModelMixin,
     serializer_class = serializers.MyFeedBackSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    permission_classes = [IsAuthenticated, ]
     filterset_fields = ['course__ayc', 'course__sem']
-    search_fields = ['title', 'course__cname',
-                     'course__ename', 'course__teacher_name']
+    search_fields = ['course__cname', 'course__ename', 'course__teacher_name', 'course__cos_id']
 
     def get_queryset(self):
         return super().get_queryset().filter(owner=self.request.user)
