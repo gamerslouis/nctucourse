@@ -8,11 +8,11 @@ import FullLoading from './Components/FullLoading'
 import { FETCH_STATUS } from './Redux/Actions/index'
 import ErrorBoundary from './Components/ErrorBoundary'
 import AuthRoute from './Components/AuthRoute'
-
 import Login from './Pages/login'
 import Simulation from './Pages/simulation'
 import GPA from './Pages/gpa'
 import GPAImport from './Pages/gpa/import'
+import Sim from './Pages/simulator'
 import SimulationHistory from './Pages/simulation/history'
 import Profile from './Pages/profile'
 import CourseList from './Pages/courses/list'
@@ -48,6 +48,7 @@ const Router = (props) => {
                                 <AuthRoute exact path='/gpa' component={GPA} />
                                 <AuthRoute exact path='/gpa/import' component={GPAImport} />
                                 <AuthRoute exact path='/simulation/history' component={SimulationHistory} />
+                                <AuthRoute exact path='/simulator' component={Sim} />
                                 <AuthRoute exact path='/profile' component={Profile} />
                                 <Route render={() => {
                                     window.location.pathname = '/'

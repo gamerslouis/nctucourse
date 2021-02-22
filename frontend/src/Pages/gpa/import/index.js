@@ -52,7 +52,11 @@ export default (props) => {
                             data: JSON.stringify(data)
                         }).then(res => {
                             enqueueSnackbar("上傳成功", { variant: 'success' })
-                            window.location.href += "/.."
+                            const redir = new URLSearchParams(window.location.search).get('redir')
+                            if (redir)
+                                window.location.href = `/${redir}`
+                            else
+                                window.location.href = "/"
                         }
                         ).catch(err => {
                             setLoading(false)

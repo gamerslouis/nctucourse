@@ -7,9 +7,10 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-import { Hidden, Drawer, List, ListItem, Divider, ButtonBase, Menu, MenuItem } from '@material-ui/core';
+import { Hidden, Drawer, List, ListItem, Divider, ButtonBase, Menu, MenuItem, withStyles, Avatar } from '@material-ui/core';
 import logo256 from '../Resources/logo256.png'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
+import { KeyboardArrowDown } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -39,6 +40,13 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const NavMenuDropdown = withStyles(theme => ({
+    paper: {
+        borderTopLeftRadius: '0px',
+        borderTopRightRadius: '0px'
+    }
+}))(Menu)
+
 const NavMenu = (props) => {
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -51,51 +59,97 @@ const NavMenu = (props) => {
     };
 
     const { text, children } = props
-    return (<>
-        <Button
-            color="inherit"
-            aria-haspopup="true"
-            onClick={handleClick}
-        >
-            {text}
-            <KeyboardArrowDownIcon fontSize="small" />
-        </Button>
+    return (
+        <>
+            <Button
+                color="inherit"
+                aria-haspopup="true"
+                onClick={handleClick}
+            >
+                {text}
+                <KeyboardArrowDownIcon fontSize="small" />
+            </Button>
 
-        <Menu
-            MenuListProps={{
-                style: { backgroundColor: "#3f51b5", color: "white" }
-            }}
-            elevation={0}
-            getContentAnchorEl={null}
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-            anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'center',
-            }}
-            transformOrigin={{
-                vertical: 'top',
-                horizontal: 'center',
-            }}
-        >
-            {children}
-        </Menu>
-    </>)
+            <NavMenuDropdown
+                MenuListProps={{
+                    style: { backgroundColor: "#3f51b5", color: "white" }
+                }}
+                elevation={0}
+                getContentAnchorEl={null}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+            >
+                {children}
+            </NavMenuDropdown>
+        </>
+    )
 }
 
-const NavMemuItem = (props) => (
+const NavMenuItem = (props) => (
     <MenuItem
         style={{ fontSize: 14 }}
         onClick={() => {
             if (props.blank) {
-                window.open(props.href);
+                window.open(props.href).opener = null
             } else {
                 window.location.href = props.href
             }
         }}
-        {...props} />
+        onAuxClick={() => {
+            window.open(props.href).opener = null
+        }}
+        {...props}
+    />
 )
+
+const NavProfile = withStyles(theme => ({
+    navBtn: {
+        paddingLeft: '12px',
+        color: 'white'
+    }
+}))(({ classes, username, nickname }) => {
+    const [anchorEl, setAnchorEl] = React.useState(null)
+    return (
+        <>
+            <Button className={classes.navBtn} onClick={evt => setAnchorEl(evt.currentTarget)}>
+                <Avatar style={{ width: '32px', height: '32px' }} />
+                <Typography style={{ fontSize: '16px', lineHeight: '16px', marginLeft: '8px' }}>
+                    {nickname === '' ? username : nickname}
+                </Typography>
+                <KeyboardArrowDown />
+            </Button>
+            <NavMenuDropdown
+                MenuListProps={{
+                    style: { backgroundColor: "#3f51b5", color: "white" }
+                }}
+                elevation={0}
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={evt => setAnchorEl(null)}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+            >
+                <NavMenuItem href="/profile">關於我</NavMenuItem>
+                <NavMenuItem href="/api/accounts/logout">Logout</NavMenuItem>
+            </NavMenuDropdown>
+        </>
+    )
+})
 
 const Navbar = (props) => {
     const classes = useStyles();
@@ -114,31 +168,24 @@ const Navbar = (props) => {
                         </ButtonBase>
                         <Button color="inherit" href="/">首頁</Button>
                         <NavMenu text="模擬排課">
-                            <NavMemuItem href="/simulation">當期排課</NavMemuItem>
-                            <NavMemuItem href="/simulation/history">歷年課程</NavMemuItem>
+                            <NavMenuItem href="/simulation">當期排課</NavMenuItem>
+                            <NavMenuItem href="/simulation/history">歷年課程</NavMenuItem>
                         </NavMenu>
                         <Button color="inherit" href="/gpa">GPA計算機</Button>
                         <NavMenu text="全校課程">
-                            <NavMemuItem href="/courses">全校課程</NavMemuItem>
-                            <NavMemuItem href="/feedbacks">心得</NavMemuItem>
+                            <NavMenuItem href="/courses">全校課程</NavMenuItem>
+                            <NavMenuItem href="/feedbacks">心得</NavMenuItem>
                         </NavMenu>
                         <NavMenu text="外部連結">
-                            <NavMemuItem blank href="https://timetable.nycu.edu.tw/">課程時間表</NavMemuItem>
-                            <NavMemuItem blank href="https://course.nycu.edu.tw/">選課系統</NavMemuItem>
+                            <NavMenuItem blank href="https://timetable.nycu.edu.tw/">課程時間表</NavMenuItem>
+                            <NavMenuItem blank href="https://course.nycu.edu.tw/">選課系統</NavMenuItem>
                         </NavMenu>
                         <div className={classes.grow} />
                         {
-                            user.is_anonymous ? (
-                                <Button color="inherit" href="/">Login</Button>
-                            ) : (<>
-                                <Typography variant="body2">
-                                    Hi, {user.username}.
-                                </Typography>
-                                <Button color="inherit" href="/api/accounts/logout">Logout</Button>
-                            </>)
+                            user.is_anonymous
+                                ? <Button color="inherit" href="/">Login</Button>
+                                : <NavProfile username={user.username} nickname={user.nickname} />
                         }
-
-
                     </Toolbar>
                 </AppBar>
             </Hidden>
@@ -160,45 +207,45 @@ const Navbar = (props) => {
                     <div className={classes.listContainer}>
                         <List>
                             {
-                                !user.is_anonymous && <>
-                                    <ListItem>
-                                        <Typography variant="body2">
-                                            Hi, {user.username}.
-                                        </Typography>
+                                !user.is_anonymous &&
+                                <>
+                                    <ListItem button disabled>
+                                        <Avatar style={{ width: '28px', height: '28px', marginRight: '6px' }} />
+                                        {user.nickname === '' ? user.username : user.nickname}
                                     </ListItem>
-                                    <Divider />
+                                    <ListItem button onClick={() => window.location.href = "/profile"}>關於我</ListItem>
                                 </>
-
                             }
                             <ListItem button onClick={() => window.location.href = "/"}>首頁</ListItem>
-                            <ListItem button onClick={() => window.location.href = "/gpa"} > GPA計算機</ListItem>
+                            {
+                                user.is_anonymous
+                                    ? <ListItem button onClick={() => window.location.href = "/"}>Login</ListItem>
+                                    : <ListItem button onClick={() => window.location.href = "/api/accounts/logout"}>Logout</ListItem>
+                            }
                         </List>
                         <Divider />
                         <List>
                             <ListItem disabled >模擬排課</ListItem>
-                            <ListItem button onClick={() => window.location.href = "/simulation"} > 當期排課</ListItem>
-                            <ListItem button onClick={() => window.location.href = "/simulation/history"} > 歷年課程</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/simulation"}>當期排課</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/simulation/history"}>歷年課程</ListItem>
                         </List>
                         <Divider />
                         <List>
-                            <ListItem button onClick={() => window.location.href = "/courses"} > 全校課程</ListItem>
-                            <ListItem button onClick={() => window.location.href = "/feedbacks"} > 心得</ListItem>
+                            <ListItem disabled >學分工具</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/gpa"}>GPA計算機</ListItem>
+                            {/* <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器</ListItem> */}
+                        </List>
+                        <Divider />
+                        <List>
+                            <ListItem disabled >課程 / 心得</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/courses"}>全校課程</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/feedbacks"}>心得</ListItem>
                         </List>
                         <Divider />
                         <List>
                             <ListItem disabled >外部連結</ListItem>
-                            <ListItem button onClick={() => window.location.href = "https://timetable.nctu.edu.tw/"} > 交大課程時間表</ListItem>
-                            <ListItem button onClick={() => window.location.href = "https://course.nctu.edu.tw/"} > 交大選課系統</ListItem>
-                        </List>
-                        <Divider />
-                        <List>
-                            {
-                                user.is_anonymous ? (
-                                    <ListItem button onClick={() => window.location.href = "/"} > Login</ListItem>
-                                ) : (
-                                        <ListItem button onClick={() => window.location.href = "/api/accounts/logout"} > Logout</ListItem>
-                                    )
-                            }
+                            <ListItem button onClick={() => window.location.href = "https://timetable.nctu.edu.tw/"}>交大課程時間表</ListItem>
+                            <ListItem button onClick={() => window.location.href = "https://course.nctu.edu.tw/"}>交大選課系統</ListItem>
                         </List>
                     </div>
                 </Drawer>

@@ -4,8 +4,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { Divider, Hidden } from '@material-ui/core';
 import Board from '../Components/BulletinBoard'
-import GoogleLogo from '../Components/GoogleLogo'
-import { useState } from 'react';
+import GoogleButton from '../Components/GoogleButton'
 import { connect } from 'react-redux'
 import { FETCH_STATUS } from '../Redux/Actions'
 import { withSnackbar } from 'notistack';
@@ -69,23 +68,6 @@ const styles = (theme) => ({
     }
 })
 
-const GoogleButton = withStyles((theme) => ({
-    root: {
-        fontFamily: "'Roboto', 'Noto Sans TC', sans-serif",
-        fontSize: '14px !important',
-        color: 'white',
-        backgroundColor: '#4285f4',
-        '&:hover': {
-            backgroundColor: '#3367d6'
-        }
-    }
-}))((props) => {
-    const [hover, setHover] = useState(false)
-    return (
-        <Button startIcon={<GoogleLogo pressed={hover} />} {...props} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} />
-    )
-});
-
 class Login extends React.Component {
     constructor(props) {
         super(props);
@@ -141,7 +123,7 @@ class Login extends React.Component {
                                         <div className={classes.loginout}>
                                             <Button variant="contained" color="primary"
                                                 className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
-                                            {/* <GoogleButton variant="contained" color="primary"
+                                            <GoogleButton variant="contained" color="primary"
                                                 href="/api/login/google-oauth2"
                                                 className={classes.button}
                                                 style={{
@@ -150,7 +132,7 @@ class Login extends React.Component {
                                                     overflow: 'hidden'
                                                 }}>
                                                 <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                            </GoogleButton> */}
+                                            </GoogleButton>
                                         </div>
                                     </div>
                                 }
@@ -175,7 +157,7 @@ class Login extends React.Component {
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <Button variant="contained" color="primary"
                                             className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
-                                        {/* <GoogleButton variant="contained" color="primary"
+                                        <GoogleButton variant="contained" color="primary"
                                             href="/api/login/google-oauth2"
                                             className={classes.button}
                                             style={{
@@ -184,7 +166,7 @@ class Login extends React.Component {
                                                 overflow: 'hidden'
                                             }}>
                                             <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                        </GoogleButton> */}
+                                        </GoogleButton>
                                         <Button variant="outlined" style={{ marginTop: '20px' }} onClick={evt => this.setState({ mobile: !this.state.mobile })}>{this.state.mobile ? '隱藏' : '顯示'}公告欄</Button>
                                     </div>
                                 </div>
