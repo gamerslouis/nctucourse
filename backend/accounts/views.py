@@ -135,7 +135,7 @@ class GetTrialCoursesView(LoginRequiredMixin, View):
         data = self.request.user.trialsimulationdata_set.first()
         return http.JsonResponse({
             'success': True,
-            'imported': data.imported_courses
+            'imported_courses': data.imported_courses
         })
 
 
