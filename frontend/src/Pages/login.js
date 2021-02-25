@@ -123,7 +123,7 @@ class Login extends React.Component {
                                         <div className={classes.loginout}>
                                             <Button variant="contained" color="primary"
                                                 className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
-                                            {/* <GoogleButton variant="contained" color="primary"
+                                            <GoogleButton variant="contained" color="primary"
                                                 href="/api/login/google-oauth2"
                                                 className={classes.button}
                                                 style={{
@@ -132,7 +132,7 @@ class Login extends React.Component {
                                                     overflow: 'hidden'
                                                 }}>
                                                 <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                            </GoogleButton> */}
+                                            </GoogleButton>
                                         </div>
                                     </div>
                                 }
@@ -157,7 +157,7 @@ class Login extends React.Component {
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <Button variant="contained" color="primary"
                                             className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
-                                        {/* <GoogleButton variant="contained" color="primary"
+                                        <GoogleButton variant="contained" color="primary"
                                             href="/api/login/google-oauth2"
                                             className={classes.button}
                                             style={{
@@ -166,7 +166,7 @@ class Login extends React.Component {
                                                 overflow: 'hidden'
                                             }}>
                                             <span style={{ margin: '2px 0px 0px' }}>使用Google登入</span>
-                                        </GoogleButton> */}
+                                        </GoogleButton>
                                         <Button variant="outlined" style={{ marginTop: '20px' }} onClick={evt => this.setState({ mobile: !this.state.mobile })}>{this.state.mobile ? '隱藏' : '顯示'}公告欄</Button>
                                     </div>
                                 </div>

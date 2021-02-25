@@ -14,3 +14,5 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+COURSE_FILE_ROOT = 'http://127.0.0.1:5000/nctucourse/coursedata/'

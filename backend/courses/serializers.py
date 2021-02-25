@@ -32,10 +32,10 @@ class FeedBackSerializer(serializers.ModelSerializer):
     course = CourseSerializer()
 
     def get_owner(self, obj):
-        if obj.anonymous:
-            return '匿名'
+        if obj.owner.profile.nickname == '':
+            return '不知名'
         else:
-            return obj.owner.username
+            return obj.owner.profile.nickname
 
     def get_owned(self, obj):
         return obj.owner == self.context['request'].user
@@ -46,7 +46,7 @@ class FeedBackSerializer(serializers.ModelSerializer):
 
 
 class MyFeedBackSerializer(serializers.ModelSerializer):
-    owner = serializers.SlugRelatedField(slug_field='username', read_only=True)
+    owner = serializers.SerializerMethodField()
     course = RelatedFieldAlternative(
         queryset=models.Course.objects.all(), serializer=CourseSerializer)
     owned = serializers.SerializerMethodField()
@@ -57,9 +57,15 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
         if not data['draft']:
             if data['course'] is None:
                 raise serializers.ValidationError()
-            if data['title'] == '' or data['content'] == '':
+            if data['content'] == '':
                 raise serializers.ValidationError()
         return data
+
+    def get_owner(self, obj):
+        if obj.owner.profile.nickname == '':
+            return '不知名'
+        else:
+            return obj.owner.profile.nickname
 
     def get_owned(self, obj):
         return True
@@ -70,7 +76,6 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'draft': {'required': False},
             'anonymous': {'required': False},
-            'title': {'allow_blank': True},
             'content': {'allow_blank': True},
         }
 

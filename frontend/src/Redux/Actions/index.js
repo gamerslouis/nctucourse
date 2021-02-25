@@ -270,5 +270,7 @@ export const setSearchCourseList = (courses) => dispatch => {
 }
 
 export const setNickname = (nick) => dispatch => {
-    dispatch(actions.user.store({ nickname: nick }))
+    axios.post('/api/accounts/setnickname/', { nickname: nick }).then(res => {
+        dispatch(actions.user.store({ nickname: nick }))
+    })
 }

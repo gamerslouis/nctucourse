@@ -57,17 +57,9 @@ class MeView(View):
                 'email': ''
             })
         else:
-            return http.JsonResponse({
-                'is_anonymous': False,
-                'username': request.user.username,
-                'email': request.user.email,
-                'social': [
-                    {
-                        'id': social.id,
-                        'uid': social.uid
-                    } for social in request.user.social_auth.all()
-                ]
-            })
+            return http.JsonResponse(
+                serializers.UserSerializer(instance=request.user).data
+            )
 
 
 class CoursesHistoryView(LoginRequiredMixin, View):
@@ -143,5 +135,16 @@ class GetTrialCoursesView(LoginRequiredMixin, View):
         data = self.request.user.trialsimulationdata_set.first()
         return http.JsonResponse({
             'success': True,
-            'imported': data.imported_courses
+            'imported_courses': data.imported_courses
         })
+
+
+class ChangeNicknameView(LoginRequiredMixin, View):
+    def post(self, request):
+        nickname = request.JSON.get('nickname', None)
+        if nickname is not None:
+            profile = request.user.profile
+            profile.nickname = nickname
+            profile.save()
+        return http.HttpResponse()
+        

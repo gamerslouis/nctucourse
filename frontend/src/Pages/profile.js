@@ -1,10 +1,11 @@
 import React from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import { Card, Container, Divider, Hidden, TextField, Typography } from '@material-ui/core';
+import { Card, Container, Divider, Hidden, TextField, Typography, Button } from '@material-ui/core';
 import GoogleButton from '../Components/GoogleButton'
 import { connect } from 'react-redux'
 import { setNickname } from '../Redux/Actions'
 import { Check, Edit } from '@material-ui/icons';
+import axios from 'axios'
 
 const Nickname = withStyles(theme => ({
     root: {
@@ -53,6 +54,12 @@ const Nickname = withStyles(theme => ({
     )
 })
 
+const disconnect = (id) => {
+    if (window.confirm("確定解除綁定?")) {
+        axios.post(`/api/disconnect/google-oauth2/${id}/`).finally(() => window.location.reload())
+    }
+}
+
 class Profile extends React.PureComponent {
     render() {
         const { user, setNick } = this.props
@@ -61,7 +68,7 @@ class Profile extends React.PureComponent {
             <Container>
                 <Card style={{ padding: 20, marginTop: '12px' }}>
                     <Typography variant="h5" align="center">使用者資料</Typography>
-                    <Hidden smUp>
+                    <Hidden mdUp>
                         <div style={{ padding: "10px 20px", display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             <Typography variant="h6" align="center">學號</Typography>
                             <Typography style={{ height: '28px' }} align="center">{user.username}</Typography>
@@ -74,12 +81,15 @@ class Profile extends React.PureComponent {
                             <Typography style={{ height: '28px' }} align="center">{user.social.length > 0 ? '已綁定' : '未綁定'}</Typography>
                             {
                                 user.social.length > 0
-                                    ? <Typography style={{ height: '28px' }} align="center">{user.social[0].email}</Typography>
-                                    : <GoogleButton>綁定Google帳號</GoogleButton>
+                                    ? <>
+                                        <Typography style={{ height: '28px' }} align="center">{user.social[0].uid}</Typography>
+                                        <Button onClick={() => disconnect(user.social[0].id)} variant="contained">解除綁定</Button>
+                                    </>
+                                    : <GoogleButton href="/api/login/google-oauth2">綁定Google帳號</GoogleButton>
                             }
                         </div>
                     </Hidden>
-                    <Hidden mdDown>
+                    <Hidden smDown>
                         <div style={{ display: 'flex', flexDirection: 'row', marginTop: '18px', marginBottom: '6px', justifyContent: 'center' }}>
                             <div style={{ padding: "10px 20px", height: '80px', width: '50%' }}>
                                 <Typography style={{ height: '28px' }}>學號：&nbsp;&nbsp;&nbsp;&nbsp;{user.username}</Typography>
@@ -89,12 +99,15 @@ class Profile extends React.PureComponent {
                                 </div>
                             </div>
                             <Divider orientation='vertical' flexItem />
-                            <div style={{ padding: "10px 20px", height: '80px', width: '50%' }}>
+                            <div style={{ padding: "10px 20px", height: '100px', width: '50%' }}>
                                 <Typography style={{ height: '28px' }}>Google 帳號：&nbsp;&nbsp;&nbsp;&nbsp;{user.social.length > 0 ? '已綁定' : '未綁定'}</Typography>
                                 {
                                     user.social.length > 0
-                                        ? <Typography style={{ height: '40px', lineHeight: '40px', verticalAlign: 'center' }}>Google 信箱：&nbsp;&nbsp;&nbsp;&nbsp;{user.social[0].email}</Typography>
-                                        : <GoogleButton>綁定Google帳號</GoogleButton>
+                                        ? <>
+                                            <Typography style={{ height: '40px', lineHeight: '40px', verticalAlign: 'center' }}>Google 信箱：&nbsp;&nbsp;&nbsp;&nbsp;{user.social[0].uid}</Typography>
+                                            <Button onClick={() => disconnect(user.social[0].id)} variant="contained">解除綁定</Button>
+                                        </>
+                                        : <GoogleButton href="/api/login/google-oauth2">綁定Google帳號</GoogleButton>
                                 }
                             </div>
                         </div>
