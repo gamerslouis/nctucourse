@@ -1,4 +1,5 @@
 import React from 'react';
+import { useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -6,7 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 import GradeIcon from '@material-ui/icons/Grade';
-import { makeInfoPageUrl } from '../Util/dataUtil/course'
+import { makeInfoPageUrl, origin_time_key_to_new } from '../Util/dataUtil/course'
 import { CourseTypeColorMap } from '../Util/style'
 
 
@@ -40,6 +41,7 @@ function begdeLebalPipe(key, course, briefMap) {
 const CourseListItem = (props) => {
     const classes = useStyles();
     const { course, onClick, actions, multiAction } = props
+    const newTimeCode = useSelector(state => state.courseSim.settings.newTimeCode)
     const begdeClasses = ['#ff7675', '#ffeaa7', '#55efc4', '#74b9ff'] // palette/cn
     const briefMap = {
         'A501': [1, '核心(人文)'],
@@ -64,7 +66,9 @@ const CourseListItem = (props) => {
                     <div>
                         <div className={classes.subtext}>
                             <Typography variant='body2' display='inline'>{course.cos_id.split('_')[1]}|</Typography>
-                            <Typography variant='body2' display='inline'>{course.cos_time}|</Typography>
+                            <Typography variant='body2' display='inline'>{
+                            newTimeCode ? origin_time_key_to_new(course.cos_time) : course.cos_time
+                            }|</Typography>
                             <GradeIcon fontSize="small" />
                             <Typography>{Number(course.cos_credit)}</Typography>
                         </div>

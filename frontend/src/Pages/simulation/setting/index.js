@@ -17,6 +17,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SettingsIcon from '@material-ui/icons/Settings';
 import RoomIcon from '@material-ui/icons/Room';
 import GetAppIcon from '@material-ui/icons/GetApp';
+import TranslateIcon from '@material-ui/icons/Translate';
 import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
 import html2canvas from 'html2canvas';
@@ -111,6 +112,19 @@ class Setting extends React.Component {
                                 edge="end"
                                 onChange={(event, value) => updateSetting('showRoomCode', value)}
                                 checked={settings.showRoomCode}
+                            />
+                        </ListItemSecondaryAction>
+                    </ListItem>
+                    <ListItem>
+                        <ListItemIcon>
+                            <TranslateIcon />
+                        </ListItemIcon>
+                        <ListItemText primary="使用新版代碼" />
+                        <ListItemSecondaryAction>
+                            <Switch
+                                edge="end"
+                                onChange={(event, value) => updateSetting('newTimeCode', value)}
+                                checked={settings.newTimeCode}
                             />
                         </ListItemSecondaryAction>
                     </ListItem>

@@ -23,7 +23,8 @@ const initialState = {
         extendTimetable: true,
         showWeekend: true,
         hideOverflowText: true,
-        showRoomCode: false
+        showRoomCode: false,
+        newTimeCode: true,
     },
     hoverCourseId: '',
 }

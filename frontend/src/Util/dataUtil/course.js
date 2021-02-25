@@ -95,3 +95,15 @@ export function filterCommonCourses(allCourses, categoryMap, category) {
     let courseIds = category.filter(c => commonIds.indexOf(Number(c[0])) !== -1).map(c => c[2])
     return allCourses.filter(c => courseIds.indexOf(c.cos_id) !== -1)
 }
+
+const new_keys = 'MTWRFSUyz1234n56789abcd'
+const oringin_keys = '1234567MNABCDXEFGHYIJKL'
+
+let mapp = {}
+for(let i in new_keys){
+    mapp[oringin_keys[i]] = new_keys[i]
+}
+
+const to_new = s => [...s].map(a=>mapp[a]).join("")
+
+export const origin_time_key_to_new = s => s.split(',').map(x=>x.split('-')).map(x=>[to_new(x[0]), ...x.slice(1)].join("-")).join(',')

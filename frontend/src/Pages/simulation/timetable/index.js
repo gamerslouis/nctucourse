@@ -49,13 +49,13 @@ const styles = theme => ({
         height: "100%",
         width: "100%",
         padding: '2px 3px',
-        border:"2px #ffffff solid",
+        border: "2px #ffffff solid",
         '&:hover': {
-            border:"2px #81C4FF solid",
+            border: "2px #81C4FF solid",
             boxSizing: "border-box",
             cursor: "pointer",
             // boxShadow: "rgba(0,0,0,0.4) 3px 3px 3px 0px inset",  
-         },
+        },
     }
 })
 
@@ -84,11 +84,11 @@ const courseStyles = theme => ({
     },
 })
 
-const TimeTableCourse = withStyles(courseStyles)((props)=> {
+const TimeTableCourse = withStyles(courseStyles)((props) => {
     const { course, roomCode, roomName, time, showRoomCode, hideOverflowText, classes, setAnchor } = props
     return (
-        <ButtonBase 
-            style={{width: '100%'}} 
+        <ButtonBase
+            style={{ width: '100%' }}
             focusRipple
             onClick={(event) => {
                 setAnchor({
@@ -99,7 +99,7 @@ const TimeTableCourse = withStyles(courseStyles)((props)=> {
                 })
                 event.stopPropagation()
             }}
-            aria-controls="timetable-course-menu" 
+            aria-controls="timetable-course-menu"
             aria-haspopup="true"
         >
             <Tooltip title={`${course.cos_cname} ${course.teacher}/${showRoomCode ? roomCode : roomName}`} arrow>
@@ -119,6 +119,7 @@ const TimeTableCourse = withStyles(courseStyles)((props)=> {
 
 class TimeTable extends React.Component {
     secs = ['M', 'N', 'A', 'B', 'C', 'D', 'X', 'E', 'F', 'G', 'H', 'Y', 'I', 'J', 'K', 'L']
+    newSecs = ['y', 'z', '1', '2', '3', '4', 'n', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd']
 
     constructor(props) {
         super(props)
@@ -151,22 +152,22 @@ class TimeTable extends React.Component {
         }
         return [classes, credits, hours]
     }
-    handleCourseSpaceClick(e, time){
+    handleCourseSpaceClick(e, time) {
         this.setState({
             menuAnchorEl: e.currentTarget,
             menuTargetTime: time,
             menuTargetIsCourse: false
         })
     }
-    setAnchor(archorMeta){
+    setAnchor(archorMeta) {
         this.setState(archorMeta)
     }
 
     render() {
-        const { showWeekend, extendTimetable, classes, hideOverflowText, showRoomCode } = this.props
+        const { showWeekend, extendTimetable, classes, hideOverflowText, showRoomCode, newTimeCode } = this.props
         let [courseClasses, credits, hours] = this.makeCourseClasses()
-        let titles = ['一', '二', '三', '四', '五']
-        if (showWeekend) titles = titles.concat(['六', '日'])
+        let titles = newTimeCode ? ['M', 'T', 'W', 'R', 'F'] : ['一', '二', '三', '四', '五']
+        if (showWeekend) titles = titles.concat(newTimeCode ? ['S', 'U'] : ['六', '日'])
 
         return (<div className={classes.root}>
             <div className={classes.tableContainer}>
@@ -183,20 +184,20 @@ class TimeTable extends React.Component {
                     </thead>
                     <tbody>
                         {courseClasses.map((rowClasses, index) => (<tr key={index}>
-                            <td className={clsx(classes.td, classes.td1)}>{this.secs[index]}</td>
+                            <td className={clsx(classes.td, classes.td1)}>{newTimeCode ? this.newSecs[index] : this.secs[index]}</td>
                             {rowClasses.slice(0, showWeekend ? 7 : 5).map((cellClasses, index2) => (
-                                <td className={clsx(classes.td, classes.tdx)} key={index2}> 
-                                    <div className={classes.courseContainer} 
-                                        onClick={e=>this.handleCourseSpaceClick(e, [index2+1, this.secs[index]])}>
-                                    {cellClasses.map(courseData =>
-                                        <TimeTableCourse {...courseData} 
-                                            hideOverflowText={hideOverflowText} 
-                                            showRoomCode={showRoomCode}
-                                            setAnchor={this.setAnchor}
-                                            key={courseData.course.cos_id} />
-                                 
-                                    )}
-                                   </div>
+                                <td className={clsx(classes.td, classes.tdx)} key={index2}>
+                                    <div className={classes.courseContainer}
+                                        onClick={e => this.handleCourseSpaceClick(e, [index2 + 1, this.secs[index]])}>
+                                        {cellClasses.map(courseData =>
+                                            <TimeTableCourse {...courseData}
+                                                hideOverflowText={hideOverflowText}
+                                                showRoomCode={showRoomCode}
+                                                setAnchor={this.setAnchor}
+                                                key={courseData.course.cos_id} />
+
+                                        )}
+                                    </div>
                                 </td>
                             ))}
                         </tr>)).splice(extendTimetable ? 0 : 1, this.secs.length - (extendTimetable ? 0 : 2))}
@@ -211,19 +212,19 @@ class TimeTable extends React.Component {
                 open={Boolean(this.state.menuAnchorEl)}
                 onClose={this.closeMenu}
             >
-                { this.state.menuTargetIsCourse &&
+                {this.state.menuTargetIsCourse &&
                     <MenuItem onClick={() => {
                         this.closeMenu()
                         this.props.setTimetableVisible(this.state.menuTarget, false)
                     }}>隱藏</MenuItem>
                 }
-                { this.state.menuTargetIsCourse &&
+                {this.state.menuTargetIsCourse &&
                     <MenuItem onClick={() => {
                         this.closeMenu()
                         this.props.removeCourse(this.state.menuTarget)
                     }}>移除</MenuItem>
                 }
-                { this.state.menuTargetIsCourse &&
+                {this.state.menuTargetIsCourse &&
                     <MenuItem onClick={() => {
                         this.closeMenu()
                         window.open(makeInfoPageUrl(this.state.menuTarget))
@@ -248,7 +249,8 @@ const mapStateToProps = (state) => ({
     extendTimetable: state.courseSim.settings.extendTimetable,
     showWeekend: state.courseSim.settings.showWeekend,
     hideOverflowText: state.courseSim.settings.hideOverflowText,
-    showRoomCode: state.courseSim.settings.showRoomCode
+    showRoomCode: state.courseSim.settings.showRoomCode,
+    newTimeCode: state.courseSim.settings.newTimeCode,
 })
 
 const mapDispatchToProps = (dispatch, props) => ({
@@ -260,7 +262,7 @@ const mapDispatchToProps = (dispatch, props) => ({
     },
     searchTimeCourses: (time, commonOnly) => {
         dispatch(searchTimeCourses(time, commonOnly))
-        if(props.changeTabIndex) {
+        if (props.changeTabIndex) {
             props.changeTabIndex(0)
         }
     },
