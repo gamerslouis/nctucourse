@@ -5,7 +5,7 @@ export function makeCourseObject(row) {
     let obj = {}
     for (let i in keys) {
         obj[keys[i]] = row[i]
-        if(keys[i]==='meta'){
+        if (keys[i] === 'meta') {
             obj[keys[i]] = JSON.parse(row[i])
         }
     }
@@ -34,6 +34,11 @@ export function getCoursesFromIds(allCourses, ids) {
 }
 
 export const roomCodeMap = {
+    YN: "護理館", YE: "實驗大樓", YR: "守仁樓", YS: "醫學二館",
+    YB: "生醫工程館", YX: "知行樓", YD: "牙醫館", YK: "傳統醫學大樓(甲棟)",
+    YT: "教學大樓", YM: "醫學館", YL: "圖書資源暨研究大樓", YA: "活動中心",
+    YH: "致和樓", YC: "生物醫學大樓", AS: "中央研究院", PH: "臺北榮民總醫院",
+    CH: "台中榮民總醫院", KH: "高雄榮民總醫院",
     C: "竹銘館", E: "教學大樓", LI: "實驗一館", BA: "生科實驗館",
     BB: "生科實驗二館", BI: "賢齊館	 ",
     EA: "工程一館", EB: "工程二館", EC: "工程三館", ED: "工程四館",
@@ -52,8 +57,8 @@ export function getCourseTimesAndRooms(course) {
     let times = []
     for (let [unit, roomCode] of cos_time.split(',').map(e => e.split('-'))) {
         let roomName = ""
-        if(roomCode === undefined){
-            
+        if (roomCode === undefined) {
+
         }
         else if (Object.keys(roomCodeMap).indexOf(roomCode.slice(0, 2)) !== -1) {
             roomName = roomCodeMap[roomCode.slice(0, 2)] + roomCode.slice(2)
@@ -85,8 +90,8 @@ export function makeInfoPageUrl(courseId) {
     return `https://timetable.nctu.edu.tw/?r=main/crsoutline&Acy=${acy}&Sem=${sem}&CrsNo=${no}&lang=zh-tw`
 }
 
-export function filterCommonCourses(allCourses, categoryMap, category){
+export function filterCommonCourses(allCourses, categoryMap, category) {
     let commonIds = Object.values(categoryMap['通識'])
-    let courseIds = category.filter(c=>commonIds.indexOf(Number(c[0]))!==-1).map(c=>c[2])
-    return allCourses.filter(c=>courseIds.indexOf(c.cos_id)!==-1)
+    let courseIds = category.filter(c => commonIds.indexOf(Number(c[0])) !== -1).map(c => c[2])
+    return allCourses.filter(c => courseIds.indexOf(c.cos_id) !== -1)
 }

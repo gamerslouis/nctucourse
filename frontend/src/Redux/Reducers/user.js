@@ -5,7 +5,9 @@ const initialState = {
     username: '',
     email: '',
     is_anonymous: true,
-    status: FETCH_STATUS.IDEL
+    social: [],
+    status: FETCH_STATUS.IDLE,
+    nickname: ''
 }
 
 export default handleActions({

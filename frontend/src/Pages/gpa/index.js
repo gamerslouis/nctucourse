@@ -57,7 +57,7 @@ class Index extends React.Component {
                     提供 Overall GPA、Last 60 Credits 的成績試算，查看計算結果前必須先匯入您的歷史成績。
             </Typography>
                 <Button variant="contained" color="primary" style={{ marginLeft: 10 }}
-                    href="/gpa/import"
+                    href="/gpa/import?redir=gpa"
                 >匯入歷史成績</Button>
             </div>
             <div style={{ padding: '0 45px' }}>

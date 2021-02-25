@@ -14,7 +14,7 @@ def get_type() -> list:
         "ename": "Undergraduate courses"
     }
     """
-    res = requests.get('https://timetable.nctu.edu.tw/?r=main/get_type', headers=headers)
+    res = requests.get('https://timetable.nycu.edu.tw/?r=main/get_type', headers=headers)
     return res.json()
 
 
@@ -25,7 +25,7 @@ def get_category(ftype, flang, acysem):
         flang: zh-tw
         acysem: 1091
     """
-    res = requests.post('https://timetable.nctu.edu.tw/?r=main/get_category', data={
+    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_category', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -35,7 +35,7 @@ def get_category(ftype, flang, acysem):
 
 
 def get_college(ftype, flang, acysem, fcategory):
-    res = requests.post('https://timetable.nctu.edu.tw/?r=main/get_college', data={
+    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_college', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -46,7 +46,7 @@ def get_college(ftype, flang, acysem, fcategory):
 
 
 def get_dep(ftype, flang, acysem, fcategory, fcollege):
-    res = requests.post('https://timetable.nctu.edu.tw/?r=main/get_dep', data={
+    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_dep', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -58,7 +58,7 @@ def get_dep(ftype, flang, acysem, fcategory, fcollege):
 
 
 def get_grade(ftype, flang, acysem, fcategory, fcollege, fdep):
-    res = requests.post('https://timetable.nctu.edu.tw/?r=main/get_grade', data={
+    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_grade', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -72,7 +72,7 @@ def get_grade(ftype, flang, acysem, fcategory, fcollege, fdep):
 
 
 def get_cos_list(acysem, fdepuuid, fgrade='**'):
-    res = requests.post('https://timetable.nctu.edu.tw/?r=main/get_cos_list', data={
+    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
         'm_acy': acysem[:-1],
         'm_sem': acysem[-1:],
         'm_acyend': acysem[:-1],
@@ -94,7 +94,7 @@ def get_cos_list(acysem, fdepuuid, fgrade='**'):
 
 
 def get_all_cos(acysem):
-    res = requests.post('https://timetable.nctu.edu.tw/?r=main/get_cos_list', data={
+    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
         'm_acy': acysem[:-1],
         'm_sem': acysem[-1:],
         'm_acyend': acysem[:-1],
@@ -132,7 +132,8 @@ def course_pipe(_data):
                     obj[k] = cs[cid][k]
                 obj['cos_id'] = cs[cid]['acy'] + cs[cid]['sem'] + '_' + cs[cid]['cos_id']
                 obj['brief_code'] = list(data['brief'][cid])[0]
-                obj['lang'] = data['language'][cid]['授課語言代碼'] 
+                obj['lang'] = data['language'][cid]['授課語言代碼']
+                obj['cos_code'] = obj['cos_code'].strip()
                 try:
                     geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院']['GECIName']
                     meta['geci'] = geci_name

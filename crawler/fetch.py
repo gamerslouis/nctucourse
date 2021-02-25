@@ -99,3 +99,8 @@ def work(sem, root):
     save_json_file(root, 'cross.json', work_common_class(types['跨領域學程']['uid'], lang, sem, '0G'))
     save_json_file(root, 'others.json', work_common_class(types['其他課程']['uid'], lang, sem, '0G'))
     save_json_file(root, 'education.json', work_common_class(types['教育學程']['uid'], lang, sem, '0G'))
+
+if __name__ == '__main__':
+    import code
+    code.interact(local=dict(globals(), **locals()))
+    

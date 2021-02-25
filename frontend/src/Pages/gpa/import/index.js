@@ -11,7 +11,7 @@ import FullLoading from '../../../Components/FullLoading'
 import axios from 'axios';
 
 export default (props) => {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme()
     const [text, setText] = useState('')
     const [loading, setLoading] = useState(false)
@@ -44,7 +44,6 @@ export default (props) => {
                             data = parse(text)
                         }
                         catch (e) {
-                            console.log(e)
                             enqueueSnackbar("無效的成績紀錄!", { variant: 'error' })
                             return
                         }
@@ -53,7 +52,11 @@ export default (props) => {
                             data: JSON.stringify(data)
                         }).then(res => {
                             enqueueSnackbar("上傳成功", { variant: 'success' })
-                            window.location.href += "/.."
+                            const redir = new URLSearchParams(window.location.search).get('redir')
+                            if (redir)
+                                window.location.href = `/${redir}`
+                            else
+                                window.location.href = "/"
                         }
                         ).catch(err => {
                             setLoading(false)
