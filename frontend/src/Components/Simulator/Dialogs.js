@@ -1,6 +1,5 @@
 import { Button, Checkbox, CircularProgress, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControlLabel, FormGroup, InputAdornment, TextField, Typography, withStyles } from '@material-ui/core'
 import { Check, Edit } from '@material-ui/icons'
-import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 
 export const DialogConfirm = ({ open, onClose }) => {
@@ -89,38 +88,6 @@ export const DialogRemoveCategory = ({ open, onClose, remove, cname }) => {
         </Dialog>
     )
 }
-
-class _DialogLoadTemplate extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            templates: []
-        }
-    }
-
-    componentDidMount() {
-        // axios.get('http://localhost:8000/template').then(res => res.data).then(templates => this.setState(templates))
-    }
-
-    render() {
-        const { open, cancel, load } = this.props
-        return (
-            <Dialog open={open} onClose={cancel}>
-                <DialogTitle>載入範本</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        原先在此類別中的課程將會被移動至未分類課程中！
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={evt => cancel()}>取消</Button>
-                    <Button onClick={evt => load([])} color="primary">確認</Button>
-                </DialogActions>
-            </Dialog>
-        )
-    }
-}
-export const DialogLoadTemplate = _DialogLoadTemplate
 
 class _DialogStatisticsSetting extends React.Component {
     constructor(props) {
@@ -450,6 +417,48 @@ export const DialogTutor = ({ next, tutorIdx, children }) => {
             <DialogActions>
                 <Button onClick={evt => next()} color="primary" disabled={tutorIdx > 1}>完成</Button>
                 <Button onClick={evt => next()} color="primary" disabled={tutorIdx <= 1}>下一步</Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+export const DialogAdjustCopy = ({ open, defaultCredit, setCredit, onClose }) => {
+    const [innerCredit, setInnerCredit] = useState(0)
+
+    useEffect(() => {
+        setInnerCredit(defaultCredit)
+    }, [defaultCredit])
+
+    const check = value => {
+        const chk = parseInt(value)
+        if (chk >= 0)
+            return `${chk}`
+        else if (value === '')
+            return 0
+        return NaN
+    }
+
+    return (
+        <Dialog open={open} maxWidth='xs' fullWidth onClose={onClose}>
+            <DialogTitle>調整這份複製顯示的學分</DialogTitle>
+            <DialogContent>
+                <DialogContentText>
+                    這個功能是為了某些課程必須在兩個不同的類別中以不同的學分數量出現而開發的，使用時請注意！
+                </DialogContentText>
+                <TextField variant="outlined" size="small" type="number"
+                    value={innerCredit}
+                    InputProps={{
+                        endAdornment: <InputAdornment position="end">學分</InputAdornment>,
+                    }}
+                    onChange={evt => {
+                        const chk = check(evt.target.value)
+                        if (!isNaN(chk))
+                            setInnerCredit(chk)
+                    }} />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={evt => onClose()} color="primary">取消</Button>
+                <Button onClick={evt => setCredit(parseInt(innerCredit))} color="primary">確認</Button>
             </DialogActions>
         </Dialog>
     )

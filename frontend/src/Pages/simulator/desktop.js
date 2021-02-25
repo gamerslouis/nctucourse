@@ -5,7 +5,7 @@ import { Cancel, Clear, DragHandle, Edit, Info, KeyboardArrowDown, Link, MoreVer
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import Category from '../../Components/Simulator/Category'
 import Course from '../../Components/Simulator/Course'
-import { DialogConfirm, DialogLoadTemplate, DialogRemoveCategory, DialogRenameCategory, DialogStatisticsSetting, DialogTutor } from '../../Components/Simulator/Dialogs';
+import { DialogAdjustCopy, DialogConfirm, DialogRemoveCategory, DialogRenameCategory, DialogStatisticsSetting, DialogTutor } from '../../Components/Simulator/Dialogs';
 import Statistics from '../../Components/Simulator/Statistics';
 
 axios.defaults.withCredentials = true
@@ -101,10 +101,10 @@ class Desktop extends React.Component {
       courses: {}
       ,
       dialogDisclaimer: false,
-      dialogLoadTemplate: false,
       dialogRemoveCategory: false,
       dialogRenameCategory: false,
       dialogStatisticsSetting: false,
+      dialogAdjustCopy: false,
       dialogCategoryTarget: -1,
       collapseImportSuccess: false,
       collapseUnsavedChange: false,
@@ -113,10 +113,14 @@ class Desktop extends React.Component {
       collapseCategories: false
       ,
       tutorIdx: 0,
-      copyAnchor: null,
-      copyAnchorCategory: null,
-      copyAnchorItemId: null
+      menuAnchor: null,
+      menuAnchorCategory: null,
+      menuAnchorIdx: null,
+      menuAnchorItemId: null
     }
+
+    this.getCourse = this.getCourse.bind(this)
+    this.getStatisticCompound = this.getStatisticCompound.bind(this)
   }
 
   balanceColumns() {
@@ -161,7 +165,7 @@ class Desktop extends React.Component {
 
     axios.get('/api/accounts/sim_data').then(res => res.data)
       .then(json => {
-        if (!json.success) {
+        if (!json.success || json.data === '') {
           // requestConfirm
           this.setState({ dialogDisclaimer: true })
         }
@@ -349,10 +353,6 @@ class Desktop extends React.Component {
     this.setState({ mainColumn, subColumns, categories, data, collapseUnsavedChange: true, dialogRemoveCategory: false, dialogCategoryTarget: -1 }, this.balanceColumns)
   }
 
-  loadTemplate(temp_categories) {
-
-  }
-
   controlFilter(item) {
     if (item.state === ' ')
       return (this.state.controlFlag & 0b1) > 0
@@ -479,6 +479,29 @@ class Desktop extends React.Component {
     }
   }
 
+  getCourse(itemId) {
+    if (itemId.startsWith('@')) {
+      if (itemId.indexOf('$') !== -1) {
+        return this.state.courses[itemId.substr(1, itemId.indexOf('$') - 1)]
+      }
+      return this.state.courses[itemId.substr(1)]
+    }
+    return this.state.courses[itemId]
+  }
+
+  getStatisticCompound(itemId) {
+    const course = this.getCourse(itemId)
+    const credit = itemId.indexOf('$') !== -1 ? parseInt(itemId.substr(itemId.indexOf('$') + 1)) : course.cos_credit
+    return {
+      credit: credit,
+      type: course.type,
+      state: course.state,
+      cos_credit: course.cos_credit,
+      cos_cname: course.cos_cname,
+      dimension: course.dimension
+    }
+  }
+
   render() {
     const { classes } = this.props
     return (
@@ -521,20 +544,55 @@ class Desktop extends React.Component {
         <DialogRemoveCategory open={this.state.dialogRemoveCategory} cname={this.state.categories[this.state.dialogCategoryTarget]}
           onClose={() => this.setState({ dialogRemoveCategory: false, dialogCategoryTarget: -1 })}
           remove={() => this.removeCategory(this.state.dialogCategoryTarget)} />
-        <DialogLoadTemplate open={this.state.dialogLoadTemplate}
-          cancel={() => this.setState({ dialogLoadTemplate: false })}
-          load={temp_categories => this.loadTemplate(temp_categories)} />
         <DialogStatisticsSetting open={this.state.dialogStatisticsSetting} onClose={() => this.setState({ dialogStatisticsSetting: false })}
           categories={this.state.categories} targets={this.state.targets} setTargets={targets => this.setState({ targets, collapseUnsavedChange: true })} />
-
-        <Menu anchorEl={this.state.copyAnchor} open={Boolean(this.state.copyAnchor)} onClose={() => this.setState({ copyAnchor: null, copyAnchorCategory: null, copyAnchorItemId: null })} keepMounted>
-          <MenuItem onClick={() => {
-            const contentKey = this.state.data[this.state.copyAnchorCategory].slice()
-            contentKey.splice(contentKey.indexOf(this.state.copyAnchorItemId) + 1, 0, this.state.copyAnchorItemId.startsWith('@') ? this.state.copyAnchorItemId : ('@' + this.state.copyAnchorItemId))
+        <DialogAdjustCopy open={this.state.dialogAdjustCopy}
+          defaultCredit={
+            this.state.menuAnchorIdx
+              ? this.state.menuAnchorItemId.indexOf('$') !== -1
+                ? parseInt(this.state.menuAnchorItemId.substr(this.state.menuAnchorItemId.indexOf('$') + 1))
+                : this.getCourse(this.state.menuAnchorItemId).cos_credit
+              : 0
+          }
+          onClose={() => this.setState({ dialogAdjustCopy: false, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })}
+          setCredit={credit => {
+            const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
+            const originalCredit = this.getCourse(this.state.menuAnchorItemId).cos_credit
+            let itemId = this.state.menuAnchorItemId
+            if (!itemId.startsWith('@'))
+              itemId = '@' + itemId
+            if (itemId.indexOf('$') !== -1)
+              itemId = itemId.substr(0, itemId.indexOf('$'))
+            contentKey.splice(this.state.menuAnchorIdx, 1, credit === originalCredit ? itemId : `${itemId}$${credit}`)
             const data = this.copyData()
-            data[this.state.copyAnchorCategory] = contentKey
-            this.setState({ data, collapseUnsavedChange: true, copyAnchor: null, copyAnchorCategory: null, copyAnchorItemId: null })
+            data[this.state.menuAnchorCategory] = contentKey
+            this.setState({ data, collapseUnsavedChange: true, dialogAdjustCopy: false, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
+            console.log(contentKey)
+          }} />
+
+        <Menu anchorEl={this.state.menuAnchor} open={Boolean(this.state.menuAnchor) && !this.state.menuAnchorItemId.startsWith('@')}
+          onClose={() => this.setState({ menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })} keepMounted>
+          <MenuItem onClick={() => {
+            const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
+            const itemId = this.state.menuAnchorItemId
+            contentKey.splice(this.state.menuAnchorIdx + 1, 0, itemId.startsWith('@') ? itemId : ('@' + itemId))
+            const data = this.copyData()
+            data[this.state.menuAnchorCategory] = contentKey
+            this.setState({ data, collapseUnsavedChange: true, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
           }}>在這裡複製一份</MenuItem>
+        </Menu>
+        <Menu anchorEl={this.state.menuAnchor} open={Boolean(this.state.menuAnchor) && this.state.menuAnchorItemId.startsWith('@')}
+          onClose={() => this.setState({ menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })} keepMounted>
+          <MenuItem onClick={() => {
+            const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
+            contentKey.splice(this.state.menuAnchorIdx, 1)
+            const data = this.copyData()
+            data[this.state.menuAnchorCategory] = contentKey
+            this.setState({ data, collapseUnsavedChange: true, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
+          }}>移除這份複製</MenuItem>
+          <MenuItem onClick={() => {
+            this.setState({ dialogAdjustCopy: true })
+          }}>調整這份複製顯示的學分</MenuItem>
         </Menu>
 
         <div className={classes.content}>
@@ -568,10 +626,11 @@ class Desktop extends React.Component {
                     loading={this.state.loading}
                     categories={this.state.categories} targets={this.state.targets}
                     contents={
-                      this.state.categories.reduce((cont, key) => {
-                        cont[key] = this.state.data[key].map(itemId => this.state.courses[itemId.startsWith('@') ? itemId.substr(1) : itemId])
-                        return cont
-                      }, {})
+                      this.state.loading ? {} :
+                        this.state.categories.reduce((cont, cat) => {
+                          cont[cat] = this.state.data[cat].map(this.getStatisticCompound)
+                          return cont
+                        }, {})
                     }
                     showAllState={(this.state.controlFlag & 0b1) > 0} />
                 </Collapse>
@@ -621,7 +680,6 @@ class Desktop extends React.Component {
                   </Droppable>
                   <div style={{ height: '24px', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', columnGap: '6px' }}>
                     <span className={classes.spanClick} onClick={evt => this.addCategory('類別 ' + (this.state.categories.length + 1))}>新增一個類別</span>
-                    <span className={classes.spanClick} onClick={evt => this.setState({ dialogLoadTemplate: true })}>載入範本</span>
                   </div>
                 </Collapse>
               </div>
@@ -643,7 +701,11 @@ class Desktop extends React.Component {
                       />
                       <FormControlLabel label="顯示0學分必選修"
                         control={<Switch size="small" checked={(this.state.controlFlag & 0b10) > 0} onChange={evt => {
-                          this.setState({ controlFlag: (this.state.controlFlag & 0b101) | (evt.target.checked ? 0b010 : 0b000), collapseUnsavedChange: true })
+                          this.setState({ controlFlag: (this.state.controlFlag & 0b101) | (evt.target.checked ? 0b010 : 0b000), collapseUnsavedChange: true },
+                            () => {
+                              if ((this.state.controlFlag & 0b100))
+                                this.balanceColumns()
+                            })
                         }} />}
                       />
                       <FormControlLabel label="自動平衡每欄高度"
@@ -656,7 +718,11 @@ class Desktop extends React.Component {
                       />
                       <FormControlLabel label="顯示課程詳細資訊"
                         control={<Switch size="small" checked={(this.state.controlFlag & 0b1000) > 0} onChange={evt => {
-                          this.setState({ controlFlag: (this.state.controlFlag & 0b0111) | (evt.target.checked ? 0b1000 : 0b0000), collapseUnsavedChange: true })
+                          this.setState({ controlFlag: (this.state.controlFlag & 0b0111) | (evt.target.checked ? 0b1000 : 0b0000), collapseUnsavedChange: true },
+                            () => {
+                              if ((this.state.controlFlag & 0b100))
+                                this.balanceColumns()
+                            })
                         }} />}
                       />
                     </div>
@@ -680,7 +746,7 @@ class Desktop extends React.Component {
                               <Draggable key={idx} index={idx} draggableId={'cat_unused_' + idx} type='COURSE'>
                                 {(provided, snapshot) => (
                                   <div style={provided.draggableProps.style} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                                    <Course item={item} />
+                                    <Course item={item} detailed={(this.state.controlFlag & 0b1000) > 0} altCredit={null} />
                                   </div>
                                 )}
                               </Draggable>
@@ -702,10 +768,9 @@ class Desktop extends React.Component {
                     <Category className={classes.category} loading={this.state.loading} catIdx={cat} id={'cat_' + cat} key={'cat_' + cat}
                       cname={this.state.categories[cat]}
                       contentKey={this.state.data[this.state.categories[cat]]}
-                      content={this.state.data[this.state.categories[cat]].map(itemId => this.state.courses[itemId.startsWith('@') ? itemId.substr(1) : itemId])}
+                      content={this.state.data[this.state.categories[cat]].map(this.getCourse)}
                       controlFlag={this.state.controlFlag}
-                      filter={item => this.controlFilter(item)}
-                      setAnchor={(anchor, itemId) => this.setState({ copyAnchor: anchor, copyAnchorCategory: this.state.categories[cat], copyAnchorItemId: itemId })} />
+                      setAnchor={(anchor, idx, itemId) => this.setState({ menuAnchor: anchor, menuAnchorCategory: this.state.categories[cat], menuAnchorIdx: idx, menuAnchorItemId: itemId })} />
                   ))
                 }
               </div>
@@ -717,10 +782,9 @@ class Desktop extends React.Component {
                         <Category className={classes.category} loading={this.state.loading} catIdx={cat} id={'cat_' + cat} key={'cat_' + cat}
                           cname={this.state.categories[cat]}
                           contentKey={this.state.data[this.state.categories[cat]]}
-                          content={this.state.data[this.state.categories[cat]].map(itemId => this.state.courses[itemId.startsWith('@') ? itemId.substr(1) : itemId])}
+                          content={this.state.data[this.state.categories[cat]].map(this.getCourse)}
                           controlFlag={this.state.controlFlag}
-                          filter={item => this.controlFilter(item)}
-                          setAnchor={(anchor, itemId) => this.setState({ copyAnchor: anchor, copyAnchorCategory: this.state.categories[cat], copyAnchorItemId: itemId })} />
+                          setAnchor={(anchor, idx, itemId) => this.setState({ menuAnchor: anchor, menuAnchorCategory: this.state.categories[cat], menuAnchorIdx: idx, menuAnchorItemId: itemId })} />
                       ))
                     }
                   </div>

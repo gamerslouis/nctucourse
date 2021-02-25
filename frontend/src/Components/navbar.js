@@ -166,7 +166,6 @@ const Navbar = (props) => {
                                 交大課程助理
                             </Typography>
                         </ButtonBase>
-                        <Button color="inherit" href="/">首頁</Button>
                         <NavMenu text="模擬排課">
                             <NavMenuItem href="/simulation">當期排課</NavMenuItem>
                             <NavMenuItem href="/simulation/history">歷年課程</NavMenuItem>
@@ -183,7 +182,12 @@ const Navbar = (props) => {
                         <div className={classes.grow} />
                         {
                             user.is_anonymous
-                                ? <Button color="inherit" href="/">Login</Button>
+                                ? 
+                                <>
+                                    {
+                                        window.location.pathname !== '/' && <Button color="inherit" href="/">Login</Button>
+                                    }
+                                </>
                                 : <NavProfile username={user.username} nickname={user.nickname} />
                         }
                     </Toolbar>
@@ -205,25 +209,33 @@ const Navbar = (props) => {
                 </AppBar>
                 <Drawer open={show} anchor={"right"} onClose={() => setShow(false)}>
                     <div className={classes.listContainer}>
-                        <List>
-                            {
-                                !user.is_anonymous &&
+                        {
+                            user.is_anonymous
+                                ?
                                 <>
-                                    <ListItem button disabled>
-                                        <Avatar style={{ width: '28px', height: '28px', marginRight: '6px' }} />
-                                        {user.nickname === '' ? user.username : user.nickname}
-                                    </ListItem>
-                                    <ListItem button onClick={() => window.location.href = "/profile"}>關於我</ListItem>
+                                    {
+                                        window.location.pathname !== '/' &&
+                                        <>
+                                            <List>
+                                                <ListItem button onClick={() => window.location.href = "/"}>Login</ListItem>
+                                            </List>
+                                            <Divider />
+                                        </>
+                                    }
                                 </>
-                            }
-                            <ListItem button onClick={() => window.location.href = "/"}>首頁</ListItem>
-                            {
-                                user.is_anonymous
-                                    ? <ListItem button onClick={() => window.location.href = "/"}>Login</ListItem>
-                                    : <ListItem button onClick={() => window.location.href = "/api/accounts/logout"}>Logout</ListItem>
-                            }
-                        </List>
-                        <Divider />
+                                :
+                                <>
+                                    <List>
+                                        <ListItem button disabled>
+                                            <Avatar style={{ width: '28px', height: '28px', marginRight: '6px' }} />
+                                            {user.nickname === '' ? user.username : user.nickname}
+                                        </ListItem>
+                                        <ListItem button onClick={() => window.location.href = "/profile"}>關於我</ListItem>
+                                        <ListItem button onClick={() => window.location.href = "/api/accounts/logout"}>Logout</ListItem>
+                                    </List>
+                                    <Divider />
+                                </>
+                        }
                         <List>
                             <ListItem disabled >模擬排課</ListItem>
                             <ListItem button onClick={() => window.location.href = "/simulation"}>當期排課</ListItem>
