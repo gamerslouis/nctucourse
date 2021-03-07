@@ -11,6 +11,7 @@ const styles = theme => ({
   content: {
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     columnGap: `${theme.spacing(2)}px`,
     padding: `${theme.spacing(0.5)}px 0px`
   },
