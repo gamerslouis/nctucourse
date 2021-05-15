@@ -50,8 +50,9 @@ const getAltCredit = (itemId) => {
 }
 
 const Category = ({ catIdx, classes, cname, content, contentKey, controlFlag, id, loading, setAnchor }) => {
-  const content_filtered = loading ? [] : content.filter(item => filter(item, controlFlag))
-  const credits = content_filtered.reduce((accu, cur) => (accu + cur.cos_credit), 0)
+  // const content_filtered = loading ? [] : content.filter(item => filter(item, controlFlag))
+  // const credits = content_filtered.reduce((accu, cur) => (accu + cur.cos_credit), 0)
+  const credits = loading ? 0 : contentKey.map((itemId, idx) => (filter(content[idx]) ? (getAltCredit(itemId) || content[idx].cos_credit) : 0)).reduce((accu, cur) => (accu + cur), 0)
   return (
     <div className={classes.root} id={id}>
       <div className={classes.title}>
