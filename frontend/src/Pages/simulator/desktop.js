@@ -163,7 +163,7 @@ class Desktop extends React.Component {
       }
     })
 
-    axios.get('http://localhost:8000/api/accounts/sim_data').then(res => res.data)
+    axios.get('/api/accounts/sim_data').then(res => res.data)
       .then(json => {
         if (!json.success || json.data === '') {
           // requestConfirm
@@ -186,7 +186,7 @@ class Desktop extends React.Component {
   }
 
   checkShouldUpdate(last_import_time = '') {
-    axios.get('http://localhost:8000/api/accounts/courses_history').then(res => res.data).then(json => {
+    axios.get('/api/accounts/courses_history').then(res => res.data).then(json => {
       const { data, last_updated_time } = json
       const course_list = JSON.parse(data)
       const course_map = {}
@@ -218,7 +218,7 @@ class Desktop extends React.Component {
   }
 
   updateImport(course_list, last_updated_time) {
-    axios.get('http://localhost:8000/api/accounts/sim_imported').then(res => res.data)
+    axios.get('/api/accounts/sim_imported').then(res => res.data)
       .then(async json => {
         const { imported_courses } = json
         const imported = imported_courses === '' ? [] : JSON.parse(imported_courses)
@@ -304,7 +304,7 @@ class Desktop extends React.Component {
         data['imported_courses'] = JSON.stringify(imported_courses)
       if (last_updated_time)
         data['last_updated_time'] = last_updated_time
-      axios.post('http://localhost:8000/api/accounts/sim_update', data).then(res => {
+      axios.post('/api/accounts/sim_update', data).then(res => {
         this.setState({
           loading: false,
           dialogDisclaimer: false,
@@ -508,7 +508,7 @@ class Desktop extends React.Component {
       <div className={classes.root}>
         <DialogTutor next={() => this.tutorNext()} tutorIdx={this.state.tutorIdx}>{this.getTutorText()}</DialogTutor>
         <DialogConfirm open={this.state.dialogDisclaimer} onClose={() => {
-          axios.post('http://localhost:8000/api/accounts/sim_confirm', {}).then(res => {
+          axios.post('/api/accounts/sim_confirm', {}).then(res => {
             this.setState({ tutorIdx: -1 }, this.checkShouldUpdate)
           })
         }} />
