@@ -13,20 +13,25 @@ from . import serializers
 
 
 class LoginRedirectNCTUOauthView(View):
+    _type = "nctu"
+    def __init__(self, _type, **kwargs):
+        super().__init__(**kwargs)
+        self._type = _type
+
     def get(self, request):
         code = request.GET.get('code', '*')
         if code != '*':
-            return nctu_login(request, code)
+            return oauth_login(request, code, self._type)
 
         if request.user.is_authenticated:
             return http.HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
         else:
-            return http.HttpResponseRedirect(nctu_auth.get_oauth_url())
+            return http.HttpResponseRedirect(nctu_auth.get_oauth_url(self._type))
 
 
-def nctu_login(request, code):
-    token = nctu_auth.auth_step1(code)
-    data = nctu_auth.auth_step2(token)
+def oauth_login(request, code, _type):
+    token = nctu_auth.auth_step1(code, _type)
+    data = nctu_auth.auth_step2(token, _type)
 
     try:
         user = User.objects.get(username=data['username'])

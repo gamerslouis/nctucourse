@@ -22,29 +22,28 @@ def retry(times=3, exception=None, validator=None):
     return decorator
 
 
-def get_oauth_url():
-    return "https://id.nctu.edu.tw/o/authorize/?client_id={}&response_type=code&scope=profile".format(
-        settings.NCTU_OAUTH_CLIENT_ID
+def get_oauth_url(_type):
+    return "https://id.{}.edu.tw/o/authorize/?client_id={}&response_type=code&scope=profile".format(
+        _type, getattr(settings, _type.upper() + '_OAUTH_CLIENT_ID')
     )
 
 
 @retry()
-def auth_step1(code):
+def auth_step1(code, _type):
     data = {'grant_type': 'authorization_code',
             'code': code,
-            'client_id': settings.NCTU_OAUTH_CLIENT_ID,
-            'client_secret': settings.NCTU_OAUTH_CLIENT_SECRET,
-            'redirect_uri': settings.NCTU_OAUTH_REDIRECT_URL}
-    res = requests.post('https://id.nctu.edu.tw/o/token/', data=data)
-
+            'client_id': getattr(settings, _type.upper() + '_OAUTH_CLIENT_ID'),
+            'client_secret': getattr(settings, _type.upper() + '_OAUTH_CLIENT_SECRET'),
+            'redirect_uri': getattr(settings, _type.upper() + '_OAUTH_REDIRECT_URL')}
+    res = requests.post('https://id.{}.edu.tw/o/token/'.format(_type), data=data)
     return res.json()['access_token']
 
 
 @retry()
-def auth_step2(token):
+def auth_step2(token, _type):
     headers = {
         'Authorization': 'Bearer {}'.format(token)
     }
-    res = requests.get('https://id.nctu.edu.tw/api/profile/', headers=headers)
+    res = requests.get('https://id.{}.edu.tw/api/profile/'.format(_type), headers=headers)
     assert 'username' in res.json()
     return res.json()

@@ -136,6 +136,9 @@ COURSE_FILE_ROOT = 'https://gamerslouis.github.io/nctucourse/coursedata/'
 
 NCTU_OAUTH_CLIENT_ID = os.environ.get('NCTU_OAUTH_CLIENT_ID')
 NCTU_OAUTH_CLIENT_SECRET = os.environ.get('NCTU_OAUTH_CLIENT_SECRET')
+NYCU_OAUTH_CLIENT_ID = os.environ.get('NYCU_OAUTH_CLIENT_ID')
+NYCU_OAUTH_CLIENT_SECRET = os.environ.get('NYCU_OAUTH_CLIENT_SECRET')
+
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOAuth2',

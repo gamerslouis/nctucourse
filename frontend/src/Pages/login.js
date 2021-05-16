@@ -123,6 +123,8 @@ class Login extends React.Component {
                                         <div className={classes.loginout}>
                                             <Button variant="contained" color="primary"
                                                 className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
+                                                <Button variant="contained" color="primary"
+                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">NYCU&nbsp;OAuth</Button>
                                             <GoogleButton variant="contained" color="primary"
                                                 href="/api/login/google-oauth2"
                                                 className={classes.button}
@@ -157,6 +159,8 @@ class Login extends React.Component {
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                         <Button variant="contained" color="primary"
                                             className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
+                                        <Button variant="contained" color="primary"
+                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">NYCU&nbsp;OAuth</Button>
                                         <GoogleButton variant="contained" color="primary"
                                             href="/api/login/google-oauth2"
                                             className={classes.button}
