@@ -1,15 +1,17 @@
-import { Divider, Paper, Tooltip, Typography, withStyles } from '@material-ui/core'
+import { Divider, Paper, Typography, withStyles } from '@material-ui/core'
 import { Link, MoreVert } from '@material-ui/icons'
 import React from 'react'
 
 const styles = theme => ({
   root: {
     margin: '4px 6px',
-    padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`
+    padding: `${theme.spacing(1)}px ${theme.spacing(1.5)}px`,
+    userSelect: 'none'
   },
   content: {
     display: 'flex',
     flexDirection: 'row',
+    alignItems: 'center',
     columnGap: `${theme.spacing(2)}px`,
     padding: `${theme.spacing(0.5)}px 0px`
   },
@@ -38,26 +40,22 @@ const styles = theme => ({
 
 const colors = ['#ef9a9a', '#a5d6a7', '#b39ddb', '#fff59d', '#ffab91', '#9fa8da']
 
-const Course = ({ classes, clone, detailed, isClone, item, setAnchor, ...others }) => {
+const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...others }) => {
   return (
     <Paper className={classes.root} {...others} style={{ background: colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
       <div className={classes.content}>
-        <Typography variant='subtitle2' style={{ overflowX: 'wrap', flexGrow: 1 }}>{item.cos_cname}</Typography>
-        <Typography variant='subtitle2' style={{ flexShrink: 0, alignSelf: 'flex-end' }}>{item.cos_credit}學分</Typography>
+        <Typography variant='subtitle2' style={{ overflowX: 'wrap', flexGrow: 1 }}>
+          {item.cos_cname}&nbsp;
+        </Typography>
+        <div style={{ display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}>
+          {isClone && <Link />}
+          <Typography variant='subtitle2'>{altCredit !== null ? altCredit : item.cos_credit}學分</Typography>
+        </div>
         {
-          !isClone && setAnchor &&
+          setAnchor &&
           <>
             <Divider className={classes.vertHR} orientation="vertical" flexItem />
             <MoreVert className={classes.spanClick} onClick={evt => setAnchor(evt.currentTarget)} />
-          </>
-        }
-        {
-          isClone &&
-          <>
-            <Divider className={classes.vertHR} orientation="vertical" flexItem />
-            <Tooltip title='將這份複製拖曳至未分類課程即可移除！'>
-              <Link style={{ flexShrink: 0, alignSelf: 'center' }} />
-            </Tooltip>
           </>
         }
       </div>
@@ -75,4 +73,10 @@ const Course = ({ classes, clone, detailed, isClone, item, setAnchor, ...others 
   )
 }
 
-export default withStyles(styles)(React.memo(Course, (prev, next) => (prev.detailed === next.detailed && prev.item.sem === next.item.sem && prev.item.id === next.item.id)))
+export default withStyles(styles)(React.memo(Course, (prev, next) => (
+  prev.detailed === next.detailed
+  && prev.item.sem === next.item.sem
+  && prev.item.id === next.item.id
+  && prev.isClone === next.isClone
+  && prev.altCredit === next.altCredit
+)))

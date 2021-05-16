@@ -35,9 +35,24 @@ const propCmp = (prev, next) => {
   return true
 }
 
-const Category = ({ catIdx, classes, cname, content, contentKey, controlFlag, filter, id, loading, setAnchor }) => {
-  const content_filtered = loading ? [] : content.filter(filter)
-  const credits = content_filtered.reduce((accu, cur) => (accu + cur.cos_credit), 0)
+const filter = (item, controlFlag) => {
+  if (item.state === ' ')
+    return (controlFlag & 0b1) > 0
+  if (item.cos_credit === 0 && ((item.type === '必修' && !item.cos_cname.startsWith('服務學習') && item.dimension !== '藝文賞析') || item.type === '選修'))
+    return (controlFlag & 0b10) > 0
+  return true
+}
+
+const getAltCredit = (itemId) => {
+  if (itemId.indexOf('$') !== -1)
+    return parseInt(itemId.substr(itemId.indexOf('$') + 1))
+  return null
+}
+
+const Category = ({ catIdx, classes, cname, content, contentKey, controlFlag, id, loading, setAnchor }) => {
+  // const content_filtered = loading ? [] : content.filter(item => filter(item, controlFlag))
+  // const credits = content_filtered.reduce((accu, cur) => (accu + cur.cos_credit), 0)
+  const credits = loading ? 0 : contentKey.map((itemId, idx) => (filter(content[idx]) ? (getAltCredit(itemId) || content[idx].cos_credit) : 0)).reduce((accu, cur) => (accu + cur), 0)
   return (
     <div className={classes.root} id={id}>
       <div className={classes.title}>
@@ -54,14 +69,17 @@ const Category = ({ catIdx, classes, cname, content, contentKey, controlFlag, fi
                   {
                     !loading &&
                     content.map((item, idx) => (
-                      filter(item) &&
+                      filter(item, controlFlag) &&
                       <Draggable key={idx} index={idx} draggableId={`cat_${catIdx}_` + idx} type='COURSE'>
-                        {(provided, snapshot) => (
-                          <div style={provided.draggableProps.style} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
-                            <Course detailed={(controlFlag & 0b1000) > 0}
-                              isClone={contentKey[idx].startsWith('@')} item={item} setAnchor={anchor => setAnchor(anchor, contentKey[idx])} />
-                          </div>
-                        )}
+                        {
+                          (provided, snapshot) => (
+                            <div style={provided.draggableProps.style} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} >
+                              <Course item={item} altCredit={getAltCredit(contentKey[idx])}
+                                detailed={(controlFlag & 0b1000) > 0} isClone={contentKey[idx].startsWith('@')}
+                                setAnchor={anchor => setAnchor(anchor, idx, contentKey[idx])} />
+                            </div>
+                          )
+                        }
                       </Draggable>
                     ))
                   }

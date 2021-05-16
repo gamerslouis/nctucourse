@@ -129,45 +129,45 @@ class Statistics extends React.Component {
                         </div>
                         <StatItem cat={'總學分'} t_credit={targets['total'].credit} t_amount={0}
                             credit={categories.map(cat => (
-                                contents[cat].filter(item => (item.type !== '軍訓') && (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)
+                                contents[cat].filter(item => (item.type !== '軍訓') && (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)
                             )).reduce((accu, item) => (accu + item), 0)}
                             amount={0} />
                         {
                             categories.slice(0, ge).map(cat =>
                                 <StatItem cat={cat} t_credit={targets[cat].credit} t_amount={targets[cat].amount}
-                                    credit={contents[cat].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents[cat].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents[cat].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                             )
                         }
                         {
                             <>
                                 <StatItem cat={'通識'} t_credit={targets['通識_total'].credit} t_amount={targets['通識_total'].amount}
-                                    credit={ges.filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={ges.filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={ges.filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                                 <StatItem sm cat={'核心'} t_credit={targets['通識_core'].credit} t_amount={targets['通識_core'].amount}
-                                    credit={ges_core.filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={ges_core.filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={ges_core.filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                                 <StatItem xs cat={'人文'} t_credit={targets['通識 ─ 核心人文'].credit} t_amount={targets['通識 ─ 核心人文'].amount}
-                                    credit={contents['通識 ─ 核心人文'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents['通識 ─ 核心人文'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents['通識 ─ 核心人文'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                                 <StatItem xs cat={'社會'} t_credit={targets['通識 ─ 核心社會'].credit} t_amount={targets['通識 ─ 核心社會'].amount}
-                                    credit={contents['通識 ─ 核心社會'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents['通識 ─ 核心社會'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents['通識 ─ 核心社會'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                                 <StatItem xs cat={'自然'} t_credit={targets['通識 ─ 核心自然'].credit} t_amount={targets['通識 ─ 核心自然'].amount}
-                                    credit={contents['通識 ─ 核心自然'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents['通識 ─ 核心自然'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents['通識 ─ 核心自然'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                                 <StatItem sm cat={'跨院'} t_credit={targets['通識 ─ 跨院'].credit} t_amount={targets['通識 ─ 跨院'].amount}
-                                    credit={contents['通識 ─ 跨院'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents['通識 ─ 跨院'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents['通識 ─ 跨院'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                                 <StatItem sm cat={'校基本'} t_credit={targets['通識 ─ 校基本'].credit} t_amount={targets['通識 ─ 校基本'].amount}
-                                    credit={contents['通識 ─ 校基本'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents['通識 ─ 校基本'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents['通識 ─ 校基本'].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                             </>
                         }
                         {
                             categories.slice(ge).filter(cat => !cat.startsWith('通識 ─ ')).map(cat =>
                                 <StatItem cat={cat} t_credit={targets[cat].credit} t_amount={targets[cat].amount}
-                                    credit={contents[cat].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.cos_credit), 0)}
+                                    credit={contents[cat].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + item.credit), 0)}
                                     amount={contents[cat].filter(item => (showAllState || (item.state !== ' '))).reduce((accu, item) => (accu + 1), 0)} />
                             )
                         }
