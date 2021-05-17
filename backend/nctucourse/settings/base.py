@@ -131,7 +131,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
-SEMESTER = '1092'
+SEMESTER = os.environ.get('SEMESTER')
 COURSE_FILE_ROOT = 'https://gamerslouis.github.io/nctucourse/coursedata/'
 
 NCTU_OAUTH_CLIENT_ID = os.environ.get('NCTU_OAUTH_CLIENT_ID')
