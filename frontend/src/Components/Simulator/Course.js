@@ -40,6 +40,17 @@ const styles = theme => ({
 
 const colors = ['#ef9a9a', '#a5d6a7', '#b39ddb', '#fff59d', '#ffab91', '#9fa8da']
 
+const getSemester = (sem) => {
+  switch (sem) {
+    case '1':
+      return '上'
+    case '2':
+      return '下'
+    default:
+      return '暑'
+  }
+}
+
 const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...others }) => {
   return (
     <Paper className={classes.root} {...others} style={{ background: colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
@@ -64,7 +75,7 @@ const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...oth
         <>
           <Divider />
           <div className={classes.detail}>
-            <span>{item.sem.substr(0, 3)}{item.sem.slice(3) === '1' ? '上' : '下'} - {item.id}</span>
+            <span>{item.sem.substr(0, 3)}{getSemester(item.sem.slice(3))} - {item.id}</span>
             <span>{item.teacher.replaceAll(';', '、')} - {item.dep}</span>
           </div>
         </>
