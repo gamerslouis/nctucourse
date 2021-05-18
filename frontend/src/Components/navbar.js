@@ -170,7 +170,10 @@ const Navbar = (props) => {
                             <NavMenuItem href="/simulation">當期排課</NavMenuItem>
                             <NavMenuItem href="/simulation/history">歷年課程</NavMenuItem>
                         </NavMenu>
-                        <Button color="inherit" href="/gpa">GPA計算機</Button>
+                        <NavMenu text="學分工具">
+                            <Button color="inherit" href="/gpa">GPA計算機</Button>
+                            <Button color="inherit" href="/simulator">學分模擬器 (Beta)</Button>
+                        </NavMenu>
                         <NavMenu text="全校課程">
                             <NavMenuItem href="/courses">全校課程</NavMenuItem>
                             <NavMenuItem href="/feedbacks">心得</NavMenuItem>
@@ -182,7 +185,7 @@ const Navbar = (props) => {
                         <div className={classes.grow} />
                         {
                             user.is_anonymous
-                                ? 
+                                ?
                                 <>
                                     {
                                         window.location.pathname !== '/' && <Button color="inherit" href="/">Login</Button>
@@ -245,7 +248,7 @@ const Navbar = (props) => {
                         <List>
                             <ListItem disabled >學分工具</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"}>GPA計算機</ListItem>
-                            {/* <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器</ListItem> */}
+                            <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器 (Beta)</ListItem>
                         </List>
                         <Divider />
                         <List>

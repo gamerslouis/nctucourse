@@ -7,6 +7,7 @@ import Category from '../../Components/Simulator/Category'
 import Course from '../../Components/Simulator/Course'
 import { DialogAdjustCopy, DialogConfirm, DialogRemoveCategory, DialogRenameCategory, DialogStatisticsSetting, DialogTutor } from '../../Components/Simulator/Dialogs';
 import Statistics from '../../Components/Simulator/Statistics';
+import betaicon from '../../Resources/beta-version-icon-6.jpg'
 
 axios.defaults.withCredentials = true
 
@@ -598,6 +599,13 @@ class Desktop extends React.Component {
         <div className={classes.content}>
           <DragDropContext onDragEnd={res => this.onDragEnd(res)}>
             <Paper className={classes.controls}>   {/* Control Panel */}
+
+              <div style={{
+                border: (this.state.tutorIdx === 4 ? '2px solid red' : '0px solid white'), transition: 'border-color 2s', borderRadius: '.5rem'
+              }}>
+                <Typography variant='h5' style={{ width: 'fit-content', display: 'inline' }}>學分模擬器 (Beta)</Typography>
+              </div>
+              <Divider style={{ margin: '8px 0px' }} />
 
               <Collapse in={this.state.collapseImportSuccess}>
                 <Paper variant='outlined' style={{ background: '#D9EDF7', color: '#31708F' }} className={classes.infocard}>

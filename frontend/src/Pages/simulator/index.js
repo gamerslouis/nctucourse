@@ -4,9 +4,7 @@ import Desktop from './desktop'
 import Mobile from './mobile'
 
 export default () => (
-  // <>
-  //   <Hidden mdDown><Desktop /></Hidden>
-  //   <Hidden lgUp><Mobile /></Hidden>
-  // </>
-  <Desktop />
+  window.innerWidth >= 800 ?
+    <Desktop /> :
+    <Mobile />
 )

@@ -7,9 +7,12 @@ export const DialogConfirm = ({ open, onClose }) => {
     const [closing, setClosing] = useState(false)
     return (
         <Dialog open={open}>
-            <DialogTitle>交大課程助理學分模擬器 免責聲明</DialogTitle>
+            <DialogTitle>交大課程助理學分模擬器 (Beta) 免責聲明</DialogTitle>
             <DialogContent>
                 <DialogContentText>
+                    <p>
+                        本系統目前處於<strong style={{ color: 'black' }}>Beta測試階段</strong>，如使用過程中有任何異常或建議，歡迎透過頁面右下方<strong style={{ color: 'black' }}>意見回饋</strong>表單回應。
+                    </p>
                     <p>
                         本系統只提供同學模擬自己已修過的學分狀況，<br />
                         系統<strong style={{ color: 'black' }}>並不會檢查</strong>同學們分配學分的方式是否正確，<br />
