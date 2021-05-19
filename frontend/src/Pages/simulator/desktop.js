@@ -400,10 +400,13 @@ class Desktop extends React.Component {
           <Typography style={{ marginBottom: '12px', fontSize: '1.15rem' }}><strong>主操作區域</strong></Typography>
           <Typography style={{ marginBottom: '6px' }}>主操作區域包含左下方的<strong>未分類課程</strong>以及整個右側區域</Typography>
           <Typography style={{ marginBottom: '20px' }}>在課程資料載入完成後你可以拖曳來將一門課程移動至其他分類</Typography>
-          <Typography style={{ marginBottom: '6px', fontSize: '1.05rem' }}><strong>複製課程</strong></Typography>
-          <Typography style={{ marginBottom: '6px' }}>某些情況下，你可能會希望一門課程出現在兩個分類中</Typography>
-          <Typography style={{ marginBottom: '6px', display: 'inline-flex' }}>點擊課程右方的<MoreVert />可以複製課程</Typography>
-          <Typography style={{ marginBottom: '6px', display: 'inline-flex' }}>複製的課程會用<Link />來標記，拖曳至未分類課程即可移除</Typography>
+          <Typography style={{ marginBottom: '6px', fontSize: '1.08rem' }}><strong>複製課程</strong></Typography>
+          <Typography style={{ marginBottom: '12px' }}>某些情況下，你可能會希望一門課程出現在兩個分類中</Typography>
+          <Typography style={{ marginBottom: '3px' }}><strong>情況(一)</strong> ─ 某門軍訓同時能算做軍訓和服務學習</Typography>
+          <Typography style={{ marginBottom: '3px' }}>點擊課程右方的<MoreVert style={{ display: 'inline-block', verticalAlign: 'bottom' }} />可以複製課程</Typography>
+          <Typography style={{ marginBottom: '12px' }}>複製的課程會用<Link style={{ display: 'inline-block', verticalAlign: 'bottom' }} />來標記，拖曳至未分類課程即可移除</Typography>
+          <Typography style={{ marginBottom: '3px' }}><strong>情況(二)</strong> ─ 某科系的4學分物理算做3學分的必修和1學分的選修</Typography>
+          <Typography style={{ marginBottom: '6px' }}>點擊已複製課程右方的<MoreVert style={{ display: 'inline-block', verticalAlign: 'bottom' }} />可以調整這份複製所要顯示的學分</Typography>
         </>
       )
     }
@@ -411,7 +414,9 @@ class Desktop extends React.Component {
       return (
         <>
           <Typography style={{ marginBottom: '12px', fontSize: '1.15rem' }}><strong>設定</strong> 選單</Typography>
-          <Typography style={{ marginBottom: '6px' }}>這裡有一些較為進階的選項讓你自訂</Typography>
+          <Typography style={{ marginBottom: '8px' }}>這裡有一些較為進階的選項讓你自訂</Typography>
+          <Typography style={{ marginBottom: '3px' }}>你可以選擇隱藏0學分的必選修</Typography>
+          <Typography style={{ marginBottom: '6px' }}>如果你覺得自動平衡很惱人的話也可以在這關掉它</Typography>
         </>
       )
     }
@@ -421,8 +426,8 @@ class Desktop extends React.Component {
           <Typography style={{ marginBottom: '12px', fontSize: '1.15rem' }}><strong>學分分類</strong> 選單</Typography>
           <Typography style={{ marginBottom: '6px' }}>在這裡可以編輯你的學分分類</Typography>
           <Typography style={{ marginBottom: '6px' }}>點擊下方的<strong>新增類別</strong>文字來增加一個分類</Typography>
-          <Typography style={{ marginBottom: '6px', display: 'inline-flex' }}>點選分類右方的<Edit /><Clear />圖示來修改/移除分類</Typography>
-          <Typography style={{ marginBottom: '6px', display: 'inline-flex' }}>按住分類左方的<DragHandle />圖示可以拖曳來變更順序</Typography>
+          <Typography style={{ marginBottom: '6px' }}>點選分類右方的<Edit style={{ display: 'inline-block', verticalAlign: 'bottom' }} /><Clear style={{ display: 'inline-block', verticalAlign: 'bottom' }} />圖示來修改/移除分類</Typography>
+          <Typography style={{ marginBottom: '6px' }}>按住分類左方的<DragHandle style={{ display: 'inline-block', verticalAlign: 'bottom' }} />圖示可以拖曳來變更順序</Typography>
         </>
       )
     }
