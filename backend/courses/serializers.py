@@ -42,7 +42,7 @@ class FeedBackSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Feedback
-        exclude = ('draft', 'anonymous')
+        exclude = ('draft',)
 
 
 class MyFeedBackSerializer(serializers.ModelSerializer):
@@ -53,7 +53,6 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         data = super().validate(data)
-        print(data)
         if not data['draft']:
             if data['course'] is None:
                 raise serializers.ValidationError()
@@ -75,8 +74,10 @@ class MyFeedBackSerializer(serializers.ModelSerializer):
         fields = '__all__'
         extra_kwargs = {
             'draft': {'required': False},
-            'anonymous': {'required': False},
             'content': {'allow_blank': True},
+            'rating1': {'min_value': 0, 'max_value': 5},
+            'rating2': {'min_value': 0, 'max_value': 5},
+            'rating3': {'min_value': 0, 'max_value': 5},
         }
 
 

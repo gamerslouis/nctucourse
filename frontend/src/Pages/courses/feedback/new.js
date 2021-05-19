@@ -28,9 +28,9 @@ class NewFeedback extends React.Component {
             // anonymous: false,
             draft: true,
             expanded: 'panel1',
-            rating1: null,
-            rating2: null,
-            rating3: null
+            rating1: 0,
+            rating2: 0,
+            rating3: 0
         }
         this.handleSemesterChange = this.handleSemesterChange.bind(this)
         this.handleCourseInputChange = this.handleCourseInputChange.bind(this)
@@ -70,6 +70,9 @@ class NewFeedback extends React.Component {
                 // anonymous: res.data.anonymous,
                 draft: res.data.draft,
                 expanded: res.data.course === null ? 'panel1' : 'panel2',
+                rating1: res.data.rating1,
+                rating2: res.data.rating2,
+                rating3: res.data.rating3,
             })
         } catch (error) {
             if (error.response.status === 404) {

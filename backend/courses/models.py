@@ -47,5 +47,7 @@ class Feedback(models.Model):
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    anonymous = models.BooleanField()
     draft = models.BooleanField()
+    rating1 = models.IntegerField()
+    rating2 = models.IntegerField()
+    rating3 = models.IntegerField()

@@ -2,7 +2,7 @@ import { Star, StarBorder } from '@material-ui/icons'
 import React from 'react'
 
 export const RatingEdit = ({ size, value, onChange, ...otherProps }) => {
-    const [hover, setHover] = React.useState(null)
+    const [hover, setHover] = React.useState(0)
     return (
         <div {...otherProps} style={{ cursor: 'pointer' }}>
             {
@@ -10,20 +10,20 @@ export const RatingEdit = ({ size, value, onChange, ...otherProps }) => {
                     (_, idx) => (
                         <>
                             {
-                                (hover === null && value === null)
+                                (hover === 0 && value === 0)
                                     ?
                                     <StarBorder key={idx} onClick={evt => onChange(idx + 1)}
-                                        onMouseEnter={evt => setHover(idx)}
-                                        onMouseLeave={evt => setHover(null)} />
+                                        onMouseEnter={evt => setHover(idx + 1)}
+                                        onMouseLeave={evt => setHover(0)} />
                                     :
-                                    (idx > (hover || (value - 1))) ?
+                                    (idx >= (hover || value)) ?
                                         <StarBorder key={idx} onClick={evt => onChange(idx + 1)}
-                                            onMouseEnter={evt => setHover(idx)}
-                                            onMouseLeave={evt => setHover(null)} />
+                                            onMouseEnter={evt => setHover(idx + 1)}
+                                            onMouseLeave={evt => setHover(0)} />
                                         :
                                         <Star key={idx} onClick={evt => onChange(idx + 1)}
-                                            onMouseEnter={evt => setHover(idx)}
-                                            onMouseLeave={evt => setHover(null)}
+                                            onMouseEnter={evt => setHover(idx + 1)}
+                                            onMouseLeave={evt => setHover(0)}
                                             style={{ color: 'orange' }} />
                             }
                         </>
