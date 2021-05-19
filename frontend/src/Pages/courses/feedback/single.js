@@ -2,6 +2,7 @@ import React from 'react'
 import {
     Paper, Typography, Box, Divider, Hidden
 } from '@material-ui/core'
+import { RatingDisplay } from '../../../Components/StarRating'
 
 const makeFeedbackContent = (feedback) => {
     let content = feedback.content
@@ -50,6 +51,12 @@ export const FeedbackBody = (props) => {
 
 export const Feedback = (props) => {
     const { feedback, renderActions, ...others } = props
+    const getRatingText = (rating) => {
+        return rating === 0 ? 'NA' : rating.toFixed(1)
+    }
+    const rating1 = feedback.rating1
+    const rating2 = feedback.rating2
+    const rating3 = feedback.rating3
     return (
         <Box component={Paper} paddingY={3} paddingX={5} {...others}>
             <div style={{ display: 'flex' }}>
@@ -75,6 +82,59 @@ export const Feedback = (props) => {
                 <Divider />
             </Box>
             <FeedbackBody feedback={feedback} />
+            <Box marginY={2}>
+                <Divider />
+            </Box>
+            <Hidden mdDown>
+                <div style={{ display: "flex", alignItems: 'center', width: '100%', justifyContent: 'space-around', padding: '0rem 2.4rem' }}>
+                    <Box>
+                        <Typography align='center' gutterBottom>
+                            深度 {getRatingText(rating1)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating1} />
+                    </Box>
+                    <Divider flexItem orientation='vertical' />
+                    <Box>
+                        <Typography align='center' gutterBottom>
+                            涼度 {getRatingText(rating2)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating2} />
+                    </Box>
+                    <Divider flexItem orientation='vertical' />
+                    <Box>
+                        <Typography align='center' gutterBottom>
+                            甜度 {getRatingText(rating3)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating3} />
+                    </Box>
+                </div>
+            </Hidden>
+            <Hidden lgUp>
+                <div style={{ display: "flex", flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                    <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', width: '100%', padding: '0.5rem 0px' }}>
+                        <Box paddingY={1}>
+                            <Typography align='center' gutterBottom>
+                                深度 {getRatingText(rating1)}
+                            </Typography>
+                            <RatingDisplay size={5} value={rating1} />
+                        </Box>
+                        <Divider flexItem orientation='vertical' />
+                        <Box paddingY={1}>
+                            <Typography align='center' gutterBottom>
+                                涼度 {getRatingText(rating2)}
+                            </Typography>
+                            <RatingDisplay size={5} value={rating2} />
+                        </Box>
+                    </div>
+                    <Divider style={{ width: '80%' }} />
+                    <Box paddingY={1}>
+                        <Typography align='center' gutterBottom>
+                            甜度 {getRatingText(rating3)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating3} />
+                    </Box>
+                </div>
+            </Hidden>
         </Box>
     )
 }

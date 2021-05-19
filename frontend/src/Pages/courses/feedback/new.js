@@ -1,7 +1,7 @@
 import React from 'react'
 import {
     Container, FormControlLabel, Checkbox, Typography, Button,
-    InputLabel, Select, Box, FormControl, TextField, Divider
+    InputLabel, Select, Box, FormControl, TextField, Divider, Hidden
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import axios from 'axios'
@@ -262,22 +262,42 @@ class NewFeedback extends React.Component {
                         <Typography> 3. 課程評分 </Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails style={{ display: 'block' }}>
-                        <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around', padding: '0px 1.6rem' }}>
-                            <Box paddingX={2}>
-                                <Typography align='center' gutterBottom>深度</Typography>
-                                <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v })} />
-                            </Box>
-                            <Divider flexItem orientation='vertical' />
-                            <Box paddingX={2}>
-                                <Typography align='center' gutterBottom>涼度</Typography>
-                                <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v })} />
-                            </Box>
-                            <Divider flexItem orientation='vertical' />
-                            <Box paddingX={2}>
-                                <Typography align='center' gutterBottom>甜度</Typography>
-                                <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v })} />
-                            </Box>
-                        </div>
+                        <Hidden mdDown>
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around', padding: '0px 1.6rem' }}>
+                                <Box paddingX={2}>
+                                    <Typography align='center' gutterBottom>深度</Typography>
+                                    <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v })} />
+                                </Box>
+                                <Divider flexItem orientation='vertical' />
+                                <Box paddingX={2}>
+                                    <Typography align='center' gutterBottom>涼度</Typography>
+                                    <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v })} />
+                                </Box>
+                                <Divider flexItem orientation='vertical' />
+                                <Box paddingX={2}>
+                                    <Typography align='center' gutterBottom>甜度</Typography>
+                                    <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v })} />
+                                </Box>
+                            </div>
+                        </Hidden>
+                        <Hidden lgUp>
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'space-around', padding: '0px 1.6rem' }}>
+                                <Box paddingY={1}>
+                                    <Typography align='center' gutterBottom>深度</Typography>
+                                    <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v })} />
+                                </Box>
+                                <Divider />
+                                <Box paddingY={1}>
+                                    <Typography align='center' gutterBottom>涼度</Typography>
+                                    <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v })} />
+                                </Box>
+                                <Divider />
+                                <Box paddingY={1}>
+                                    <Typography align='center' gutterBottom>甜度</Typography>
+                                    <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v })} />
+                                </Box>
+                            </div>
+                        </Hidden>
                         <Box style={{ display: "flex", justifyContent: "center" }} marginTop={4} marginBottom={2}>
                             <Box marginX={1}>
                                 <Button variant="contained" color="primary" onClick={() => this.handleSubmit(false)} >{this.state.draft ? '發布' : '更新'}</Button>
