@@ -39,6 +39,7 @@ const styles = theme => ({
 })
 
 const colors = ['#ef9a9a', '#a5d6a7', '#b39ddb', '#fff59d', '#ffab91', '#9fa8da']
+const color_other = '#fab9f8'
 
 const getSemester = (sem) => {
   switch (sem) {
@@ -53,7 +54,7 @@ const getSemester = (sem) => {
 
 const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...others }) => {
   return (
-    <Paper className={classes.root} {...others} style={{ background: colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
+    <Paper className={classes.root} {...others} style={{ background: item.sem === '' ? color_other : colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
       <div className={classes.content}>
         <Typography variant='subtitle2' style={{ overflowX: 'wrap', flexGrow: 1 }}>
           {item.cos_cname}&nbsp;
@@ -75,8 +76,8 @@ const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...oth
         <>
           <Divider />
           <div className={classes.detail}>
-            <span>{item.sem.substr(0, 3)}{getSemester(item.sem.slice(3))} - {item.id}</span>
-            <span>{item.teacher.replaceAll(';', '、')} - {item.dep}</span>
+            <span>{item.sem !== '' && item.sem.substr(0, 3) + getSemester(item.sem.slice(3)) + ' - '}{item.id}</span>
+            <span>{item.sem === '' ? '學分抵免' : item.teacher.replaceAll(';', '、') + ' - ' + item.dep}</span>
           </div>
         </>
       }

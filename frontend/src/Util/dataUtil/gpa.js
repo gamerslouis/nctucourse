@@ -1,24 +1,47 @@
 export const parse = (text) => {
-    let lines = text.split('\n')
-    lines = lines.slice(lines.indexOf('學期成績紀錄') + 2)
+    const lines = text.split('\n')
     let courses = []
-    for (let line of lines) {
+    return courses.concat(parseBlock(lines, '學期成績紀錄'))
+        .concat(parseBlock(lines, '學生抵免紀錄'))
+}
+
+const parseBlock = (lines, head) => {
+    let courses = []
+    const credit = head === '學生抵免紀錄'
+    for (let line of lines.slice(lines.indexOf(head) + 2)) {
         let eles = line.split('\t')
-        if (Number.isNaN(Number(eles[0]))) break
-        courses.push({
-            sem: eles[1],
-            id: eles[2],
-            dep: eles[3],
-            cos_cname: eles[4],
-            type: eles[5],
-            cos_credit: Number(eles[6]),
-            score: Number.isNaN(Number(eles[7])) ? eles[7] : Number(eles[7]),
-            levelScore: eles[8],
-            scoreType: eles[9],
-            state: eles[10],
-            teacher: eles[11],
-            dimension: eles[12]
-        })
+        if (eles.length === 0 || Number.isNaN(Number(eles[0]))) break
+        if (credit) {
+            courses.push({
+                sem: '',
+                id: eles[1],
+                dep: '',
+                cos_cname: eles[2],
+                type: eles[4],
+                cos_credit: Number(eles[3]),
+                score: '抵免',
+                levelScore: '抵免',
+                scoreType: '抵免',
+                state: eles[5],
+                teacher: '',
+                dimension: ''
+            })
+        } else {
+            courses.push({
+                sem: eles[1],
+                id: eles[2],
+                dep: eles[3],
+                cos_cname: eles[4],
+                type: eles[5],
+                cos_credit: Number(eles[6]),
+                score: Number.isNaN(Number(eles[7])) ? eles[7] : Number(eles[7]),
+                levelScore: eles[8],
+                scoreType: eles[9],
+                state: eles[10],
+                teacher: eles[11],
+                dimension: eles[12]
+            })
+        }
     }
     return courses
 }

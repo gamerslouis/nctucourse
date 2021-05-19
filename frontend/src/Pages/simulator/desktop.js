@@ -226,7 +226,7 @@ class Desktop extends React.Component {
         const history = course_list.filter(item => (
           item.scoreType === '通過不通過'
             ? item.score === '通過'
-            : (item.state === ' ' || (item.score !== 'W' && item.score >= 60))
+            : item.scoreType === '抵免' || (item.state === ' ' || (item.score !== 'W' && item.score >= 60))
         ))
         if (this.state.categories.indexOf('軍訓') === -1 && history.filter(item => (item.type === '軍訓')).length > 0)
           await this.addCategory('軍訓')
