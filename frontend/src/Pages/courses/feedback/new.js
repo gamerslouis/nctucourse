@@ -1,7 +1,7 @@
 import React from 'react'
 import {
     Container, FormControlLabel, Checkbox, Typography, Button,
-    InputLabel, Select, Box, FormControl, TextField
+    InputLabel, Select, Box, FormControl, TextField, Divider
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import axios from 'axios'
@@ -10,6 +10,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withSnackbar } from 'notistack';
+import { RatingDisplay, RatingEdit } from '../../../Components/StarRating';
 
 
 const defaultText = '+★修課年度★\n\n+￡教了什麼￡\n\n+◆上課方式◆\n\n+▼考試作業▼\n\n+￥其他￥\n\n+＆誰適合修這門課＆\n\n'
@@ -27,6 +28,9 @@ class NewFeedback extends React.Component {
             // anonymous: false,
             draft: true,
             expanded: 'panel1',
+            rating1: null,
+            rating2: null,
+            rating3: null
         }
         this.handleSemesterChange = this.handleSemesterChange.bind(this)
         this.handleCourseInputChange = this.handleCourseInputChange.bind(this)
@@ -116,7 +120,7 @@ class NewFeedback extends React.Component {
             if (this.state.course === null) {
                 this.props.enqueueSnackbar(`請選擇課程`, { variant: 'warning' })
                 return
-            } 
+            }
             if (this.state.content === "") {
                 this.props.enqueueSnackbar(`請填寫內文`, { variant: 'warning' })
                 return
@@ -127,6 +131,9 @@ class NewFeedback extends React.Component {
             content: this.state.content,
             // anonymous: this.state.anonymous,
             draft: draft,
+            rating1: this.state.rating1,
+            rating2: this.state.rating2,
+            rating3: this.state.rating3
         }
         if (this.state.course !== null) {
             data['course'] = this.state.course.id
@@ -169,10 +176,7 @@ class NewFeedback extends React.Component {
                 <Typography variant="h4" gutterBottom >{this.state.draft ? '新增心得' : '更新心得'}</Typography>
                 <ExpansionPanel expanded={this.state.expanded === 'panel1'} onChange={() => this.setState({ expanded: 'panel1' })}>
                     <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
-
-                        <Typography>
-                            1. 選擇課程
-                        </Typography>
+                        <Typography> 1. 選擇課程 </Typography>
                     </ExpansionPanelSummary>
                     <ExpansionPanelDetails>
                         <Box paddingX={2}>
@@ -247,21 +251,44 @@ class NewFeedback extends React.Component {
                                     label="匿名"
                                 />
                             </Box> */}
-                            <Box style={{ display: "flex", justifyContent: "center" }} marginBottom={2}>
-                                <Box marginX={1}>
-                                    <Button variant="contained" color="primary" onClick={() => this.handleSubmit(false)} >{this.state.draft ? '發布' : '更新'}</Button>
-                                </Box>
-                                {this.state.draft &&
-                                    <Box marginX={1}>
-                                        <Button variant="contained" onClick={() => this.handleSubmit(true)}>草稿</Button>
-                                    </Box>
-                                }
-                                {this.props.match.params.fid &&
-                                    <Box marginX={1}>
-                                        <Button variant="contained" onClick={this.handleDelete}>刪除</Button>
-                                    </Box>
-                                }
+                        </Box>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
+                <ExpansionPanel expanded={this.state.expanded === 'panel3'} onChange={() => this.setState({ expanded: 'panel3' })}>
+                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography> 3. 課程評分 </Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails style={{ display: 'block' }}>
+                        <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around', padding: '0px 1.6rem' }}>
+                            <Box paddingX={2}>
+                                <Typography align='center' gutterBottom>深度</Typography>
+                                <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v })} />
                             </Box>
+                            <Divider flexItem orientation='vertical' />
+                            <Box paddingX={2}>
+                                <Typography align='center' gutterBottom>涼度</Typography>
+                                <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v })} />
+                            </Box>
+                            <Divider flexItem orientation='vertical' />
+                            <Box paddingX={2}>
+                                <Typography align='center' gutterBottom>甜度</Typography>
+                                <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v })} />
+                            </Box>
+                        </div>
+                        <Box style={{ display: "flex", justifyContent: "center" }} marginTop={4} marginBottom={2}>
+                            <Box marginX={1}>
+                                <Button variant="contained" color="primary" onClick={() => this.handleSubmit(false)} >{this.state.draft ? '發布' : '更新'}</Button>
+                            </Box>
+                            {this.state.draft &&
+                                <Box marginX={1}>
+                                    <Button variant="contained" onClick={() => this.handleSubmit(true)}>草稿</Button>
+                                </Box>
+                            }
+                            {this.props.match.params.fid &&
+                                <Box marginX={1}>
+                                    <Button variant="contained" onClick={this.handleDelete}>刪除</Button>
+                                </Box>
+                            }
                         </Box>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
