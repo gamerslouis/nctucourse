@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import useAxios from 'axios-hooks'
 import {
     Container, Paper, Typography, Link, Box, FormControlLabel, Checkbox, Button, Grid,
-    Table, TableBody, TableCell, TableHead, TableRow, TableContainer, FormControl, NativeSelect, Switch, Divider, Tooltip
+    Table, TableBody, TableCell, TableHead, TableRow, TableContainer, FormControl, NativeSelect, Switch, Divider, Tooltip, Hidden
 } from '@material-ui/core'
 import { Feedback } from './feedback/single'
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
@@ -118,44 +118,84 @@ const CoursePage = (props) => {
                     </NativeSelect>
                 </FormControl>
             </div>
-            <div style={{ display: "flex", alignItems: 'center', width: '100%', justifyContent: 'space-around', padding: '0.8rem 3.2rem' }}>
-                <Tooltip placement='top' arrow title={thisTeacherOnly
-                    ? <span>此教授：{getRatingText(rating1F)}<br />所有教授：{getRatingText(rating1)}</span>
-                    : `所有教授：${getRatingText(rating1)}`
-                }>
-                    <Box>
-                        <Typography align='center' gutterBottom>
-                            深度 {getRatingText(thisTeacherOnly ? rating1F : rating1)}
-                            {
-                                thisTeacherOnly && !isNaN(rating1) &&
-                                <span style={{ fontSize: '12px' }}> /{getRatingText(rating1)}</span>
-                            }
-                        </Typography>
-                        <RatingDisplay size={5} value={thisTeacherOnly ? rating1F : rating1} />
-                    </Box>
-                </Tooltip>
-                <Divider flexItem orientation='vertical' />
-                <Tooltip placement='top' arrow title={thisTeacherOnly
-                    ? <span>此教授：{getRatingText(rating2F)}<br />所有教授：{getRatingText(rating2)}</span>
-                    : `所有教授：${getRatingText(rating2)}`
-                }>
-                    <Box>
-                        <Typography align='center' gutterBottom>
-                            涼度 {getRatingText(thisTeacherOnly ? rating2F : rating2)}
-                            {
-                                thisTeacherOnly && !isNaN(rating2) &&
-                                <span style={{ fontSize: '12px' }}> /{getRatingText(rating2)}</span>
-                            }
-                        </Typography>
-                        <RatingDisplay size={5} value={thisTeacherOnly ? rating2F : rating2} />
-                    </Box>
-                </Tooltip>
-                <Divider flexItem orientation='vertical' />
-                <Tooltip placement='top' arrow title={thisTeacherOnly
-                    ? <span>此教授：{getRatingText(rating3F)}<br />所有教授：{getRatingText(rating3)}</span>
-                    : `所有教授：${getRatingText(rating3)}`
-                }>
-                    <Box>
+            <Hidden mdDown>
+                <div style={{ display: "flex", alignItems: 'center', width: '100%', justifyContent: 'space-around', padding: '0.8rem 3.2rem' }}>
+                    <Tooltip placement='top' arrow title={thisTeacherOnly
+                        ? <span>此教授：{getRatingText(rating1F)}<br />所有教授：{getRatingText(rating1)}</span>
+                        : `所有教授：${getRatingText(rating1)}`
+                    }>
+                        <Box>
+                            <Typography align='center' gutterBottom>
+                                深度 {getRatingText(thisTeacherOnly ? rating1F : rating1)}
+                                {
+                                    thisTeacherOnly && !isNaN(rating1) &&
+                                    <span style={{ fontSize: '12px' }}> /{getRatingText(rating1)}</span>
+                                }
+                            </Typography>
+                            <RatingDisplay size={5} value={thisTeacherOnly ? rating1F : rating1} />
+                        </Box>
+                    </Tooltip>
+                    <Divider flexItem orientation='vertical' />
+                    <Tooltip placement='top' arrow title={thisTeacherOnly
+                        ? <span>此教授：{getRatingText(rating2F)}<br />所有教授：{getRatingText(rating2)}</span>
+                        : `所有教授：${getRatingText(rating2)}`
+                    }>
+                        <Box>
+                            <Typography align='center' gutterBottom>
+                                涼度 {getRatingText(thisTeacherOnly ? rating2F : rating2)}
+                                {
+                                    thisTeacherOnly && !isNaN(rating2) &&
+                                    <span style={{ fontSize: '12px' }}> /{getRatingText(rating2)}</span>
+                                }
+                            </Typography>
+                            <RatingDisplay size={5} value={thisTeacherOnly ? rating2F : rating2} />
+                        </Box>
+                    </Tooltip>
+                    <Divider flexItem orientation='vertical' />
+                    <Tooltip placement='top' arrow title={thisTeacherOnly
+                        ? <span>此教授：{getRatingText(rating3F)}<br />所有教授：{getRatingText(rating3)}</span>
+                        : `所有教授：${getRatingText(rating3)}`
+                    }>
+                        <Box>
+                            <Typography align='center' gutterBottom>
+                                甜度 {getRatingText(thisTeacherOnly ? rating3F : rating3)}
+                                {
+                                    thisTeacherOnly && !isNaN(rating3) &&
+                                    <span style={{ fontSize: '12px' }}> /{getRatingText(rating3)}</span>
+                                }
+                            </Typography>
+                            <RatingDisplay size={5} value={thisTeacherOnly ? rating3F : rating3} />
+                        </Box>
+                    </Tooltip>
+                </div>
+            </Hidden>
+            <Hidden lgUp>
+                <div style={{ display: "flex", flexDirection: 'column', alignItems: 'center', padding: '0.8rem', width: '100%' }}>
+                    <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', width: '100%', padding: '0.5rem 0px' }}>
+                        <Box paddingY={1}>
+                            <Typography align='center' gutterBottom>
+                                深度 {getRatingText(thisTeacherOnly ? rating1F : rating1)}
+                                {
+                                    thisTeacherOnly && !isNaN(rating1) &&
+                                    <span style={{ fontSize: '12px' }}> /{getRatingText(rating1)}</span>
+                                }
+                            </Typography>
+                            <RatingDisplay size={5} value={thisTeacherOnly ? rating1F : rating1} />
+                        </Box>
+                        <Divider flexItem orientation='vertical' />
+                        <Box paddingY={1}>
+                            <Typography align='center' gutterBottom>
+                                涼度 {getRatingText(thisTeacherOnly ? rating2F : rating2)}
+                                {
+                                    thisTeacherOnly && !isNaN(rating2) &&
+                                    <span style={{ fontSize: '12px' }}> /{getRatingText(rating2)}</span>
+                                }
+                            </Typography>
+                            <RatingDisplay size={5} value={thisTeacherOnly ? rating2F : rating2} />
+                        </Box>
+                    </div>
+                    <Divider style={{ width: '100%' }} />
+                    <Box paddingY={1}>
                         <Typography align='center' gutterBottom>
                             甜度 {getRatingText(thisTeacherOnly ? rating3F : rating3)}
                             {
@@ -165,8 +205,8 @@ const CoursePage = (props) => {
                         </Typography>
                         <RatingDisplay size={5} value={thisTeacherOnly ? rating3F : rating3} />
                     </Box>
-                </Tooltip>
-            </div>
+                </div>
+            </Hidden>
             <div style={{ display: "flex", alignItems: 'center', width: '100%', justifyContent: 'center' }}>
                 {
                     data.feedbacks.filter(f => f.course.teacher_name === teachers[teacher] || !thisTeacherOnly).length > 0 ?

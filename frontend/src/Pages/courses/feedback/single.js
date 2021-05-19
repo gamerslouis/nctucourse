@@ -85,28 +85,56 @@ export const Feedback = (props) => {
             <Box marginY={2}>
                 <Divider />
             </Box>
-            <div style={{ display: "flex", alignItems: 'center', width: '100%', justifyContent: 'space-around', padding: '0rem 2.4rem' }}>
-                <Box>
-                    <Typography align='center' gutterBottom>
-                        深度 {getRatingText(rating1)}
-                    </Typography>
-                    <RatingDisplay size={5} value={rating1} />
-                </Box>
-                <Divider flexItem orientation='vertical' />
-                <Box>
-                    <Typography align='center' gutterBottom>
-                        涼度 {getRatingText(rating2)}
-                    </Typography>
-                    <RatingDisplay size={5} value={rating2} />
-                </Box>
-                <Divider flexItem orientation='vertical' />
-                <Box>
-                    <Typography align='center' gutterBottom>
-                        甜度 {getRatingText(rating3)}
-                    </Typography>
-                    <RatingDisplay size={5} value={rating3} />
-                </Box>
-            </div>
+            <Hidden mdDown>
+                <div style={{ display: "flex", alignItems: 'center', width: '100%', justifyContent: 'space-around', padding: '0rem 2.4rem' }}>
+                    <Box>
+                        <Typography align='center' gutterBottom>
+                            深度 {getRatingText(rating1)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating1} />
+                    </Box>
+                    <Divider flexItem orientation='vertical' />
+                    <Box>
+                        <Typography align='center' gutterBottom>
+                            涼度 {getRatingText(rating2)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating2} />
+                    </Box>
+                    <Divider flexItem orientation='vertical' />
+                    <Box>
+                        <Typography align='center' gutterBottom>
+                            甜度 {getRatingText(rating3)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating3} />
+                    </Box>
+                </div>
+            </Hidden>
+            <Hidden lgUp>
+                <div style={{ display: "flex", flexDirection: 'column', alignItems: 'center', width: '100%' }}>
+                    <div style={{ display: "flex", flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', width: '100%', padding: '0.5rem 0px' }}>
+                        <Box paddingY={1}>
+                            <Typography align='center' gutterBottom>
+                                深度 {getRatingText(rating1)}
+                            </Typography>
+                            <RatingDisplay size={5} value={rating1} />
+                        </Box>
+                        <Divider flexItem orientation='vertical' />
+                        <Box paddingY={1}>
+                            <Typography align='center' gutterBottom>
+                                涼度 {getRatingText(rating2)}
+                            </Typography>
+                            <RatingDisplay size={5} value={rating2} />
+                        </Box>
+                    </div>
+                    <Divider style={{ width: '80%' }} />
+                    <Box paddingY={1}>
+                        <Typography align='center' gutterBottom>
+                            甜度 {getRatingText(rating3)}
+                        </Typography>
+                        <RatingDisplay size={5} value={rating3} />
+                    </Box>
+                </div>
+            </Hidden>
         </Box>
     )
 }

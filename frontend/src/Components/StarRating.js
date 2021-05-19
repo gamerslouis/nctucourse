@@ -4,7 +4,7 @@ import React from 'react'
 export const RatingEdit = ({ size, value, onChange, ...otherProps }) => {
     const [hover, setHover] = React.useState(0)
     return (
-        <div {...otherProps} style={{ display: 'flex', flexDirection: 'row', cursor: 'pointer' }}>
+        <div {...otherProps} style={{ display: 'flex', flexDirection: 'row', cursor: 'pointer', justifyContent: 'center' }}>
             {
                 new Array(size).fill(0).map(
                     (_, idx) => (
