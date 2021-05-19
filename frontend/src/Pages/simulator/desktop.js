@@ -504,7 +504,7 @@ class Desktop extends React.Component {
   }
 
   toggleFlag(checked, flagPos, shouldBalance) {
-    const mask = 1 << (flagPos - 1)
+    const mask = 1 << flagPos
     this.setState({ controlFlag: (this.state.controlFlag & (~mask)) | (checked ? mask : 0), collapseUnsavedChange: true },
       () => {
         if (shouldBalance && (this.state.controlFlag & 0b100))
@@ -712,16 +712,16 @@ class Desktop extends React.Component {
                   <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                     <div style={{ width: '240px' }}>
                       <FormControlLabel label="顯示當學期未送註冊組課程"
-                        control={<Switch size="small" checked={(this.state.controlFlag & 0b0001) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 1, true)} />}
+                        control={<Switch size="small" checked={(this.state.controlFlag & 0b0001) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 0, true)} />}
                       />
                       <FormControlLabel label="顯示0學分必選修"
-                        control={<Switch size="small" checked={(this.state.controlFlag & 0b0010) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 2, true)} />}
+                        control={<Switch size="small" checked={(this.state.controlFlag & 0b0010) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 1, true)} />}
                       />
                       <FormControlLabel label="自動平衡每欄高度"
-                        control={<Switch size="small" checked={(this.state.controlFlag & 0b0100) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 3, true)} />}
+                        control={<Switch size="small" checked={(this.state.controlFlag & 0b0100) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 2, true)} />}
                       />
                       <FormControlLabel label="顯示課程詳細資訊"
-                        control={<Switch size="small" checked={(this.state.controlFlag & 0b1000) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 4, true)} />}
+                        control={<Switch size="small" checked={(this.state.controlFlag & 0b1000) > 0} onChange={evt => this.toggleFlag(evt.target.checked, 3, true)} />}
                       />
                     </div>
                     <Button variant='outlined' style={{ margin: '8px' }} onClick={evt => this.tutorNext()}>播放導覽</Button>
