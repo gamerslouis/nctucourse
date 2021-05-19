@@ -14,7 +14,7 @@ from . import models
 
 
 class UserAdmin(UserAdmin):
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'account_actions')
+    list_display = ('id', 'username', 'email', 'first_name', 'last_name', 'is_staff', 'account_actions')
 
     def process_login(self, request, account_id, *args, **kwargs):
         user = User.objects.get(pk=account_id)
@@ -42,6 +42,10 @@ class CoursesHistoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'user')
     search_fields = ('user__username',)
 
+@admin.register(models.TrialSimulationData)
+class TrialSimulationDataAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user')
+    search_fields = ('user__username',)
 
 # Re-register UserAdmin
 admin.site.unregister(User)
