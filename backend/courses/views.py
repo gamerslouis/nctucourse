@@ -19,7 +19,7 @@ from . import models
 class CourseViewSet(mixins.ListModelMixin,
                     mixins.RetrieveModelMixin,
                     viewsets.GenericViewSet):
-    queryset = models.Course.objects.all()
+    queryset = models.Course.objects.all().order_by('-ayc', '-sem')
     serializer_class = serializers.CourseSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]

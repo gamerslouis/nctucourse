@@ -13,7 +13,7 @@ import { withSnackbar } from 'notistack';
 import { RatingDisplay, RatingEdit } from '../../../Components/StarRating';
 
 
-const defaultText = '+★修課年度★\n\n+￡教了什麼￡\n\n+◆上課方式◆\n\n+▼考試作業▼\n\n+￥其他￥\n\n+＆誰適合修這門課＆\n\n'
+const defaultText = '+￡教了什麼￡\n\n+◆上課方式◆\n\n+▼考試作業▼\n\n+￥其他￥\n\n+＆誰適合修這門課＆\n\n'
 
 class NewFeedback extends React.Component {
     constructor(props) {
@@ -246,6 +246,7 @@ class NewFeedback extends React.Component {
                                 variant="outlined"
                                 value={this.state.content}
                                 onChange={e => this.setState({ content: e.target.value })}
+                                inputProps={{ style: { lineHeight: '26px', fontSize: '14px' } }}
                             />
                             {"Ps. 行首加號表示該行為段落標題。"}
                             {/* <Box>
