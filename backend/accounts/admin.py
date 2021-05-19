@@ -18,7 +18,7 @@ class UserAdmin(UserAdmin):
 
     def process_login(self, request, account_id, *args, **kwargs):
         user = User.objects.get(pk=account_id)
-        login(request, user)
+        login(request, user, 'django.contrib.auth.backends.ModelBackend')
         return http.HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
 
     def get_urls(self):
