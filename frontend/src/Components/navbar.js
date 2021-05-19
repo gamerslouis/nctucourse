@@ -171,8 +171,8 @@ const Navbar = (props) => {
                             <NavMenuItem href="/simulation/history">歷年課程</NavMenuItem>
                         </NavMenu>
                         <NavMenu text="學分工具">
-                            <Button color="inherit" href="/gpa">GPA計算機</Button>
-                            <Button color="inherit" href="/simulator">學分模擬器 (Beta)</Button>
+                            <NavMenuItem color="inherit" href="/gpa">GPA計算機</NavMenuItem>
+                            <NavMenuItem color="inherit" href="/simulator">學分模擬器 (Beta)</NavMenuItem>
                         </NavMenu>
                         <NavMenu text="全校課程">
                             <NavMenuItem href="/courses">全校課程</NavMenuItem>
