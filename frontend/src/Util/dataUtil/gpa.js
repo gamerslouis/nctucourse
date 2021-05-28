@@ -2,15 +2,19 @@ export const parse = (text) => {
     const lines = text.split('\n')
     let courses = []
     return courses.concat(parseBlock(lines, '學期成績紀錄'))
-        .concat(parseBlock(lines, '學生抵免紀錄'))
+        .concat(handleTrans(parseBlock(lines, '學生抵免紀錄')))
 }
+
+const trim = str => str.replace(/^\s+|\s+$/g, '')
+const isNum = str => str.match(/^\d+$/)
 
 const parseBlock = (lines, head) => {
     let courses = []
     const credit = head === '學生抵免紀錄'
     for (let line of lines.slice(lines.indexOf(head) + 2)) {
-        let eles = line.split('\t')
-        if (eles.length === 0 || Number.isNaN(Number(eles[0]))) break
+        let eles = line.split('\t').map(trim)
+        if (eles.length === 0 || !isNum(eles[0])) break
+        if (eles.length < 6) continue
         if (credit) {
             courses.push({
                 sem: '',
@@ -34,15 +38,29 @@ const parseBlock = (lines, head) => {
                 cos_cname: eles[4],
                 type: eles[5],
                 cos_credit: Number(eles[6]),
-                score: Number.isNaN(Number(eles[7])) ? eles[7] : Number(eles[7]),
-                levelScore: eles[8],
-                scoreType: eles[9],
-                state: eles[10],
-                teacher: eles[11],
-                dimension: eles[12]
+                score: isNum(eles[7]) ? Number(eles[7]) : (eles[7] || ''),
+                levelScore: eles[8] || '',
+                scoreType: eles[9] || '',
+                state: eles[10] || '',
+                teacher: eles[11] || '',
+                dimension: eles[12] || ''
             })
         }
     }
+    return courses
+}
+
+const handleTrans = (courses) => {
+    let ids = []
+    courses.forEach((c, idx) => {
+        let s = 0
+        for (let i = 0; i <= idx; i++) {
+            if (courses[i].id === courses[idx].id) {
+                s++
+            }
+        }
+        courses[idx].sem = "C" + ("000" + s).slice(-3)
+    })
     return courses
 }
 
@@ -74,6 +92,10 @@ export const courseTo40Point = (course) => {
 
 export const filterNotCourse = (course) => {
     return course.cos_credit > 0 && course.levelScore !== 'W' && course.scoreType === '百分法' && course.state === '已送註冊組'
+}
+
+export const filterTransCourse = (course) => {
+    return course.score === '抵免'
 }
 
 export const getCredits = (courses) => {

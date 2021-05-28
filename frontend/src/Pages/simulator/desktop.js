@@ -164,7 +164,7 @@ class Desktop extends React.Component {
       }
     })
 
-    axios.get('/api/accounts/sim_data').then(res => res.data)
+    axios.post('/api/accounts/sim_data').then(res => res.data)
       .then(json => {
         if (!json.success || json.data === '') {
           // requestConfirm
@@ -219,10 +219,10 @@ class Desktop extends React.Component {
   }
 
   updateImport(course_list, last_updated_time) {
-    axios.get('/api/accounts/sim_imported').then(res => res.data)
+    axios.post('/api/accounts/sim_imported').then(res => res.data)
       .then(async json => {
         const { imported_courses } = json
-        const imported = imported_courses === '' ? [] : JSON.parse(imported_courses)
+        let imported = imported_courses === '' ? [] : JSON.parse(imported_courses)
         const history = course_list.filter(item => (
           item.scoreType === '通過不通過'
             ? item.score === '通過'
@@ -231,6 +231,14 @@ class Desktop extends React.Component {
         if (this.state.categories.indexOf('軍訓') === -1 && history.filter(item => (item.type === '軍訓')).length > 0)
           await this.addCategory('軍訓')
         const data = this.copyData()
+
+        const historyIds = history.map(item => { return item.sem + '_' + item.id })
+        const shouldRemove = imported.filter(id => historyIds.indexOf(id) === -1)
+        for (let cat in data) {
+          data[cat] = data[cat].filter(itemId => shouldRemove.indexOf(this.getRowCourseId(itemId)) === -1)
+        }
+        imported = imported.filter(id => historyIds.indexOf(id) !== -1)
+
         for (let i = 0; i < history.length; i++) {
           const item = history[i]
           const itemId = item.sem + '_' + item.id
@@ -486,13 +494,17 @@ class Desktop extends React.Component {
   }
 
   getCourse(itemId) {
+    return this.state.courses[this.getRowCourseId(itemId)]
+  }
+
+  getRowCourseId(itemId) {
     if (itemId.startsWith('@')) {
       if (itemId.indexOf('$') !== -1) {
-        return this.state.courses[itemId.substr(1, itemId.indexOf('$') - 1)]
+        return itemId.substr(1, itemId.indexOf('$') - 1)
       }
-      return this.state.courses[itemId.substr(1)]
+      return itemId.substr(1)
     }
-    return this.state.courses[itemId]
+    return itemId
   }
 
   getStatisticCompound(itemId) {

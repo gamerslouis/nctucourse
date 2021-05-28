@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import { parse } from '../../../Util/dataUtil/gpa';
-import { Container, Paper, Typography, useTheme, Link } from '@material-ui/core';
+import { Container, Paper, Typography, useTheme, Link, Table, TableContainer, TableRow, TableCell, TableHead, TableBody, Hidden, Box } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import gpa_teach1 from '../../../Resources/gpa_teach1.png'
 import gpa_teach2 from '../../../Resources/gpa_teach2.png'
 import FullLoading from '../../../Components/FullLoading'
+import CourseTable from '../../../Components/CourseTable'
 import axios from 'axios';
 
+
 export default (props) => {
+    const myRef = useRef(null)
     const { enqueueSnackbar } = useSnackbar();
     const theme = useTheme()
     const [text, setText] = useState('')
     const [loading, setLoading] = useState(false)
+    const [parsedCourses, setParsedCources] = useState(null)
     return <Container>
         {loading && <FullLoading />}
         <Paper style={{ padding: theme.spacing(5) }}>
@@ -37,33 +41,49 @@ export default (props) => {
             <div>
                 <Button variant="contained" color="primary" onClick={
                     () => {
-                        if (!window.confirm('本平台提供之結果僅供參考，不保證其正確性。')) return
                         let data
                         try {
                             if (text === '') throw Error
                             data = parse(text)
+                            if (data.length === 0) throw Error
                         }
                         catch (e) {
                             enqueueSnackbar("無效的成績紀錄!", { variant: 'error' })
                             return
                         }
-                        setLoading(true)
-                        axios.post('/api/accounts/courses_history/', {
-                            data: JSON.stringify(data)
-                        }).then(res => {
-                            enqueueSnackbar("上傳成功", { variant: 'success' })
-                            const redir = new URLSearchParams(window.location.search).get('redir')
-                            if (redir)
-                                window.location.href = `/${redir}`
-                            else
-                                window.location.href = "/"
-                        }
-                        ).catch(err => {
-                            setLoading(false)
-                            enqueueSnackbar("上傳失敗", { variant: 'error' })
-                        })
-                    }}>送出</Button>
+                        setParsedCources(data)
+                        setTimeout(() => myRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' }), 0)
+                    }}>解析</Button>
             </div>
         </Paper>
+        {
+            <Hidden xsUp={parsedCourses == null} >
+                <Paper ref={myRef} style={{ marginTop: theme.spacing(3), padding: theme.spacing(5) }} id="anchor">
+                    <Typography variant="h5" gutterBottom>即將匯入</Typography>
+                    <CourseTable courses={parsedCourses == null ? [] : parsedCourses}></CourseTable>
+                    <Box marginTop={3}>
+                        <Button variant="contained" color="primary" onClick={
+                            () => {
+                                if (!window.confirm('本平台提供之結果僅供參考，不保證其正確性。')) return
+                                setLoading(true)
+                                axios.post('/api/accounts/courses_history/', {
+                                    data: JSON.stringify(parsedCourses)
+                                }).then(res => {
+                                    enqueueSnackbar("上傳成功", { variant: 'success' })
+                                    const redir = new URLSearchParams(window.location.search).get('redir')
+                                    if (redir)
+                                        window.location.href = `/${redir}`
+                                    else
+                                        window.location.href = "/"
+                                }
+                                ).catch(err => {
+                                    setLoading(false)
+                                    enqueueSnackbar("上傳失敗", { variant: 'error' })
+                                })
+                            }}>送出</Button>
+                    </Box>
+                </Paper>
+            </Hidden>
+        }
     </Container>
 }
