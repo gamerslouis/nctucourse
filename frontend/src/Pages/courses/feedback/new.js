@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Container, FormControlLabel, Checkbox, Typography, Button,
+    Container, Typography, Button,
     InputLabel, Select, Box, FormControl, TextField, Divider, Hidden
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -10,7 +10,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withSnackbar } from 'notistack';
-import { RatingDisplay, RatingEdit } from '../../../Components/StarRating';
+import { RatingEdit } from '../../../Components/StarRating';
 
 
 const defaultText = '+￡教了什麼￡\n\n+◆上課方式◆\n\n+▼考試作業▼\n\n+￥其他￥\n\n+＆誰適合修這門課＆\n\n'
@@ -123,7 +123,7 @@ class NewFeedback extends React.Component {
         const { ayc, sem } = this.state.semester
         const param = `?ayc=${ayc}&sem=${sem}&search=${value}`
         let res = await axios.get('/api/courses/courses/' + param)
-        if (this.state.courseSearchIndex == idx)
+        if (this.state.courseSearchIndex === idx)
             this.setState({ courses: res.data.results, courseSearching: false })
     }
 

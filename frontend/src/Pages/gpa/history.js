@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Button, Paper, Grid, useTheme } from '@material-ui/core';
+import { Container, Typography, Button, Paper, useTheme } from '@material-ui/core';
 import useAxios from 'axios-hooks'
 
 import CourseTable from '../../Components/CourseTable'

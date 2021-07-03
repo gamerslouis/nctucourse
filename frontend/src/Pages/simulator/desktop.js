@@ -7,7 +7,6 @@ import Category from '../../Components/Simulator/Category'
 import Course from '../../Components/Simulator/Course'
 import { DialogAdjustCopy, DialogConfirm, DialogRemoveCategory, DialogRenameCategory, DialogStatisticsSetting, DialogTutor } from '../../Components/Simulator/Dialogs';
 import Statistics from '../../Components/Simulator/Statistics';
-import betaicon from '../../Resources/beta-version-icon-6.jpg'
 
 axios.defaults.withCredentials = true
 

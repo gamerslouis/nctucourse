@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import { parse } from '../../../Util/dataUtil/gpa';
-import { Container, Paper, Typography, useTheme, Link, Table, TableContainer, TableRow, TableCell, TableHead, TableBody, Hidden, Box } from '@material-ui/core';
+import { Container, Paper, Typography, useTheme, Link, Hidden, Box } from '@material-ui/core';
 import { useSnackbar } from 'notistack';
 import gpa_teach1 from '../../../Resources/gpa_teach1.png'
 import gpa_teach2 from '../../../Resources/gpa_teach2.png'

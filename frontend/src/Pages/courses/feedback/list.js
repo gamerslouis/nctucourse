@@ -78,7 +78,7 @@ class FeedbackList extends React.Component {
             <Container>
                 <Typography variant="h4" gutterBottom >心得</Typography>
                 {
-                    user.is_anonymous == false && (
+                    user.is_anonymous === false && (
                         <div style={{ marginBottom: 20 }}>
                             <Button variant="contained" color="primary" href="/feedbacks/edit">
                                 新增心得
