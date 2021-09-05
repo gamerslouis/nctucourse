@@ -84,6 +84,7 @@ else:
         }
     }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
