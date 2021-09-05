@@ -68,7 +68,7 @@ if __name__ == "__main__":
                 deletedIds = ids.difference(dids)
                 if len(deletedIds) > 0:
                     if len(deletedIds) > 20:
-                        logging.warn("delete courses too many, reject: " + len(deletedIds))
+                        logging.warn("delete courses too many, reject: " + str(len(deletedIds)))
                         raise Exception("Abort")
                     else:
                         SimCollect.objects.filter(semester=sem, course_id__in=deletedIds).delete()
