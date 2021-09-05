@@ -67,7 +67,7 @@ if __name__ == "__main__":
                     dids = set(list(map(lambda v:v[0],json.load(f)['courses'])))
                 deletedIds = ids.difference(dids)
                 if len(deletedIds) > 0:
-                    if len(deletedIds) > 10:
+                    if len(deletedIds) > 20:
                         logging.warn("delete courses too many, reject: " + len(deletedIds))
                         raise Exception("Abort")
                     else:
