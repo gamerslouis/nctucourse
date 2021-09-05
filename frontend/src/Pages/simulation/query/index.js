@@ -63,7 +63,7 @@ function CategorySelect({ classes, cateMap, values, index, handleChange }) {
                 <option value="" disabled>
                     選擇
                 </option>
-                {Object.keys(cateMap).map((k) => (<option key={k} value={k}>{k}</option>))}
+                {Object.keys(cateMap).map((k) => (<option disabled={cateMap[k] === null} key={k} value={k}>{k}</option>))}
             </NativeSelect>
         </FormControl>
     )
