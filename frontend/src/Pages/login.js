@@ -124,7 +124,7 @@ class Login extends React.Component {
                                             {/* <Button variant="contained" color="primary"
                                                 className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button> */}
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">NYCU&nbsp;OAuth</Button>
+                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">單一入口帳號登入</Button>
                                             <GoogleButton variant="contained" color="primary"
                                                 href="/api/login/google-oauth2"
                                                 className={classes.button}
@@ -160,7 +160,7 @@ class Login extends React.Component {
                                         {/* <Button variant="contained" color="primary"
                                             className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button> */}
                                         <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">NYCU&nbsp;OAuth</Button>
+                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">單一入口帳號登入</Button>
                                         <GoogleButton variant="contained" color="primary"
                                             href="/api/login/google-oauth2"
                                             className={classes.button}
