@@ -18,7 +18,6 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('django_prometheus.urls')),
     path('api/', include('core.urls')),
     path('api/', include('social_django.urls', namespace='social')),
     path('api/accounts/', include('accounts.urls')),

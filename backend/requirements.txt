@@ -6,14 +6,12 @@ cryptography==3.3.1
 defusedxml==0.7.0rc2
 Django==3.2.7
 django-filter==2.4.0
-django-prometheus==2.1.0
 djangorestframework==3.12.2
 gitdb==4.0.5
 GitPython==3.1.13
 gunicorn==20.0.4
 idna==2.10
 oauthlib==3.1.0
-prometheus-client==0.11.0
 pycparser==2.20
 PyJWT==2.0.1
 PyMySQL==0.10.1

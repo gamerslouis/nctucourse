@@ -20,7 +20,6 @@ INSTALLED_APPS = [
     'social_django',
     'rest_framework',
     'django_filters',
-    'django_prometheus',
     'core',
     'accounts.apps.AccountsConfig',
     'simulation',
@@ -28,7 +27,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'django_prometheus.middleware.PrometheusBeforeMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -37,7 +35,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'core.middleware.JsonRequestMiddleware',
-    'django_prometheus.middleware.PrometheusAfterMiddleware',
 ]
 
 
@@ -173,3 +170,6 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%Y/%m/%d %H:%M",
     'PAGE_SIZE': 20
 }
+
+PROMETHEUS_METRICS_EXPORT_PORT_RANGE = range(8001, 8050)
+
