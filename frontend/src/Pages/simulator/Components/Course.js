@@ -18,7 +18,7 @@ const styles = theme => ({
   detail: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'flex-start',
     color: 'rgba(0, 0, 0, 0.6)',
     fontSize: '12px'
@@ -54,7 +54,7 @@ const getSemester = (sem) => {
 
 const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...others }) => {
   return (
-    <Paper className={classes.root} {...others} style={{ background: item.sem === '' ? color_other : colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
+    <Paper className={classes.root} {...others} style={{ background: item.sem[0] === 'C' ? color_other : colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
       <div className={classes.content}>
         <Typography variant='subtitle2' style={{ overflowX: 'wrap', flexGrow: 1 }}>{item.cos_cname}</Typography>
         <div style={{ display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}>
@@ -74,11 +74,14 @@ const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...oth
         <>
           <Divider />
           <div className={classes.detail}>
-            <span style={{ flexGrow: 1, flexShrink: 0, marginRight: 4 }}>{item.sem !== '' && item.sem.substr(0, 3) + getSemester(item.sem.slice(3))} {item.id} - {isNaN(parseInt(item.score)) ? item.score : `${item.score}分`}</span>
-            <span style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-              <span>{item.sem === '' ? '學分抵免' : item.teacher.replaceAll(';', '、')}</span>
-              <span>&nbsp;- {item.dep}</span>
-            </span>
+            {item.sem[0] !== 'C' && <span style={{ flexGrow: 1, flexShrink: 0, marginRight: 4 }}>{item.sem.substr(0, 3) + getSemester(item.sem.slice(3))} {item.id} - {isNaN(parseInt(item.score)) ? item.score : `${item.score}分`}</span>}
+            {
+              item.sem[0] === 'C' ? '學分抵免' : 
+              <span style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <span>{item.teacher.replaceAll(';', '、')}</span>
+                <span>&nbsp;- {item.dep}</span>
+              </span>
+            }
           </div>
         </>
       }

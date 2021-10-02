@@ -121,10 +121,10 @@ class Login extends React.Component {
                                         <Typography variant='h5' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 21px)', background: '#fafafa' }}>Login</Typography>
                                         <Divider style={{ background: '#999999', margin: '8px 0px' }} />
                                         <div className={classes.loginout}>
+                                            {/* <Button variant="contained" color="primary"
+                                                className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button> */}
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
-                                                <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">NYCU&nbsp;OAuth</Button>
+                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">單一入口帳號登入</Button>
                                             <GoogleButton variant="contained" color="primary"
                                                 href="/api/login/google-oauth2"
                                                 className={classes.button}
@@ -157,10 +157,10 @@ class Login extends React.Component {
                                     <Typography variant='subtitle1' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 18px)', background: '#fafafa' }}>Login</Typography>
                                     <Divider style={{ background: '#999999', margin: '4px 0px' }} />
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        {/* <Button variant="contained" color="primary"
+                                            className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button> */}
                                         <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
-                                        <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">NYCU&nbsp;OAuth</Button>
+                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">單一入口帳號登入</Button>
                                         <GoogleButton variant="contained" color="primary"
                                             href="/api/login/google-oauth2"
                                             className={classes.button}

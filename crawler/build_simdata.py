@@ -76,12 +76,33 @@ def work(sem, root):
 
         # 通識
         category_map['通識'] = OrderedDict()
-        graduateds.extend(['核心-人文', '核心-社會', '核心-自然', '跨院', '校基本'])
+        # 所有通識
+        graduateds.append('所有通識')
+        did = graduateds.index('所有通識')
+        category_map['通識']['所有通識'] = did
+        for cid in common['通識']:
+            writer.writerow([did, 'all', cid])
+        # 106 通識制度
+        graduateds.extend(['▼▼▼以下為106舊制分類▼▼▼', '核心-人文', '核心-社會', '核心-自然', '跨院', '校基本'])
         did = graduateds.index('核心-人文')
+        category_map['通識']['▼▼▼以下為106舊制分類▼▼▼'] = None
         for idx, name in enumerate(['核心-人文', '核心-社會', '核心-自然', '跨院', '校基本']):
             category_map['通識'][name] = did+idx
         for cid in common['通識']:
             for idx, bid in enumerate(['A501', 'A502', 'A503', 'A504', 'A505']):
+                if bid in courses_map[cid]['brief_code']:
+                    writer.writerow([did+idx, 'all', cid])
+        
+        # 110 通識制度
+        graduateds.extend(['▼▼▼以下為110新制分類▼▼▼', '基本素養-批判思考', '基本素養-量性推理', '基本素養-組織管理', '基本素養-生命及品格教育',
+                           '領域課程-人文與美學', '領域課程-個人、社會與文化', '領域課程-公民與倫理思考', '領域課程-社會中的科技與自然'])
+        did = graduateds.index('基本素養-批判思考')
+        category_map['通識']['▼▼▼以下為110新制分類▼▼▼'] = None
+        for idx, name in enumerate(['基本素養-批判思考', '基本素養-量性推理', '基本素養-組織管理', '基本素養-生命及品格教育',
+                           '領域課程-人文與美學', '領域課程-個人、社會與文化', '領域課程-公民與倫理思考', '領域課程-社會中的科技與自然']):
+            category_map['通識'][name] = did+idx
+        for cid in common['通識']:
+            for idx, bid in enumerate(['Z101', 'Z102', 'Z103', 'Z104', 'Z105', 'Z106', 'Z107', 'Z108']):
                 if bid in courses_map[cid]['brief_code']:
                     writer.writerow([did+idx, 'all', cid])
 

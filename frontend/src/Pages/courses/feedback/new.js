@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Container, FormControlLabel, Checkbox, Typography, Button,
+    Container, Typography, Button,
     InputLabel, Select, Box, FormControl, TextField, Divider, Hidden
 } from '@material-ui/core'
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -10,7 +10,7 @@ import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
 import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { withSnackbar } from 'notistack';
-import { RatingDisplay, RatingEdit } from '../../../Components/StarRating';
+import { RatingEdit } from '../../../Components/StarRating';
 
 
 const defaultText = '+￡教了什麼￡\n\n+◆上課方式◆\n\n+▼考試作業▼\n\n+￥其他￥\n\n+＆誰適合修這門課＆\n\n'
@@ -22,6 +22,8 @@ class NewFeedback extends React.Component {
             semesters: null,
             semester: null,
             enableCourseSearch: false,
+            courseSearching: false,
+            courseSearchIndex: 0, 
             courses: [],
             course: null,
             content: defaultText,
@@ -30,7 +32,8 @@ class NewFeedback extends React.Component {
             expanded: 'panel1',
             rating1: 0,
             rating2: 0,
-            rating3: 0
+            rating3: 0,
+            changed: false,
         }
         this.handleSemesterChange = this.handleSemesterChange.bind(this)
         this.handleCourseInputChange = this.handleCourseInputChange.bind(this)
@@ -46,6 +49,13 @@ class NewFeedback extends React.Component {
         else if (new URLSearchParams(window.location.search).get('cid') != null) {
             this.fetchCourse(new URLSearchParams(window.location.search).get('cid'))
         }
+        window.addEventListener('beforeunload', evt => {
+            if (this.state.changed) {
+                const msg = '變更尚未保存！'
+                evt.returnValue = msg
+                return msg
+            }
+        })
     }
 
     async updateSemesters() {
@@ -87,6 +97,9 @@ class NewFeedback extends React.Component {
     }
 
     makeCourseName(course) {
+        if (course === null) {
+            return `搜尋中...`
+        }
         return `${course.cos_id} ${course.cname}（${course.teacher_name}）`
     }
 
@@ -105,14 +118,18 @@ class NewFeedback extends React.Component {
     }
 
     async handleCourseInputChange(value) {
+        const idx = this.state.courseSearchIndex + 1
+        this.setState({ courseSearchIndex: idx, courseSearching: true })
         const { ayc, sem } = this.state.semester
         const param = `?ayc=${ayc}&sem=${sem}&search=${value}`
         let res = await axios.get('/api/courses/courses/' + param)
-        this.setState({ courses: res.data.results })
+        if (this.state.courseSearchIndex === idx)
+            this.setState({ courses: res.data.results, courseSearching: false })
     }
 
     async handleCourseChange(value) {
         this.setState(state => ({
+            changed: true,
             course: value,
             expanded: 'panel2'
         }))
@@ -151,7 +168,9 @@ class NewFeedback extends React.Component {
             this.props.enqueueSnackbar(
                 "上傳成功", { variant: 'success' }
             )
-            setTimeout(() => window.location.href = "/feedbacks?my=true", 1000)
+            this.setState({ changed: false }, () => {
+                setTimeout(() => window.location.href = "/feedbacks?my=true", 1000)
+            })
         } catch (error) {
             this.props.enqueueSnackbar(
                 `上傳失敗(${error.request.status})`, { variant: 'error' }
@@ -164,7 +183,9 @@ class NewFeedback extends React.Component {
         if (window.confirm("確定刪除文章?")) {
             try {
                 await axios.delete(`/api/courses/feedbacks/my/${this.props.match.params.fid}/`)
-                window.location.href = '/feedbacks'
+                await this.setState({ changed: false }, () => {
+                    window.location.href = '/feedbacks'
+                })
             } catch (error) {
                 this.props.enqueueSnackbar(
                     `刪除失敗(${error.request.status})`, { variant: 'error' }
@@ -204,11 +225,12 @@ class NewFeedback extends React.Component {
                             </FormControl>
                             <Autocomplete
                                 style={{ width: "fit-content", display: "inline" }}
-                                options={this.state.courses}
+                                options={this.state.courseSearching ? [null, ] : this.state.courses}
                                 disabled={!this.state.enableCourseSearch}
                                 getOptionLabel={o => this.makeCourseName(o)}
                                 onChange={(event, newValue) => {
-                                    this.handleCourseChange(newValue);
+                                    if(!this.state.courseSearching)
+                                        this.handleCourseChange(newValue);
                                 }}
                                 onInputChange={(event, newInputValue) => {
                                     this.handleCourseInputChange(newInputValue);
@@ -245,7 +267,7 @@ class NewFeedback extends React.Component {
                                 defaultValue={defaultText}
                                 variant="outlined"
                                 value={this.state.content}
-                                onChange={e => this.setState({ content: e.target.value })}
+                                onChange={e => this.setState({ content: e.target.value, changed: true })}
                                 inputProps={{ style: { lineHeight: '26px', fontSize: '14px' } }}
                             />
                             {"Ps. 行首加號表示該行為段落標題。"}
@@ -267,17 +289,17 @@ class NewFeedback extends React.Component {
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'space-around', padding: '0px 1.6rem' }}>
                                 <Box paddingX={2}>
                                     <Typography align='center' gutterBottom>深度</Typography>
-                                    <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v })} />
+                                    <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v, changed: true })} />
                                 </Box>
                                 <Divider flexItem orientation='vertical' />
                                 <Box paddingX={2}>
                                     <Typography align='center' gutterBottom>涼度</Typography>
-                                    <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v })} />
+                                    <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v, changed: true })} />
                                 </Box>
                                 <Divider flexItem orientation='vertical' />
                                 <Box paddingX={2}>
                                     <Typography align='center' gutterBottom>甜度</Typography>
-                                    <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v })} />
+                                    <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v, changed: true })} />
                                 </Box>
                             </div>
                         </Hidden>
@@ -285,17 +307,17 @@ class NewFeedback extends React.Component {
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'space-around', padding: '0px 1.6rem' }}>
                                 <Box paddingY={1}>
                                     <Typography align='center' gutterBottom>深度</Typography>
-                                    <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v })} />
+                                    <RatingEdit size={5} value={this.state.rating1} onChange={v => this.setState({ rating1: v, changed: true })} />
                                 </Box>
                                 <Divider />
                                 <Box paddingY={1}>
                                     <Typography align='center' gutterBottom>涼度</Typography>
-                                    <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v })} />
+                                    <RatingEdit size={5} value={this.state.rating2} onChange={v => this.setState({ rating2: v, changed: true })} />
                                 </Box>
                                 <Divider />
                                 <Box paddingY={1}>
                                     <Typography align='center' gutterBottom>甜度</Typography>
-                                    <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v })} />
+                                    <RatingEdit size={5} value={this.state.rating3} onChange={v => this.setState({ rating3: v, changed: true })} />
                                 </Box>
                             </div>
                         </Hidden>
@@ -314,6 +336,7 @@ class NewFeedback extends React.Component {
                                 </Box>
                             }
                         </Box>
+                        <Typography variant="caption">• 您的匿稱將會作為文章作者名稱。如未設置匿稱，將顯示匿名。</Typography>
                     </ExpansionPanelDetails>
                 </ExpansionPanel>
             </Container >

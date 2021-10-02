@@ -40,7 +40,7 @@ class SupportSemesterView(generics.ListAPIView):
 class FeedBackViewSet(mixins.ListModelMixin,
                       mixins.RetrieveModelMixin,
                       viewsets.GenericViewSet):
-    queryset = models.Feedback.objects.filter(draft=False)
+    queryset = models.Feedback.objects.filter(draft=False).order_by('-updated_at')
     serializer_class = serializers.FeedBackSerializer
     pagination_class = LimitOffsetPagination
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]

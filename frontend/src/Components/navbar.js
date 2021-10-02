@@ -171,6 +171,7 @@ const Navbar = (props) => {
                             <NavMenuItem href="/simulation/history">歷年課程</NavMenuItem>
                         </NavMenu>
                         <NavMenu text="學分工具">
+                            <NavMenuItem color="inherit" href="/coursehistory">修課記錄</NavMenuItem>
                             <NavMenuItem color="inherit" href="/gpa">GPA計算機</NavMenuItem>
                             <NavMenuItem color="inherit" href="/simulator">學分模擬器 (Beta)</NavMenuItem>
                         </NavMenu>
@@ -247,6 +248,7 @@ const Navbar = (props) => {
                         <Divider />
                         <List>
                             <ListItem disabled >學分工具</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/coursehistory"}>修課記錄</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"}>GPA計算機</ListItem>
                             <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器 (Beta)</ListItem>
                         </List>

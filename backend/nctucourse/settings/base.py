@@ -84,6 +84,7 @@ else:
         }
     }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 # AUTH_USER_MODEL = 'accounts.User'
 
 # Password validation
@@ -169,3 +170,6 @@ REST_FRAMEWORK = {
     'DATETIME_FORMAT': "%Y/%m/%d %H:%M",
     'PAGE_SIZE': 20
 }
+
+PROMETHEUS_METRICS_EXPORT_PORT_RANGE = range(8001, 8050)
+

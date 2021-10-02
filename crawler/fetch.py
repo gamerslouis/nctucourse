@@ -94,7 +94,6 @@ def deduplice(courses):
         def __init__(self, obj) -> None:
             self.obj = obj
         def __hash__(self):
-            print(self.obj['cos_id'].__hash__())
             return self.obj['cos_id'].__hash__()
         def __eq__(self, o: object) -> bool:
             return o.obj['cos_id'] == self.obj['cos_id']

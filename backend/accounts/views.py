@@ -94,8 +94,11 @@ class CoursesHistoryView(LoginRequiredMixin, View):
         return http.HttpResponse(status=200)
 
 
-class TrailSimView(LoginRequiredMixin, View):
+class GetTrailSimView(LoginRequiredMixin, View):
     def get(self, request):
+        return self.post(request)
+
+    def post(self, request):
         if self.request.user.trialsimulationdata_set.count() == 0:
             return http.JsonResponse({
                 'success': False,
@@ -109,6 +112,8 @@ class TrailSimView(LoginRequiredMixin, View):
             'last_updated_time': data.last_updated_time if data.last_updated_time is not None else ""
         })
 
+
+class UpdateTrailSimView(LoginRequiredMixin, View):
     def post(self, request):
         if self.request.user.trialsimulationdata_set.count() == 0:
             return http.HttpResponseNotFound()
@@ -132,6 +137,9 @@ class TrialComfirmView(LoginRequiredMixin, View):
 
 class GetTrialCoursesView(LoginRequiredMixin, View):
     def get(self, request):
+        return self.post(request)
+
+    def post(self, request):
         if self.request.user.trialsimulationdata_set.count() == 0:
             return http.JsonResponse({
                 'success': False,
