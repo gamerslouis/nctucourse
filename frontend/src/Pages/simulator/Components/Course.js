@@ -18,7 +18,7 @@ const styles = theme => ({
   detail: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-end',
     alignItems: 'flex-start',
     color: 'rgba(0, 0, 0, 0.6)',
     fontSize: '12px'
@@ -56,9 +56,7 @@ const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...oth
   return (
     <Paper className={classes.root} {...others} style={{ background: item.sem[0] === 'C' ? color_other : colors[parseInt(item.sem.substr(0, 3)) % 6] }}>
       <div className={classes.content}>
-        <Typography variant='subtitle2' style={{ overflowX: 'wrap', flexGrow: 1 }}>
-          {item.cos_cname}&nbsp;
-        </Typography>
+        <Typography variant='subtitle2' style={{ overflowX: 'wrap', flexGrow: 1 }}>{item.cos_cname}</Typography>
         <div style={{ display: 'flex', flexShrink: 0, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}>
           {isClone && <Link />}
           <Typography variant='subtitle2'>{altCredit !== null ? altCredit : item.cos_credit}學分</Typography>
@@ -76,8 +74,14 @@ const Course = ({ altCredit, classes, detailed, isClone, item, setAnchor, ...oth
         <>
           <Divider />
           <div className={classes.detail}>
-            <span>{item.sem[0] !== 'C' && item.sem.substr(0, 3) + getSemester(item.sem.slice(3)) + ' - '}{item.id}</span>
-            <span>{item.sem[0] === 'C' ? '學分抵免' : item.teacher.replaceAll(';', '、') + ' - ' + item.dep}</span>
+            {item.sem[0] !== 'C' && <span style={{ flexGrow: 1, flexShrink: 0, marginRight: 4 }}>{item.sem.substr(0, 3) + getSemester(item.sem.slice(3))} {item.id} - {isNaN(parseInt(item.score)) ? item.score : `${item.score}分`}</span>}
+            {
+              item.sem[0] === 'C' ? '學分抵免' : 
+              <span style={{ display: 'inline-flex', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                <span>{item.teacher.replaceAll(';', '、')}</span>
+                <span>&nbsp;- {item.dep}</span>
+              </span>
+            }
           </div>
         </>
       }
