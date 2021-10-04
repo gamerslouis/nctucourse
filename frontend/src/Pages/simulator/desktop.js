@@ -163,7 +163,7 @@ class Desktop extends React.Component {
       }
     })
 
-    axios.post('/api/accounts/sim_data').then(res => res.data)
+    axios.post('http://localhost:8000/api/accounts/sim_data').then(res => res.data)
       .then(json => {
         if (!json.success || json.data === '') {
           // requestConfirm
@@ -186,7 +186,7 @@ class Desktop extends React.Component {
   }
 
   checkShouldUpdate(last_import_time = '') {
-    axios.get('/api/accounts/courses_history').then(res => res.data).then(json => {
+    axios.get('http://localhost:8000/api/accounts/courses_history').then(res => res.data).then(json => {
       const { data, last_updated_time } = json
       const course_list = JSON.parse(data)
       const course_map = {}
@@ -218,7 +218,7 @@ class Desktop extends React.Component {
   }
 
   updateImport(course_list, last_updated_time) {
-    axios.post('/api/accounts/sim_imported').then(res => res.data)
+    axios.post('http://localhost:8000/api/accounts/sim_imported').then(res => res.data)
       .then(async json => {
         const { imported_courses } = json
         let imported = imported_courses === '' ? [] : JSON.parse(imported_courses)
@@ -312,7 +312,7 @@ class Desktop extends React.Component {
         data['imported_courses'] = JSON.stringify(imported_courses)
       if (last_updated_time)
         data['last_updated_time'] = last_updated_time
-      axios.post('/api/accounts/sim_update', data).then(res => {
+      axios.post('http://localhost:8000/api/accounts/sim_update', data).then(res => {
         this.setState({
           loading: false,
           dialogDisclaimer: false,
@@ -534,7 +534,7 @@ class Desktop extends React.Component {
       <div className={classes.root}>
         <DialogTutor next={() => this.tutorNext()} tutorIdx={this.state.tutorIdx}>{this.getTutorText()}</DialogTutor>
         <DialogConfirm open={this.state.dialogDisclaimer} onClose={() => {
-          axios.post('/api/accounts/sim_confirm', {}).then(res => {
+          axios.post('http://localhost:8000/api/accounts/sim_confirm', {}).then(res => {
             this.setState({ tutorIdx: -1 }, this.checkShouldUpdate)
           })
         }} />
@@ -596,29 +596,45 @@ class Desktop extends React.Component {
             console.log(contentKey)
           }} />
 
-        <Menu anchorEl={this.state.menuAnchor} open={Boolean(this.state.menuAnchor) && !this.state.menuAnchorItemId.startsWith('@')}
+        <Menu anchorEl={this.state.menuAnchor} open={Boolean(this.state.menuAnchor)}
           onClose={() => this.setState({ menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })} keepMounted>
-          <MenuItem onClick={() => {
-            const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
-            const itemId = this.state.menuAnchorItemId
-            contentKey.splice(this.state.menuAnchorIdx + 1, 0, itemId.startsWith('@') ? itemId : ('@' + itemId))
-            const data = this.copyData()
-            data[this.state.menuAnchorCategory] = contentKey
-            this.setState({ data, collapseUnsavedChange: true, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
-          }}>在這裡複製一份</MenuItem>
-        </Menu>
-        <Menu anchorEl={this.state.menuAnchor} open={Boolean(this.state.menuAnchor) && this.state.menuAnchorItemId.startsWith('@')}
-          onClose={() => this.setState({ menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })} keepMounted>
-          <MenuItem onClick={() => {
-            const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
-            contentKey.splice(this.state.menuAnchorIdx, 1)
-            const data = this.copyData()
-            data[this.state.menuAnchorCategory] = contentKey
-            this.setState({ data, collapseUnsavedChange: true, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
-          }}>移除這份複製</MenuItem>
-          <MenuItem onClick={() => {
-            this.setState({ dialogAdjustCopy: true })
-          }}>調整這份複製顯示的學分</MenuItem>
+          {
+            this.state.menuAnchorItemId &&
+            <div>
+              {
+                navigator.clipboard &&
+                <MenuItem onClick={() => {
+                  navigator.clipboard.writeText(this.getCourse(this.state.menuAnchorItemId).cos_cname)
+                  this.setState({ menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
+                }}>複製課程名稱</MenuItem>
+              }
+              {
+                this.state.menuAnchorItemId.startsWith('@')
+                  ?
+                  <>
+                    <MenuItem onClick={() => {
+                      const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
+                      contentKey.splice(this.state.menuAnchorIdx, 1)
+                      const data = this.copyData()
+                      data[this.state.menuAnchorCategory] = contentKey
+                      this.setState({ data, collapseUnsavedChange: true, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
+                    }}>移除這份複製</MenuItem>
+                    <MenuItem onClick={() => {
+                      this.setState({ dialogAdjustCopy: true })
+                    }}>調整這份複製顯示的學分</MenuItem>
+                  </>
+                  :
+                  <MenuItem onClick={() => {
+                    const contentKey = this.state.data[this.state.menuAnchorCategory].slice()
+                    const itemId = this.state.menuAnchorItemId
+                    contentKey.splice(this.state.menuAnchorIdx + 1, 0, itemId.startsWith('@') ? itemId : ('@' + itemId))
+                    const data = this.copyData()
+                    data[this.state.menuAnchorCategory] = contentKey
+                    this.setState({ data, collapseUnsavedChange: true, menuAnchor: null, menuAnchorCategory: null, menuAnchorIdx: null })
+                  }}>在這裡複製一份</MenuItem>
+              }
+            </div>
+          }
         </Menu>
 
         <div className={classes.content}>

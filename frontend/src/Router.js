@@ -50,7 +50,7 @@ const Router = (props) => {
                                 <AuthRoute exact path='/gpa/import' component={GPAImport} />
                                 <AuthRoute exact path='/coursehistory' component={CourseHistory} />
                                 <AuthRoute exact path='/simulation/history' component={SimulationHistory} />
-                                <Route exact path='/simulator' component={Sim} />
+                                <AuthRoute exact path='/simulator' component={Sim} />
                                 <AuthRoute exact path='/profile' component={Profile} />
                                 <Route render={() => {
                                     window.location.pathname = '/'
