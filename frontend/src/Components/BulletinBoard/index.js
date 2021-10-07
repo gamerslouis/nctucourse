@@ -185,12 +185,8 @@ class Board extends React.Component {
             return -1
         }
         
-        axios.get('/api/bulletins/').then(r => r.data['bulletins']).then(bulletins =>
+        axios.get(`${process.env.REACT_APP_HOST}/api/bulletins/`).then(r => r.data['bulletins']).then(bulletins =>
             this.setState({ loading: false, content: bulletins.map((cont, idx) => ({ idx, cont })).sort(CMP) }))
-        // setInterval(() => {
-        //     this.setState({ loading: false, content: BOARD_CONTENT.map((cont, idx) => ({ idx, cont })).sort(CMP) })
-        // }, 1000)
-        // ajax to get the posts
     }
 
     render() {
