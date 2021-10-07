@@ -41,7 +41,7 @@ export const DialogConfirm = ({ open, onClose }) => {
                                 onClose()
                             }} color="primary" disabled={!checked || closing}>
                                 關閉
-                        </Button>
+                            </Button>
                     }
                 </div>
             </DialogActions>
@@ -198,11 +198,11 @@ class _DialogStatisticsSetting extends React.Component {
                                             }
                                         </Typography>
                                         <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                        <Edit className={classes.spanClick} onClick={evt => this.setState({
+                                        <span className={classes.spanClick} onClick={evt => this.setState({
                                             editing: 'total',
                                             edit_credit: this.state.targets['total'].credit,
                                             edit_amount: 0
-                                        })} />
+                                        })}><Edit />&nbsp;編輯</span>
                                     </>
                                 }
                                 {
@@ -219,9 +219,7 @@ class _DialogStatisticsSetting extends React.Component {
                                                     this.setState({ edit_credit: chk })
                                             }} onKeyDown={evt => { if (evt.key === 'Enter') this.saveInner('total') }} />
                                         <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                        <div>
-                                            <Check className={classes.spanClick} onClick={evt => this.saveInner('total')} />
-                                        </div>
+                                        <div className={classes.spanClick} onClick={evt => this.saveInner('total')}><Check />&nbsp;確認</div>
                                     </>
                                 }
                             </div>
@@ -240,11 +238,11 @@ class _DialogStatisticsSetting extends React.Component {
                                             }
                                         </Typography>
                                         <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                        <Edit className={classes.spanClick} onClick={evt => this.setState({
+                                        <span className={classes.spanClick} onClick={evt => this.setState({
                                             editing: '通識_total',
                                             edit_credit: this.state.targets['通識_total'].credit,
                                             edit_amount: 0
-                                        })} />
+                                        })}><Edit />&nbsp;編輯</span>
                                     </>
                                 }
                                 {
@@ -261,9 +259,7 @@ class _DialogStatisticsSetting extends React.Component {
                                                     this.setState({ edit_credit: chk })
                                             }} onKeyDown={evt => { if (evt.key === 'Enter') this.saveInner('通識_total') }} />
                                         <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                        <div>
-                                            <Check className={classes.spanClick} onClick={evt => this.saveInner('通識_total')} />
-                                        </div>
+                                        <div className={classes.spanClick} onClick={evt => this.saveInner('通識_total')}><Check />&nbsp;確認</div>
                                     </>
                                 }
                             </div>
@@ -282,11 +278,11 @@ class _DialogStatisticsSetting extends React.Component {
                                             }
                                         </Typography>
                                         <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                        <Edit className={classes.spanClick} onClick={evt => this.setState({
+                                        <span className={classes.spanClick} onClick={evt => this.setState({
                                             editing: '通識_core',
                                             edit_credit: this.state.targets['通識_core'].credit,
                                             edit_amount: 0
-                                        })} />
+                                        })}><Edit />&nbsp;編輯</span>
                                     </>
                                 }
                                 {
@@ -303,9 +299,7 @@ class _DialogStatisticsSetting extends React.Component {
                                                     this.setState({ edit_credit: chk })
                                             }} onKeyDown={evt => { if (evt.key === 'Enter') this.saveInner('通識_core') }} />
                                         <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                        <div>
-                                            <Check className={classes.spanClick} onClick={evt => this.saveInner('通識_core')} />
-                                        </div>
+                                        <div className={classes.spanClick} onClick={evt => this.saveInner('通識_core')}><Check />&nbsp;確認</div>
                                     </>
                                 }
                             </div>
@@ -331,11 +325,11 @@ class _DialogStatisticsSetting extends React.Component {
                                                     }
                                                 </Typography>
                                                 <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                                <Edit className={classes.spanClick} onClick={evt => this.setState({
+                                                <span className={classes.spanClick} onClick={evt => this.setState({
                                                     editing: cat,
                                                     edit_credit: this.state.targets[cat].credit,
                                                     edit_amount: this.state.targets[cat].amount
-                                                })} />
+                                                })}><Edit />&nbsp;編輯</span>
                                             </>
                                         }
                                         {
@@ -362,9 +356,7 @@ class _DialogStatisticsSetting extends React.Component {
                                                             this.setState({ edit_amount: chk })
                                                     }} onKeyDown={evt => { if (evt.key === 'Enter') this.saveInner(cat) }} />
                                                 <div style={{ display: 'flex', flexGrow: 1 }}>&nbsp;</div>
-                                                <div>
-                                                    <Check className={classes.spanClick} onClick={evt => this.saveInner(cat)} />
-                                                </div>
+                                                <div className={classes.spanClick} onClick={evt => this.saveInner(cat)}><Check />&nbsp;確認</div>
                                             </>
                                         }
                                     </div>
@@ -375,7 +367,7 @@ class _DialogStatisticsSetting extends React.Component {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={evt => this.handleClose()}>取消</Button>
-                    <Button onClick={evt => this.handleSave()} color="primary">確認</Button>
+                    <Button onClick={evt => this.handleSave()} color="primary" disabled={this.state.editing !== ''}>確認</Button>
                 </DialogActions>
             </Dialog>
         )
@@ -389,7 +381,7 @@ export const DialogStatisticsSetting = withStyles(theme => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        '&:not(:hover) > svg': {
+        '&:not(:hover) > span': {
             display: 'none'
         }
     },
@@ -397,6 +389,9 @@ export const DialogStatisticsSetting = withStyles(theme => ({
         color: 'rgba(0, 0, 0, 0.6)',
         cursor: 'pointer',
         transform: 'scale(0.85)',
+        fontSize: '1rem',
+        display: 'inline-flex',
+        alignItems: 'center',
         flexShrink: 0,
         '&:hover': {
             color: 'rgba(0, 0, 0, 0.85)'
