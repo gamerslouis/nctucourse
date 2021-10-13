@@ -110,7 +110,10 @@ class Login extends React.Component {
                             <div className={classes.mdCont}>
                                 <div className={classes.mdTitle}>
                                     <img src='/logo256.png' alt='logo' width='192px' />
-                                    <Typography variant="h3">交大課程助理</Typography>
+                                    <div>
+                                        <Typography variant="h3">交大課程助理</Typography>
+                                        <Typography variant="subtitle1">非官方的課程管理工具</Typography>
+                                    </div>
                                 </div>
                             </div>
                             <div className={classes.mdCont}>
@@ -145,10 +148,11 @@ class Login extends React.Component {
                 <Hidden lgUp>
                     <div className={classes.lgRoot}>
                         <div className={classes.lgTitle}>
-                            <img src='/logo256.png' alt='logo' width='72px' />
-                            <Typography variant="h4">
-                                交大課程助理
-                        </Typography>
+                            <img src='/logo256.png' alt='logo' width='96px' />
+                            <div>
+                                <Typography variant="h4">交大課程助理</Typography>
+                                <Typography variant="subtitle1">非官方的課程管理工具</Typography>
+                            </div>
                         </div>
                         <div style={{ flexShrink: 0 }}>
                             {
