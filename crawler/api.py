@@ -88,7 +88,8 @@ def get_cos_list(acysem, fdepuuid, fgrade='**'):
         'm_cos_code': '**',
         'm_crstime': '**',
         'm_crsoutline': '**',
-        'm_costype': '**'
+        'm_costype': '**',
+        'm_selcampus': '**'
     }, headers=headers)
     return res.json()
 
