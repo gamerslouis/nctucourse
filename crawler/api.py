@@ -140,6 +140,7 @@ def course_pipe(_data):
                     meta['geci'] = geci_name
                 except KeyError:
                     pass
+                meta['cos_ename'] = cs[cid]['cos_ename']
                 obj['meta'] = json.dumps(meta)
                 #
                 courses.append(obj)
