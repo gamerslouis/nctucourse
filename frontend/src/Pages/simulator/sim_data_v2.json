@@ -1,0 +1,36 @@
+{
+	"version": 2,
+	"categories": {
+		"cat_0": true,
+		"cat_1": true,
+		"cat_2": true
+	},
+	"groups": {
+		"gcat_0": [
+			"cat_1", 
+			"cat_2"
+		]
+	},
+	"cat_names": {
+		"cat_0": "必修",
+		"cat_1": "通識─核心",
+		"cat_2": "通識─跨院",
+		"gcat_0": "通識"
+	},
+	"content": {
+		"cat_0": [],
+		"cat_1": [],
+		"cat_2": []
+	},
+	"targets": {
+		"cat_0": [57, null],
+		"cat_1": [6, null],
+		"cat_2": [2, null],
+		"gcat_0": [18, null]
+	},
+	"options": {
+		"show_zero": true,
+		"show_details": false,
+		"show_pending": true
+	}
+}

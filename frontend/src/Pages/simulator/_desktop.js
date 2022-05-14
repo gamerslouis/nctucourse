@@ -3,10 +3,10 @@ import axios from 'axios'
 import { Button, Collapse, Divider, FormControlLabel, IconButton, Menu, MenuItem, Paper, Switch, Typography, withStyles } from '@material-ui/core';
 import { Cancel, Clear, DragHandle, Edit, Info, KeyboardArrowDown, Link, MoreVert, Warning } from '@material-ui/icons';
 import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
-import Category from './Components/Category'
-import Course from './Components/Course'
-import { DialogAdjustCopy, DialogConfirm, DialogRemoveCategory, DialogRenameCategory, DialogStatisticsSetting, DialogTutor } from './Components/Dialogs';
-import Statistics from './Components/Statistics';
+import Category from './_Components/Category'
+import Course from './_Components/Course'
+import { DialogAdjustCopy, DialogConfirm, DialogRemoveCategory, DialogRenameCategory, DialogStatisticsSetting, DialogTutor } from './_Components/Dialogs';
+import Statistics from './_Components/Statistics';
 
 axios.defaults.withCredentials = true
 
