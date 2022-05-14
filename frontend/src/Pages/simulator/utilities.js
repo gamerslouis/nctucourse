@@ -68,12 +68,12 @@ export const updateData = (courses, data, imported) => {
     }
 
     // value - key table
-    cat_names = {}
+    const cat_names = {}
     for (let catid in data_new.cat_names)
         cat_names[data_new.cat_names[catid]] = catid
 
     // Add 軍訓 if presented in data
-    if (!cat_names.hasOwnProperty("軍訓") && history.filter(item => (item.type === '軍訓')).length !== 0) {
+    if (!cat_names.hasOwnProperty("軍訓") && courses.filter(item => (item.type === '軍訓')).length !== 0) {
         const new_catid = "cat_" + Object.keys(data_new.categories)
             .map(catid => parseInt(catid.match(/^cat_(\d+)$/)[1]))
             .sort((a, b) => (b - a))[0] ?? 0
@@ -84,7 +84,7 @@ export const updateData = (courses, data, imported) => {
         data_new.targets[new_catid] = [null, 5]
     }
 
-    const historyIds = history.map(item => (item.sem + '_' + item.id))
+    const historyIds = courses.map(item => (item.sem + '_' + item.id))
     const absentImported = imported_new.filter(id => historyIds.indexOf(id) === -1)
     for (let catid in data_new.content) {
         data_new.content[catid] = data_new.content[catid]
@@ -92,7 +92,7 @@ export const updateData = (courses, data, imported) => {
     }
     imported_new = imported_new.filter(itemId => historyIds.indexOf(itemId) !== -1)
 
-    for (let item of history) {
+    for (let item of courses) {
         const itemId = item.sem + '_' + item.id
 
         if (imported_new.indexOf(itemId) !== -1)
@@ -122,7 +122,7 @@ export const updateData = (courses, data, imported) => {
         }
         // ! 13後的通識匯入？
         else if (cat_names[item.type]) {
-            data_new.content[item.type].push(itemId)
+            data_new.content[cat_names[item.type]].push(itemId)
         }
         else {
             data_new.content.unused.push(itemId)

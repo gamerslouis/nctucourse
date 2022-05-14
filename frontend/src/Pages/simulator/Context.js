@@ -1,9 +1,6 @@
 import React from "react";
 
 export const SimulatorContext = React.createContext({})
-
-export const SimulatorContextProvider = SimulatorContext.Provider
+export const SimulatorUpdateContext = React.createContext(() => {})
 
 export const CourseHistory = React.createContext({})
-
-export const CourseHistoryProvider = CourseHistory.Provider

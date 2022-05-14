@@ -6,4 +6,4 @@ const SimulatorMobileView = () => {
     )
 }
 
-export default SimulatorMobileView
+export default React.memo(SimulatorMobileView)

@@ -1,11 +1,13 @@
 import { CircularProgress } from "@material-ui/core"
+import { Settings } from "@material-ui/icons"
 import axios from "axios"
 import React from "react"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
-import { CourseHistoryProvider, SimulatorContextProvider } from "./Context"
+import DrawerOptions from "./Components/DrawerOptions"
+import { CourseHistory, SimulatorContext, SimulatorUpdateContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
 import SimulatorMobileView from "./MobileView"
-import { Base, LoadingContext } from "./style"
+import { Base, LoadingContext, OptionFab } from "./style"
 import { copyData, migrateData, updateData } from "./utilities"
 
 class Simulator extends React.PureComponent {
@@ -17,13 +19,29 @@ class Simulator extends React.PureComponent {
             contextReady: false,
             courses: {}
             ,
-            dialogDisclaimerOpen: false
+            dialogDisclaimerOpen: false,
+            drawerOptions: false
             ,
-            collapseImportSuccess: false,
-            collapseUnsavedChange: false
+            importSuccess: false
         }
 
+        this.setContext = this.setContext.bind(this)
+        this.syncToServer = this.syncToServer.bind(this)
         this.handleDisclaimerConfirm = this.handleDisclaimerConfirm.bind(this)
+        this.handleOptionsOpen = this.handleOptionsOpen.bind(this)
+        this.handleOptionsClose = this.handleOptionsClose.bind(this)
+        this.handleImportSuccessClose = this.handleImportSuccessClose.bind(this)
+        this.handleDirtyClose = this.handleDirtyClose.bind(this)
+    }
+    setContext(value, callback = undefined) {
+        if (typeof value === 'function')
+            this.setState(prevState => ({
+                ...prevState,
+                context: value(prevState.context),
+                contextDirty: true
+            }), callback)
+        else
+            this.setState({ context: value, contextDirty: true }, callback)
     }
 
     componentDidMount() {
@@ -42,7 +60,7 @@ class Simulator extends React.PureComponent {
                     this.setState({ dialogDisclaimerOpen: true })
                 }
                 else {
-                    const { data_JSONserialized, last_updated_time } = json
+                    const { data: data_JSONserialized, last_updated_time } = json
                     let data = JSON.parse(data_JSONserialized)
                     if (data.version !== 2)
                         data = migrateData(data)
@@ -71,6 +89,7 @@ class Simulator extends React.PureComponent {
                         courses: course_map,
                         contextReady: true
                     })
+                    console.log(this.state.context)
                 }
             })
     }
@@ -88,7 +107,7 @@ class Simulator extends React.PureComponent {
 
                 const [data_new, imported_new] = updateData(history, copyData(this.state.context), imported)
 
-                this.setState({ context: data_new, collapseImportSuccess: true },
+                this.setState({ context: data_new, importSuccess: true },
                     () => this.syncToServer(imported_new, course_last_updated_time))
             })
     }
@@ -103,9 +122,10 @@ class Simulator extends React.PureComponent {
         axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_update`, data).then(res => {
             this.setState({
                 contextReady: true,
-                dialogDisclaimer: false,
-                collapseUnsavedChange: false
+                contextDirty: false,
+                dialogDisclaimer: false
             })
+            console.log(this.state.context)
         })
     }
 
@@ -117,24 +137,38 @@ class Simulator extends React.PureComponent {
             })
     }
 
+    handleOptionsOpen() { this.setState({ drawerOptions: true }) }
+    handleOptionsClose() { this.setState({ drawerOptions: false }) }
+
+    handleImportSuccessClose() { this.setState({ importSuccess: false }) }
+    handleDirtyClose() { this.syncToServer() }
+
     render() {
         return (
-            <Base>
-                <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
-                {
-                    this.state.contextReady ?
-                        <CourseHistoryProvider value={this.state.courses}>
-                            <SimulatorContextProvider value={this.state.context}>
-                                {
+            <CourseHistory.Provider value={this.state.courses}>
+                <SimulatorUpdateContext.Provider value={this.setContext}>
+                    <SimulatorContext.Provider value={this.state.context}>
+                        <Base>
+                            <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
+                            <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
+                            {
+                                this.state.contextReady ?
                                     /mobile/i.test(navigator.userAgent) ?
-                                        <SimulatorDesktopView /> :
-                                        <SimulatorMobileView />
-                                }
-                            </SimulatorContextProvider>
-                        </CourseHistoryProvider> :
-                        <LoadingContext><CircularProgress /></LoadingContext>
-                }
-            </Base>
+                                        <SimulatorMobileView /> :
+                                        <>
+                                            <SimulatorDesktopView
+                                                dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
+                                                importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
+                                            <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
+                                                <Settings />
+                                            </OptionFab>
+                                        </> :
+                                    <LoadingContext><CircularProgress /></LoadingContext>
+                            }
+                        </Base>
+                    </SimulatorContext.Provider>
+                </SimulatorUpdateContext.Provider>
+            </CourseHistory.Provider>
         )
     }
 }
