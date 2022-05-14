@@ -88,7 +88,8 @@ def get_cos_list(acysem, fdepuuid, fgrade='**'):
         'm_cos_code': '**',
         'm_crstime': '**',
         'm_crsoutline': '**',
-        'm_costype': '**'
+        'm_costype': '**',
+        'm_selcampus': '**'
     }, headers=headers)
     return res.json()
 
@@ -139,6 +140,7 @@ def course_pipe(_data):
                     meta['geci'] = geci_name
                 except KeyError:
                     pass
+                meta['cos_ename'] = cs[cid]['cos_ename']
                 obj['meta'] = json.dumps(meta)
                 #
                 courses.append(obj)
