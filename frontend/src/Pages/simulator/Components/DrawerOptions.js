@@ -2,7 +2,7 @@ import { Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItem
 import { FiberNew, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
-import { SimulatorContext, SimulatorUpdateContext } from "../Context"
+import { SimulatorContext, SimulatorPropsContext } from "../Context"
 
 const Base = styled.div`
     width: 285px;
@@ -10,7 +10,7 @@ const Base = styled.div`
 
 const Switch = React.memo(props => <MuiSwitch edge="end" {...props} />)
 const ContextSwitch = ({ optId }) => {
-    const setContext = useContext(SimulatorUpdateContext)
+    const { setContext } = useContext(SimulatorPropsContext)
     const handleChange = (_, checked) => {
         setContext(prevCtx => {
             const newOptions = { ...prevCtx.options }

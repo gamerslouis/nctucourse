@@ -42,5 +42,7 @@ export const Tab = withStyles(() => ({
     root: { minWidth: 0 }
 }))(MuiTab)
 export const TabPanel = styled.div`
+    padding: 16px;
+
     overflow-y: auto;
 `

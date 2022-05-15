@@ -14,6 +14,14 @@ export const migrateData = (data_old) => {
             } catch { };
             return [null, null]
         }
+        const migrateItemId = itemId_old => {
+            const match = itemId_old.match(/^@?([\d_]+)(\$\d+)?$/)
+            const itemId_raw = match[1]
+            const isClone = itemId_old.startsWith("@")
+            const mod_credit_str = match[2]
+            const mod_credit = mod_credit_str ? parseInt(mod_credit_str.slice(1)) : null
+            return generateItemId(itemId_raw, isClone, mod_credit)
+        }
 
         data_new.options = {
             show_pending: (controlFlag & 0b0001) !== 0,
@@ -24,15 +32,18 @@ export const migrateData = (data_old) => {
         const categories_map = {}
         data_new.categories = {}
         data_new.cat_names = {}
+        data_new.layout = []
         data_new.content = {}
         data_new.targets = {}
-        categories.forEach((cat, cidx) => {
-            categories_map[cat] = `cat_${cidx}`
+        categories.forEach((cat, catidx) => {
+            const catid = `cat_${catidx}`
+            categories_map[cat] = catid
 
-            data_new.categories[`cat_${cidx}`] = true
-            data_new.cat_names[`cat_${cidx}`] = cat
-            data_new.content[`cat_${cidx}`] = data[cat]
-            data_new.targets[`cat_${cidx}`] = parse_target(targets[cat])
+            data_new.layout.push(catid)
+            data_new.categories[catid] = true
+            data_new.cat_names[catid] = cat
+            data_new.content[catid] = data[cat].map(migrateItemId)
+            data_new.targets[catid] = parse_target(targets[cat])
         })
         data_new.content["unused"] = data["unused"]
 
@@ -52,6 +63,8 @@ export const migrateData = (data_old) => {
         data_new.cat_names.gcat_1 = "通識"
         data_new.targets.gcat_0 = parse_target(targets["通識_core"])
         data_new.targets.gcat_1 = parse_target(targets["通識_total"])
+        data_new.layout.push("gcat_1")
+        data_new.layout.push("gcat_0")
 
         data_new.targets.total = parse_target(targets["total"])
     }
@@ -134,4 +147,24 @@ export const updateData = (courses, data, imported) => {
 
 export const copyData = data => JSON.parse(JSON.stringify(data))
 
-export const getRawCourseId = courseId => courseId.match(/^@?([\d_]+)(\$\d+)?$/)[1]
+export const getRawCourseId = courseId => courseId.match(/^[\w_]+/)[0]
+
+export const generateItemId = (courseId, clone, credits) => {
+    const itemId_raw = getRawCourseId(courseId)
+    if (!clone)
+        return itemId_raw
+    const uid = (() => {
+        let d = Date.now()
+        if (typeof performance !== 'undefined') {
+            d += performance?.now()
+        }
+        return 'xxxx'.replace(/[xy]/g, c => {
+            let r = (d + Math.random() * 16) % 16 | 0
+            d = Math.floor(d / 16)
+            return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16)
+        })
+    })()
+    if (credits)
+        return itemId_raw + "@" + uid + "$" + credits
+    return itemId_raw + "@" + uid
+}

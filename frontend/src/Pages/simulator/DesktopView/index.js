@@ -2,6 +2,7 @@ import { Collapse, makeStyles, Tabs } from "@material-ui/core"
 import { Cancel, Info, Warning } from "@material-ui/icons"
 import React, { useState } from 'react'
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews"
+import Statistics from "../Components/Statistics"
 import UnusedItems from "../Components/UnusedItems"
 import { CollapseButton, CollapsePaper, CollapseSave, CollapseText, ContainerGrid, ContainerPaper, Tab, TabPanel } from "./style"
 
@@ -22,7 +23,7 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
 
     return (
         <ContainerGrid container direction="row" spacing={2}>
-            <ContainerGrid item sm={12} md={4}>
+            <ContainerGrid item sm={12} md={6} lg={4} xl={3}>
                 <ContainerPaper style={{ display: "flex", flexDirection: "column", paddingBottom: 50 }}>
                     <Collapse in={importSuccess}>
                         <CollapsePaper variant='outlined' style={{ background: '#D9EDF7', color: '#31708F' }}>
@@ -43,23 +44,24 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
 
                     <Tabs value={tabIndex} onChange={handleTabSwitch}
                         textColor="primary" variant="fullWidth">
-                        <Tab label="學分分類" />
                         <Tab label="資料統計" />
+                        <Tab label="學分分類" />
                     </Tabs>
 
                     <SwipeableViews index={tabIndex} className={classes.view}>
-                        <TabPanel value={tabIndex} index={0}>
-                            學分分類
+                        <TabPanel index={0}>
+                            <Statistics />
                         </TabPanel>
-                        <TabPanel value={tabIndex} index={1}>
-                            資料統計
+
+                        <TabPanel index={1}>
+                            學分分類
                         </TabPanel>
                     </SwipeableViews>
 
                     <UnusedItems />
                 </ContainerPaper>
             </ContainerGrid>
-            <ContainerGrid item sm={12} md={8}>
+            <ContainerGrid item sm={12} md={6} lg={8} xl={9}>
                 <ContainerPaper>
 
                 </ContainerPaper>

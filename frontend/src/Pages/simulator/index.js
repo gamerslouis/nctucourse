@@ -4,7 +4,7 @@ import axios from "axios"
 import React from "react"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
 import DrawerOptions from "./Components/DrawerOptions"
-import { CourseHistory, SimulatorContext, SimulatorUpdateContext } from "./Context"
+import { SimulatorContext, SimulatorPropsContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
 import SimulatorMobileView from "./MobileView"
 import { Base, LoadingContext, OptionFab } from "./style"
@@ -145,30 +145,31 @@ class Simulator extends React.PureComponent {
 
     render() {
         return (
-            <CourseHistory.Provider value={this.state.courses}>
-                <SimulatorUpdateContext.Provider value={this.setContext}>
-                    <SimulatorContext.Provider value={this.state.context}>
-                        <Base>
-                            <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
-                            <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
-                            {
-                                this.state.contextReady ?
-                                    /mobile/i.test(navigator.userAgent) ?
-                                        <SimulatorMobileView /> :
-                                        <>
-                                            <SimulatorDesktopView
-                                                dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
-                                                importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
-                                            <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
-                                                <Settings />
-                                            </OptionFab>
-                                        </> :
-                                    <LoadingContext><CircularProgress /></LoadingContext>
-                            }
-                        </Base>
-                    </SimulatorContext.Provider>
-                </SimulatorUpdateContext.Provider>
-            </CourseHistory.Provider>
+            <SimulatorPropsContext.Provider value={{
+                courses: this.state.courses,
+                setContext: this.setContext
+            }}>
+                <SimulatorContext.Provider value={this.state.context}>
+                    <Base>
+                        <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
+                        <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
+                        {
+                            this.state.contextReady ?
+                                /mobile/i.test(navigator.userAgent) ?
+                                    <SimulatorMobileView /> :
+                                    <>
+                                        <SimulatorDesktopView
+                                            dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
+                                            importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
+                                        <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
+                                            <Settings />
+                                        </OptionFab>
+                                    </> :
+                                <LoadingContext><CircularProgress /></LoadingContext>
+                        }
+                    </Base>
+                </SimulatorContext.Provider>
+            </SimulatorPropsContext.Provider>
         )
     }
 }
