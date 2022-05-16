@@ -3,6 +3,7 @@ import { Settings } from "@material-ui/icons"
 import axios from "axios"
 import React from "react"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
+import DialogTargetEdit from "./Components/Dialogs/DialogTargetEdit"
 import DrawerOptions from "./Components/DrawerOptions"
 import { SimulatorContext, SimulatorPropsContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
@@ -16,10 +17,11 @@ class Simulator extends React.PureComponent {
         this.state = {
             context: {},
             contextDirty: false,
-            contextReady: false,
-            courses: {}
+            contextReady: false
             ,
             dialogDisclaimerOpen: false,
+            dialogEditingTarget: null
+            ,
             drawerOptions: false
             ,
             importSuccess: false
@@ -32,6 +34,15 @@ class Simulator extends React.PureComponent {
         this.handleOptionsClose = this.handleOptionsClose.bind(this)
         this.handleImportSuccessClose = this.handleImportSuccessClose.bind(this)
         this.handleDirtyClose = this.handleDirtyClose.bind(this)
+        this.handleTargetEdit = this.handleTargetEdit.bind(this)
+        this.handleTargetEditClose = this.handleTargetEditClose.bind(this)
+        this.handleTargetEditSubmit = this.handleTargetEditSubmit.bind(this)
+
+        this.contextProps = {
+            courses: {},
+            setContext: this.setContext,
+            handleTargetEdit: this.handleTargetEdit
+        }
     }
     setContext(value, callback = undefined) {
         if (typeof value === 'function')
@@ -81,14 +92,12 @@ class Simulator extends React.PureComponent {
                 })
 
                 if (import_last_updated_time !== course_last_updated_time) {
-                    this.setState({ courses: course_map },
-                        () => this.updateImport(course_list, course_last_updated_time))
+                    this.contextProps.courses = course_map
+                    this.updateImport(course_list, course_last_updated_time)
                 }
                 else {
-                    this.setState({
-                        courses: course_map,
-                        contextReady: true
-                    })
+                    this.contextProps.courses = course_map
+                    this.setState({ contextReady: true })
                     console.log(this.state.context)
                 }
             })
@@ -143,28 +152,43 @@ class Simulator extends React.PureComponent {
     handleImportSuccessClose() { this.setState({ importSuccess: false }) }
     handleDirtyClose() { this.syncToServer() }
 
+    handleTargetEdit(catid) { this.setState({ dialogEditingTarget: catid }) }
+    handleTargetEditClose() { this.setState({ dialogEditingTarget: null }) }
+    handleTargetEditSubmit(credit, amount) {
+        const targets_new = { ...this.state.context.targets }
+        targets_new[this.state.dialogEditingTarget] = [credit, amount]
+        this.setContext(prevCtx => ({ ...prevCtx, targets: targets_new }))
+        this.handleTargetEditClose()
+    }
+
     render() {
         return (
-            <SimulatorPropsContext.Provider value={{
-                courses: this.state.courses,
-                setContext: this.setContext
-            }}>
+            <SimulatorPropsContext.Provider value={this.contextProps}>
                 <SimulatorContext.Provider value={this.state.context}>
                     <Base>
-                        <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
                         <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
+
+                        <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
+
                         {
                             this.state.contextReady ?
-                                /mobile/i.test(navigator.userAgent) ?
-                                    <SimulatorMobileView /> :
-                                    <>
-                                        <SimulatorDesktopView
-                                            dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
-                                            importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
-                                        <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
-                                            <Settings />
-                                        </OptionFab>
-                                    </> :
+                                <>
+                                    <DialogTargetEdit editingTarget={this.state.dialogEditingTarget}
+                                        onClose={this.handleTargetEditClose} onSubmit={this.handleTargetEditSubmit} />
+
+                                    {
+                                        /mobile/i.test(navigator.userAgent) ?
+                                            <SimulatorMobileView /> :
+                                            <>
+                                                <SimulatorDesktopView
+                                                    dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
+                                                    importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
+                                                <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
+                                                    <Settings />
+                                                </OptionFab>
+                                            </>
+                                    }
+                                </> :
                                 <LoadingContext><CircularProgress /></LoadingContext>
                         }
                     </Base>

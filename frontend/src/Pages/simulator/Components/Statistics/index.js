@@ -38,10 +38,14 @@ const useStyles = makeStyles(() => ({
 }))
 
 const StatisticItem = React.memo(
-    ({ amount, cat_name, credits, target, ...otherProps }) => {
+    ({ amount, catid, cat_name, credits, target, ...otherProps }) => {
         const classes = useStyles()
-        const total = otherProps.hasOwnProperty("total")
+        const { handleTargetEdit } = useContext(SimulatorPropsContext)
+        
         const getPortion = (num, den) => Math.min(100, 100 * num / Math.max(1, den))
+        const handleClick = () => handleTargetEdit(catid)
+
+        const total = otherProps.hasOwnProperty("total")
         const rows = 1 + (target[0] !== null && 1) + (target[1] !== null && 1)
 
         return (
@@ -65,7 +69,7 @@ const StatisticItem = React.memo(
                             {target[1] ? `${amount}/${target[1]}` : amount}門
                         </TableCell>
                     }
-                    <TableCell rowSpan={rows} className={classes.tdButton}>
+                    <TableCell rowSpan={rows} className={classes.tdButton} onClick={handleClick}>
                         <Edit className={clsx("td-svg-button", classes.svg)} />
                     </TableCell>
                 </TableRow>
@@ -98,7 +102,6 @@ const Statistics = () => {
             flag = false
             let cats_poped = []
             for (let cat of cats) {
-                console.log(cat)
                 if (cat.startsWith("g")) {
                     flag = true
                     cats_poped = cats_poped.concat(groups[cat])
@@ -133,11 +136,11 @@ const Statistics = () => {
                         {
                             context => (
                                 <>
-                                    <StatisticItem total cat_name="總學分" target={context.targets.total}
+                                    <StatisticItem total catid="total" cat_name="總學分" target={context.targets.total}
                                         credits={getCourseCredits(Object.keys(context.categories), context.content, context.groups, context.options.show_pending)} />
                                     {
                                         context.layout.map(catid => (
-                                            <StatisticItem key={`statistics_${catid}`}
+                                            <StatisticItem key={`statistics_${catid}`} catid={catid}
                                                 cat_name={context.cat_names[catid]} target={context.targets[catid]}
                                                 amount={getCourseAmount([catid], context.content, context.groups, context.options.show_pending)}
                                                 credits={getCourseCredits([catid], context.content, context.groups, context.options.show_pending)} />

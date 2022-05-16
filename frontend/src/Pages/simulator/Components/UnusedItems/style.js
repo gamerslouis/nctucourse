@@ -57,7 +57,7 @@ export const Title = styled.div`
     ${props => !props.open && `
         border-top-left-radius: 4px;
         border-top-right-radius: 4px;
-        box-shadow: 0px -1px 1px -1px rgb(0 0 0 / 20%);
+        box-shadow: 0px -2px 1px -1px rgb(0 0 0 / 20%);
     `}
 `
 
