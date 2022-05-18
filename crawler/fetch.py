@@ -108,6 +108,7 @@ def work(sem, root):
     save_json_file(root, 'bachelor.json', work_type_category(types['學士班課程']['uid'], lang, sem, '3*' ,allcourses))
     save_json_file(root, 'graduated.json', work_type_category(types['研究所課程']['uid'], lang, sem, '2*' ,allcourses))
     save_json_file(root, 'common.json', work_common_class(types['學士班共同課程']['uid'], lang, sem, '0G' ,allcourses))
+    save_json_file(root, 'common_college.json', work_common_class(types['學士班共同課程']['uid'], lang, sem, '0C' ,allcourses))
     save_json_file(root, 'program.json', work_common_class(types['學分學程']['uid'], lang, sem, '0G' ,allcourses))
     save_json_file(root, 'cross.json', work_common_class(types['跨領域學程']['uid'], lang, sem, '0G' ,allcourses))
     save_json_file(root, 'others.json', work_common_class(types['其他課程']['uid'], lang, sem, '0G' ,allcourses))

@@ -14,6 +14,7 @@ def work(sem, root):
     bachelor = load_json(root, 'bachelor.json')
     graduated = load_json(root, 'graduated.json')
     common = load_json(root, 'common.json')
+    common_college = load_json(root, 'common_college.json')
     program = load_json(root, 'program.json')
     cross = load_json(root, 'cross.json')
     others = load_json(root, 'others.json')
@@ -125,12 +126,25 @@ def work(sem, root):
 
         # 其他共同課程
         category_map['學士班共同課程'] = OrderedDict()
+        graduateds.append('▼▼▼校共同課程▼▼▼')
+        category_map['學士班共同課程']['▼▼▼校共同課程▼▼▼'] = None
         for type in common.keys() - ['通識', '外語', '體育']:
             graduateds.append(type)
             did = graduateds.index(type)
             category_map['學士班共同課程'][type] = did
             for cid in common[type]:
                 writer.writerow([did, 'all', cid])
+
+        # 各學院共同必修
+        graduateds.append('▼▼▼各院共同必修課程▼▼▼')
+        category_map['學士班共同課程']['▼▼▼各院共同必修課程▼▼▼'] = None
+        for type in common_college.keys():
+            graduateds.append(type)
+            did = graduateds.index(type)
+            category_map['學士班共同課程'][type] = did
+            for cid in common_college[type]:
+                writer.writerow([did, 'all', cid])
+
 
         # 學分學程、跨域學程、其他課程
         for type_name, type in [('學分學程', program), ('跨領域學程', cross), ('其他課程', others)]:
