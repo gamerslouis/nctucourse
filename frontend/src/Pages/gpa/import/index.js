@@ -20,6 +20,7 @@ import FullLoading from "../../../Components/FullLoading";
 import CourseTable from "./CourseTable";
 import useAxios from "axios-hooks";
 import { makeKey, shouldMerge } from "./utils";
+import axios from "axios";
 
 const convertCourseToMap = (courses) => {
   const dict = {};
