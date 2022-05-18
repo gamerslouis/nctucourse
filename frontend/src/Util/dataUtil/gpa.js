@@ -1,14 +1,15 @@
 export const parse = (text) => {
     const lines = text.split('\n')
     let courses = []
-    return courses.concat(parseBlock(lines, '學期成績紀錄'))
-        .concat(handleTrans(parseBlock(lines, '學生抵免紀錄')))
+    return courses.concat(parseBlockV2(lines, '學期成績紀錄'))
+        .concat(handleTrans(parseBlockV2(lines, '學生抵免紀錄')))
 }
 
 const trim = str => str.replace(/^\s+|\s+$/g, '')
 const isNum = str => str.match(/^\d+$/)
 
-const parseBlock = (lines, head) => {
+// duplicate
+const parseBlockV1 = (lines, head) => {
     let courses = []
     const credit = head === '學生抵免紀錄'
     for (let line of lines.slice(lines.indexOf(head) + 2)) {
@@ -44,6 +45,52 @@ const parseBlock = (lines, head) => {
                 state: eles[10] || '',
                 teacher: eles[11] || '',
                 dimension: eles[12] || ''
+            })
+        }
+    }
+    return courses
+}
+
+const parseBlockV2 = (lines, head) => {
+    let courses = []
+    const credit = head === '學生抵免紀錄'
+    for (let line of lines.slice(lines.indexOf(head) + 2)) {
+        let eles = line.split('\t').map(trim)
+        if (eles.length === 0 || !isNum(eles[0])) break
+        if (eles.length < 6) continue
+        if (credit) {
+            courses.push({
+                sem: '',
+                id: eles[1],
+                dep: '',
+                cos_cname: eles[2],
+                type: eles[4],
+                cos_credit: Number(eles[3]),
+                score: '抵免',
+                levelScore: '抵免',
+                scoreType: '抵免',
+                state: eles[5],
+                teacher: '',
+                dimension: ''
+            })
+        } else {
+            const _levelscore = eles[7] === 'W' || eles[8] === 'W' ? 'W' : eles[7]
+            const scoreField = _levelscore === 'W' ? 'W' : (_levelscore ? '無資料' : '')
+            const typeField = _levelscore ? ( _levelscore === '通過' || _levelscore === '不通過' ? '通過不通過' : '等第制' ) : ''
+
+            courses.push({
+                sem: eles[1],
+                id: eles[2],
+                dep: eles[3],
+                cos_cname: eles[4],
+                type: eles[5],
+                cos_credit: Number(eles[6]),
+                score: scoreField,
+                levelScore: _levelscore || '',
+                scoreType: typeField,
+                state: eles[8] || '',
+                teacher: eles[9] || '',
+                dimension: eles[10] || ''
             })
         }
     }
@@ -90,7 +137,7 @@ export const courseTo40Point = (course) => {
     return 0
 }
 
-export const filterNotCourse = (course) => {
+export const filterEffectiveCreditCourse = (course) => {
     return course.cos_credit > 0 && course.levelScore !== 'W' && course.scoreType === '百分法' && course.state === '已送註冊組'
 }
 

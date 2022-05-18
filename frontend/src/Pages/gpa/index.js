@@ -33,7 +33,7 @@ class Index extends React.Component {
     }
     fetchGPAData(){
         axios.get('/api/accounts/courses_history/').then((res) => {
-            let courses = JSON.parse(res.data['data']).filter(gpaTool.filterNotCourse)
+            let courses = JSON.parse(res.data['data']).filter(gpaTool.filterEffectiveCreditCourse)
             let credits = gpaTool.getCredits(courses)
             let [last60Courses, last60Credits] = gpaTool.getLast60Courses(courses)
             const sum = (a, b) => a + b
