@@ -1,5 +1,5 @@
-import { Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
-import { FiberNew, Subject, Visibility } from "@material-ui/icons"
+import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
+import { FiberNew, Input, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../Context"
@@ -58,6 +58,15 @@ const DrawerOptions = ({ open, onClose }) => {
                         <ListItemSecondaryAction>
                             <ContextSwitch optId="show_pending" />
                         </ListItemSecondaryAction>
+                    </ListItem>
+
+                    <Divider />
+
+                    <ListItem button component="a" href="/gpa/import?redir=simulator">
+                        <ListItemIcon>
+                            <Input />
+                        </ListItemIcon>
+                        <ListItemText primary="匯入歷史成績" />
                     </ListItem>
                 </List>
             </Base>

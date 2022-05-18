@@ -2,7 +2,12 @@ import { CircularProgress } from "@material-ui/core"
 import { Settings } from "@material-ui/icons"
 import axios from "axios"
 import React from "react"
+import DialogCategoryAdd from "./Components/Dialogs/DialogCategoryAdd"
+import DialogCategoryDelete from "./Components/Dialogs/DialogCategoryDelete"
+import DialogCategoryRename from "./Components/Dialogs/DialogCategoryRename"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
+import DialogGroupAdd from "./Components/Dialogs/DialogGroupAdd"
+import DialogGroupEdit from "./Components/Dialogs/DialogGroupEdit"
 import DialogTargetEdit from "./Components/Dialogs/DialogTargetEdit"
 import DrawerOptions from "./Components/DrawerOptions"
 import { SimulatorContext, SimulatorPropsContext } from "./Context"
@@ -20,7 +25,12 @@ class Simulator extends React.PureComponent {
             contextReady: false
             ,
             dialogDisclaimerOpen: false,
-            dialogEditingTarget: null
+            dialogEditingTarget: null,
+            dialogCategoryAdd: false,
+            dialogCategoryRename: null,
+            dialogCategoryDelete: null,
+            dialogGroupAdd: false,
+            dialogGroupEdit: null
             ,
             drawerOptions: false
             ,
@@ -37,11 +47,26 @@ class Simulator extends React.PureComponent {
         this.handleTargetEdit = this.handleTargetEdit.bind(this)
         this.handleTargetEditClose = this.handleTargetEditClose.bind(this)
         this.handleTargetEditSubmit = this.handleTargetEditSubmit.bind(this)
+        this.handleCategoryAddOpen = this.handleCategoryAddOpen.bind(this)
+        this.handleCategoryAddClose = this.handleCategoryAddClose.bind(this)
+        this.handleCategoryRenameOpen = this.handleCategoryRenameOpen.bind(this)
+        this.handleCategoryRenameClose = this.handleCategoryRenameClose.bind(this)
+        this.handleCategoryDeleteOpen = this.handleCategoryDeleteOpen.bind(this)
+        this.handleCategoryDeleteClose = this.handleCategoryDeleteClose.bind(this)
+        this.handleGroupAddOpen = this.handleGroupAddOpen.bind(this)
+        this.handleGroupAddClose = this.handleGroupAddClose.bind(this)
+        this.handleGroupEditOpen = this.handleGroupEditOpen.bind(this)
+        this.handleGroupEditClose = this.handleGroupEditClose.bind(this)
 
         this.contextProps = {
             courses: {},
             setContext: this.setContext,
-            handleTargetEdit: this.handleTargetEdit
+            handleTargetEdit: this.handleTargetEdit,
+            handleCategoryAddOpen: this.handleCategoryAddOpen,
+            handleCategoryRenameOpen: this.handleCategoryRenameOpen,
+            handleCategoryDeleteOpen: this.handleCategoryDeleteOpen,
+            handleGroupAddOpen: this.handleGroupAddOpen,
+            handleGroupEditOpen: this.handleGroupEditOpen
         }
     }
     setContext(value, callback = undefined) {
@@ -109,9 +134,8 @@ class Simulator extends React.PureComponent {
                 const { imported_courses } = json
                 const imported = imported_courses === "" ? [] : JSON.parse(imported_courses)
 
-                // ! 抵免現在長怎樣？
                 const history = course_list.filter(item => (
-                    item.state === " " || item.score === "通過" || item.score < "F"
+                    item.levelScore === "" || item.levelScore === "抵免" || item.levelScore === "通過" || item.levelScore < "F"
                 ))
 
                 const [data_new, imported_new] = updateData(history, copyData(this.state.context), imported)
@@ -161,6 +185,18 @@ class Simulator extends React.PureComponent {
         this.handleTargetEditClose()
     }
 
+    handleCategoryAddOpen() { this.setState({ dialogCategoryAdd: true }) }
+    handleCategoryAddClose() { this.setState({ dialogCategoryAdd: false }) }
+    handleCategoryRenameOpen(catid) { this.setState({ dialogCategoryRename: catid }) }
+    handleCategoryRenameClose() { this.setState({ dialogCategoryRename: null }) }
+    handleCategoryDeleteOpen(catid) { this.setState({ dialogCategoryDelete: catid }) }
+    handleCategoryDeleteClose() { this.setState({ dialogCategoryDelete: null }) }
+
+    handleGroupAddOpen() { this.setState({ dialogGroupAdd: true }) }
+    handleGroupAddClose() { this.setState({ dialogGroupAdd: false }) }
+    handleGroupEditOpen(catid) { this.setState({ dialogGroupEdit: catid }) }
+    handleGroupEditClose() { this.setState({ dialogGroupEdit: null }) }
+
     render() {
         return (
             <SimulatorPropsContext.Provider value={this.contextProps}>
@@ -175,6 +211,13 @@ class Simulator extends React.PureComponent {
                                 <>
                                     <DialogTargetEdit editingTarget={this.state.dialogEditingTarget}
                                         onClose={this.handleTargetEditClose} onSubmit={this.handleTargetEditSubmit} />
+
+                                    <DialogCategoryAdd open={this.state.dialogCategoryAdd} onClose={this.handleCategoryAddClose} />
+                                    <DialogCategoryRename catid={this.state.dialogCategoryRename} onClose={this.handleCategoryRenameClose} />
+                                    <DialogCategoryDelete catid={this.state.dialogCategoryDelete} onClose={this.handleCategoryDeleteClose} />
+                                    
+                                    <DialogGroupAdd open={this.state.dialogGroupAdd} onClose={this.handleGroupAddClose} />
+                                    <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
 
                                     {
                                         /mobile/i.test(navigator.userAgent) ?

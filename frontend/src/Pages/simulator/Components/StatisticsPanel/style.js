@@ -4,6 +4,8 @@ import styled from "styled-components"
 
 export const Base = styled.div`
     width: 100%;
+
+    overflow-y: auto;
 `
 
 export const TableCell = withStyles(() => ({

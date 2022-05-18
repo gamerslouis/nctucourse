@@ -2,7 +2,8 @@ import { Collapse, makeStyles, Tabs } from "@material-ui/core"
 import { Cancel, Info, Warning } from "@material-ui/icons"
 import React, { useState } from 'react'
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews"
-import Statistics from "../Components/Statistics"
+import CategoryPanel from "../Components/CategoryPanel"
+import StatisticsPanel from "../Components/StatisticsPanel"
 import UnusedItems from "../Components/UnusedItems"
 import { CollapseButton, CollapsePaper, CollapseSave, CollapseText, ContainerGrid, ContainerPaper, Tab, TabPanel } from "./style"
 
@@ -50,11 +51,11 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
 
                     <SwipeableViews index={tabIndex} className={classes.view}>
                         <TabPanel index={0}>
-                            <Statistics />
+                            <StatisticsPanel />
                         </TabPanel>
 
                         <TabPanel index={1}>
-                            學分分類
+                            <CategoryPanel />
                         </TabPanel>
                     </SwipeableViews>
 

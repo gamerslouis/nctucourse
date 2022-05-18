@@ -87,9 +87,9 @@ export const updateData = (courses, data, imported) => {
 
     // Add 軍訓 if presented in data
     if (!cat_names.hasOwnProperty("軍訓") && courses.filter(item => (item.type === '軍訓')).length !== 0) {
-        const new_catid = "cat_" + Object.keys(data_new.categories)
+        const new_catid = "cat_" + ((Object.keys(data_new.categories)
             .map(catid => parseInt(catid.match(/^cat_(\d+)$/)[1]))
-            .sort((a, b) => (b - a))[0] ?? 0
+            .sort((a, b) => (b - a))[0] ?? 0) + 1)
         data_new.categories[new_catid] = true
         data_new.cat_names[new_catid] = "軍訓"
         cat_names["軍訓"] = new_catid
@@ -111,7 +111,7 @@ export const updateData = (courses, data, imported) => {
         if (imported_new.indexOf(itemId) !== -1)
             continue
         imported_new.push(itemId)
-
+        
         if (item.cos_cname.startsWith("服務學習") && cat_names["服務學習"]) {
             data_new.content[cat_names["服務學習"]].push(itemId)
         }

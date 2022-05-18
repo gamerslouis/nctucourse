@@ -16,7 +16,7 @@ export const CollapsePaper = withStyles(theme => ({
         width: `calc(100% - ${theme.spacing(4)}px)`,
         display: "inline-flex",
         alignItems: "center",
-        margin: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
+        margin: `${theme.spacing(1)}px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
         padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
         fontWeight: "bold",
         fontSize: "16px"
@@ -43,6 +43,4 @@ export const Tab = withStyles(() => ({
 }))(MuiTab)
 export const TabPanel = styled.div`
     padding: 16px;
-
-    overflow-y: auto;
 `

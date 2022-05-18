@@ -41,7 +41,7 @@ const StatisticItem = React.memo(
     ({ amount, catid, cat_name, credits, target, ...otherProps }) => {
         const classes = useStyles()
         const { handleTargetEdit } = useContext(SimulatorPropsContext)
-        
+
         const getPortion = (num, den) => Math.min(100, 100 * num / Math.max(1, den))
         const handleClick = () => handleTargetEdit(catid)
 
@@ -94,7 +94,7 @@ const StatisticItem = React.memo(
         )
     })
 
-const Statistics = () => {
+const StatisticsPanel = () => {
     const { courses } = useContext(SimulatorPropsContext)
     const populateGroupedCategories = (cats, groups) => {
         let flag = true
@@ -111,18 +111,18 @@ const Statistics = () => {
             }
             cats = cats_poped
         }
-        return cats
+        return [...(new Set(cats))]
     }
     const getCourseAmount = (catids, content, groups, show_pending) => {
         const cats = populateGroupedCategories(catids, groups)
-        const amounts = cats.map(catid => content[catid].filter(itemId => show_pending || courses[getRawCourseId(itemId)].state !== " "))
+        const amounts = cats.map(catid => content[catid].filter(itemId => show_pending || courses[getRawCourseId(itemId)].levelScore !== ""))
         return amounts.reduce((prev, cur) => prev + cur.length, 0)
     }
     const getCourseCredits = (catids, content, groups, show_pending) => {
         const cats = populateGroupedCategories(catids, groups)
         const credits = cats.map(
             catid => content[catid]
-                .filter(itemId => show_pending || courses[getRawCourseId(itemId)].state !== " ")
+                .filter(itemId => show_pending || courses[getRawCourseId(itemId)].levelScore !== "")
                 .map(itemId => parseInt(itemId.match(/\$(\d+)/)?.[1] ?? courses[getRawCourseId(itemId)].cos_credit))
         )
         return credits.reduce((prev, cur) => prev + cur.reduce((p, c) => (p + c), 0), 0)
@@ -140,7 +140,7 @@ const Statistics = () => {
                                         credits={getCourseCredits(Object.keys(context.categories), context.content, context.groups, context.options.show_pending)} />
                                     {
                                         context.layout.map(catid => (
-                                            <StatisticItem key={`statistics_${catid}`} catid={catid}
+                                            <StatisticItem key={`statistics-panel-${catid}`} catid={catid}
                                                 cat_name={context.cat_names[catid]} target={context.targets[catid]}
                                                 amount={getCourseAmount([catid], context.content, context.groups, context.options.show_pending)}
                                                 credits={getCourseCredits([catid], context.content, context.groups, context.options.show_pending)} />
@@ -156,4 +156,4 @@ const Statistics = () => {
     )
 }
 
-export default React.memo(Statistics)
+export default React.memo(StatisticsPanel)
