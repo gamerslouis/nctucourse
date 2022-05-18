@@ -56,6 +56,7 @@ const DialogCategoryDelete = ({ catid, onClose }) => {
                     layout.splice(layout.indexOf(catid), 1)
 
                 const content = { ...ctx.content }
+                content.unused = content.unused.slice().concat(content[catid])
                 delete content[catid]
 
                 const targets = { ...ctx.targets }
@@ -80,7 +81,7 @@ const DialogCategoryDelete = ({ catid, onClose }) => {
                     {
                         catid === null ? "" :
                             canDelete ? (catid.startsWith("g") ? "" : "刪除後原先類別內的資料會移動至未分類課程中") :
-                                "此類別被群組依賴，請先刪除對應群組再重試"
+                                "此類別被群組依賴，請先調整對應群組再重試"
                     }
                 </DialogContentText>
             </DialogContent>

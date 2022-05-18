@@ -5,9 +5,11 @@ import React from "react"
 import DialogCategoryAdd from "./Components/Dialogs/DialogCategoryAdd"
 import DialogCategoryDelete from "./Components/Dialogs/DialogCategoryDelete"
 import DialogCategoryRename from "./Components/Dialogs/DialogCategoryRename"
+import DialogContextReset from "./Components/Dialogs/DialogContextReset"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
 import DialogGroupAdd from "./Components/Dialogs/DialogGroupAdd"
 import DialogGroupEdit from "./Components/Dialogs/DialogGroupEdit"
+import DialogLayoutArrange from "./Components/Dialogs/DialogLayoutArrange"
 import DialogTargetEdit from "./Components/Dialogs/DialogTargetEdit"
 import DrawerOptions from "./Components/DrawerOptions"
 import { SimulatorContext, SimulatorPropsContext } from "./Context"
@@ -24,13 +26,15 @@ class Simulator extends React.PureComponent {
             contextDirty: false,
             contextReady: false
             ,
-            dialogDisclaimerOpen: false,
+            dialogDisclaimer: false,
             dialogEditingTarget: null,
             dialogCategoryAdd: false,
             dialogCategoryRename: null,
             dialogCategoryDelete: null,
             dialogGroupAdd: false,
-            dialogGroupEdit: null
+            dialogGroupEdit: null,
+            dialogLayoutArrange: false,
+            dialogContextReset: false
             ,
             drawerOptions: false
             ,
@@ -46,7 +50,6 @@ class Simulator extends React.PureComponent {
         this.handleDirtyClose = this.handleDirtyClose.bind(this)
         this.handleTargetEdit = this.handleTargetEdit.bind(this)
         this.handleTargetEditClose = this.handleTargetEditClose.bind(this)
-        this.handleTargetEditSubmit = this.handleTargetEditSubmit.bind(this)
         this.handleCategoryAddOpen = this.handleCategoryAddOpen.bind(this)
         this.handleCategoryAddClose = this.handleCategoryAddClose.bind(this)
         this.handleCategoryRenameOpen = this.handleCategoryRenameOpen.bind(this)
@@ -57,6 +60,11 @@ class Simulator extends React.PureComponent {
         this.handleGroupAddClose = this.handleGroupAddClose.bind(this)
         this.handleGroupEditOpen = this.handleGroupEditOpen.bind(this)
         this.handleGroupEditClose = this.handleGroupEditClose.bind(this)
+        this.handleLayoutArrangeOpen = this.handleLayoutArrangeOpen.bind(this)
+        this.handleLayoutArrangeClose = this.handleLayoutArrangeClose.bind(this)
+        this.handleContextResetOpen = this.handleContextResetOpen.bind(this)
+        this.handleContextResetClose = this.handleContextResetClose.bind(this)
+        this.handleContextResetConfirm = this.handleContextResetConfirm.bind(this)
 
         this.contextProps = {
             courses: {},
@@ -66,7 +74,9 @@ class Simulator extends React.PureComponent {
             handleCategoryRenameOpen: this.handleCategoryRenameOpen,
             handleCategoryDeleteOpen: this.handleCategoryDeleteOpen,
             handleGroupAddOpen: this.handleGroupAddOpen,
-            handleGroupEditOpen: this.handleGroupEditOpen
+            handleGroupEditOpen: this.handleGroupEditOpen,
+            handleLayoutArrangeOpen: this.handleLayoutArrangeOpen,
+            handleContextResetOpen: this.handleContextResetOpen
         }
     }
     setContext(value, callback = undefined) {
@@ -93,7 +103,7 @@ class Simulator extends React.PureComponent {
             .then(json => {
                 if (!json.success || json.data === "") {
                     // requestConfirm
-                    this.setState({ dialogDisclaimerOpen: true })
+                    this.setState({ dialogDisclaimer: true })
                 }
                 else {
                     const { data: data_JSONserialized, last_updated_time } = json
@@ -106,7 +116,7 @@ class Simulator extends React.PureComponent {
             })
     }
 
-    fetchCourseHistory(import_last_updated_time = "") {
+    fetchCourseHistory(import_last_updated_time = "", reset = false) {
         axios.get(`${process.env.REACT_APP_HOST}/api/accounts/courses_history`)
             .then(res => res.data).then(json => {
                 const { data, last_updated_time: course_last_updated_time } = json
@@ -118,7 +128,7 @@ class Simulator extends React.PureComponent {
 
                 if (import_last_updated_time !== course_last_updated_time) {
                     this.contextProps.courses = course_map
-                    this.updateImport(course_list, course_last_updated_time)
+                    this.updateImport(course_list, course_last_updated_time, reset)
                 }
                 else {
                     this.contextProps.courses = course_map
@@ -128,7 +138,7 @@ class Simulator extends React.PureComponent {
             })
     }
 
-    updateImport(course_list, course_last_updated_time) {
+    updateImport(course_list, course_last_updated_time, reset = false) {
         axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_imported`).then(res => res.data)
             .then(json => {
                 const { imported_courses } = json
@@ -138,7 +148,7 @@ class Simulator extends React.PureComponent {
                     item.levelScore === "" || item.levelScore === "抵免" || item.levelScore === "通過" || item.levelScore < "F"
                 ))
 
-                const [data_new, imported_new] = updateData(history, copyData(this.state.context), imported)
+                const [data_new, imported_new] = updateData(history, reset ? {} : copyData(this.state.context), reset ? [] : imported)
 
                 this.setState({ context: data_new, importSuccess: true },
                     () => this.syncToServer(imported_new, course_last_updated_time))
@@ -165,7 +175,7 @@ class Simulator extends React.PureComponent {
     handleDisclaimerConfirm() {
         axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_confirm`, {})
             .then(() => {
-                this.setState({ dialogDisclaimerOpen: false })
+                this.setState({ dialogDisclaimer: false })
                 this.fetchCourseHistory()
             })
     }
@@ -178,12 +188,6 @@ class Simulator extends React.PureComponent {
 
     handleTargetEdit(catid) { this.setState({ dialogEditingTarget: catid }) }
     handleTargetEditClose() { this.setState({ dialogEditingTarget: null }) }
-    handleTargetEditSubmit(credit, amount) {
-        const targets_new = { ...this.state.context.targets }
-        targets_new[this.state.dialogEditingTarget] = [credit, amount]
-        this.setContext(prevCtx => ({ ...prevCtx, targets: targets_new }))
-        this.handleTargetEditClose()
-    }
 
     handleCategoryAddOpen() { this.setState({ dialogCategoryAdd: true }) }
     handleCategoryAddClose() { this.setState({ dialogCategoryAdd: false }) }
@@ -197,6 +201,13 @@ class Simulator extends React.PureComponent {
     handleGroupEditOpen(catid) { this.setState({ dialogGroupEdit: catid }) }
     handleGroupEditClose() { this.setState({ dialogGroupEdit: null }) }
 
+    handleLayoutArrangeOpen() { this.setState({ dialogLayoutArrange: true }) }
+    handleLayoutArrangeClose() { this.setState({ dialogLayoutArrange: false }) }
+
+    handleContextResetOpen() { this.setState({ dialogContextReset: true, drawerOptions: false }) }
+    handleContextResetClose() { this.setState({ dialogContextReset: false }) }
+    handleContextResetConfirm() { this.fetchCourseHistory("", true) }
+
     render() {
         return (
             <SimulatorPropsContext.Provider value={this.contextProps}>
@@ -204,20 +215,23 @@ class Simulator extends React.PureComponent {
                     <Base>
                         <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
 
-                        <DialogDisclaimer open={this.state.dialogDisclaimerOpen} onClose={this.handleDisclaimerConfirm} />
+                        <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
+                        <DialogContextReset open={this.state.dialogContextReset}
+                            onClose={this.handleContextResetClose} onSubmit={this.handleContextResetConfirm} />
 
                         {
                             this.state.contextReady ?
                                 <>
-                                    <DialogTargetEdit editingTarget={this.state.dialogEditingTarget}
-                                        onClose={this.handleTargetEditClose} onSubmit={this.handleTargetEditSubmit} />
+                                    <DialogTargetEdit editingTarget={this.state.dialogEditingTarget} onClose={this.handleTargetEditClose} />
 
                                     <DialogCategoryAdd open={this.state.dialogCategoryAdd} onClose={this.handleCategoryAddClose} />
                                     <DialogCategoryRename catid={this.state.dialogCategoryRename} onClose={this.handleCategoryRenameClose} />
                                     <DialogCategoryDelete catid={this.state.dialogCategoryDelete} onClose={this.handleCategoryDeleteClose} />
-                                    
+
                                     <DialogGroupAdd open={this.state.dialogGroupAdd} onClose={this.handleGroupAddClose} />
                                     <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
+
+                                    <DialogLayoutArrange open={this.state.dialogLayoutArrange} onClose={this.handleLayoutArrangeClose} />
 
                                     {
                                         /mobile/i.test(navigator.userAgent) ?

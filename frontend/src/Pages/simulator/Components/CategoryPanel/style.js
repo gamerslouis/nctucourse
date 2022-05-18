@@ -19,7 +19,7 @@ export const ButtonGroup = styled.div`
     
     display: inline-flex;
     
-    margin-bottom: 4px;
+    margin-bottom: 8px;
     border-bottom: 2px solid rgba(224, 224, 224, 1);
 `
 

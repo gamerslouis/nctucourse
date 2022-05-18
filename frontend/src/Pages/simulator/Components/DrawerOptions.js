@@ -1,5 +1,5 @@
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
-import { FiberNew, Input, Subject, Visibility } from "@material-ui/icons"
+import { DeleteForever, FiberNew, Input, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../Context"
@@ -26,10 +26,20 @@ const ContextSwitch = ({ optId }) => {
 }
 
 const DrawerOptions = ({ open, onClose }) => {
+    const { handleContextResetOpen } = useContext(SimulatorPropsContext)
     return (
         <Drawer anchor="right" open={open} onClose={onClose}>
             <Base>
                 <List subheader={<ListSubheader>Settings</ListSubheader>}>
+                    <ListItem button component="a" href="/gpa/import?redir=simulator">
+                        <ListItemIcon>
+                            <Input />
+                        </ListItemIcon>
+                        <ListItemText primary="匯入歷史成績" />
+                    </ListItem>
+
+                    <Divider />
+
                     <ListItem>
                         <ListItemIcon>
                             <Visibility />
@@ -62,11 +72,11 @@ const DrawerOptions = ({ open, onClose }) => {
 
                     <Divider />
 
-                    <ListItem button component="a" href="/gpa/import?redir=simulator">
+                    <ListItem button onClick={handleContextResetOpen}>
                         <ListItemIcon>
-                            <Input />
+                            <DeleteForever />
                         </ListItemIcon>
-                        <ListItemText primary="匯入歷史成績" />
+                        <ListItemText primary="初始化資料" />
                     </ListItem>
                 </List>
             </Base>

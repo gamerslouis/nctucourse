@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormHelperText, InputAdornment, OutlinedInput as MuiOutlinedInput, withStyles } from "@material-ui/core"
 import React, { useContext, useEffect, useState } from "react"
 import styled from "styled-components"
-import { SimulatorContext } from "../../Context"
+import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 
 const TextFields = styled.div`
     width: 100%;
@@ -15,8 +15,9 @@ const OutlinedInput = withStyles(() => ({
     }
 }))(MuiOutlinedInput)
 
-const DialogTargetEdit = ({ editingTarget, onClose, onSubmit }) => {
+const DialogTargetEdit = ({ editingTarget, onClose }) => {
     const context = useContext(SimulatorContext)
+    const { setContext } = useContext(SimulatorPropsContext)
     const [credits, setCredits] = useState(0)
     const [amount, setAmount] = useState(0)
 
@@ -38,7 +39,14 @@ const DialogTargetEdit = ({ editingTarget, onClose, onSubmit }) => {
         if (evt.key === "Enter")
             handleSubmit()
     }
-    const handleSubmit = () => onSubmit(credits ? credits : null, amount ? amount : null)
+    const handleSubmit = () => {
+        setContext(ctx => {
+            const targets = { ...ctx.targets }
+            targets[editingTarget] = [credits ? credits : null, amount ? amount : null]
+            return { ...ctx, targets }
+        })
+        onClose()
+    }
 
     return (
         <Dialog open={editingTarget !== null} onClose={onClose} maxWidth="xs" fullWidth>
@@ -49,10 +57,13 @@ const DialogTargetEdit = ({ editingTarget, onClose, onSubmit }) => {
                         onChange={handleCreditsChange}
                         onKeyPress={handleKeyPress}
                         endAdornment={<InputAdornment position="end">學分</InputAdornment>} />
-                    <OutlinedInput type="number" value={amount}
-                        onChange={handleAmountChange}
-                        onKeyPress={handleKeyPress}
-                        endAdornment={<InputAdornment position="end">門</InputAdornment>} />
+                    {
+                        editingTarget !== "total" &&
+                        <OutlinedInput type="number" value={amount}
+                            onChange={handleAmountChange}
+                            onKeyPress={handleKeyPress}
+                            endAdornment={<InputAdornment position="end">門</InputAdornment>} />
+                    }
                 </TextFields>
                 <FormHelperText>設定為0以移除目標</FormHelperText>
             </DialogContent>

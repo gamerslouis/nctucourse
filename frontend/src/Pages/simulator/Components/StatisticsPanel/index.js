@@ -1,10 +1,10 @@
 import { LinearProgress, makeStyles, Table, TableBody, TableRow } from "@material-ui/core"
-import { Edit } from "@material-ui/icons"
+import { Edit, LowPriority } from "@material-ui/icons"
 import clsx from "clsx"
 import React, { useContext } from "react"
 import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 import { getRawCourseId } from "../../utilities"
-import { Base, LinearProgressBlue, ProgressCell, TableCell } from "./style"
+import { Base, Button, ButtonGroup, LinearProgressBlue, ProgressCell, TableCell } from "./style"
 
 const useStyles = makeStyles(() => ({
     category: {
@@ -95,7 +95,7 @@ const StatisticItem = React.memo(
     })
 
 const StatisticsPanel = () => {
-    const { courses } = useContext(SimulatorPropsContext)
+    const { courses, handleLayoutArrangeOpen } = useContext(SimulatorPropsContext)
     const populateGroupedCategories = (cats, groups) => {
         let flag = true
         while (flag) {
@@ -130,6 +130,10 @@ const StatisticsPanel = () => {
 
     return (
         <Base>
+            <ButtonGroup>
+                <Button startIcon={<LowPriority />} onClick={handleLayoutArrangeOpen}>調整類別顯示順序</Button>
+            </ButtonGroup>
+
             <Table size="small">
                 <TableBody>
                     <SimulatorContext.Consumer>
