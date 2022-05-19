@@ -14,6 +14,7 @@ const DialogCategoryRename = ({ catid, onClose }) => {
     const context = useContext(SimulatorContext)
     const { setContext } = useContext(SimulatorPropsContext)
     const [name, setName] = useState("")
+    const [error, setError] = useState(false)
 
     useEffect(() => {
         if (catid !== null) {
@@ -21,7 +22,10 @@ const DialogCategoryRename = ({ catid, onClose }) => {
         }
     }, [catid, context.cat_names])
 
-    const handleChange = evt => setName(evt.target.value)
+    const handleChange = evt => {
+        setName(evt.target.value)
+        setError(Object.keys(context.cat_names).filter(_catid => _catid !== catid).map(catid => context.cat_names[catid]).indexOf(evt.target.value) !== -1)
+    }
     const handleKeyPress = evt => {
         if (evt.key === "Enter")
             handleSubmit()
@@ -41,7 +45,8 @@ const DialogCategoryRename = ({ catid, onClose }) => {
             <DialogContent style={{ overflowY: "clip" }}>
                 <TextFields>
                     <TextField variant="outlined" label="類別名稱" size="small"
-                        value={name} onChange={handleChange} onKeyPress={handleKeyPress} />
+                        value={name} onChange={handleChange} onKeyPress={handleKeyPress}
+                        error={error} helperText={error ? "已有重複名稱的類別/群組存在" : null} />
                 </TextFields>
             </DialogContent>
             <DialogActions>

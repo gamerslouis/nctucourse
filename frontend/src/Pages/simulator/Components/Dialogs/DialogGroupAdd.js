@@ -7,6 +7,7 @@ const DialogGroupAdd = ({ open, onClose }) => {
     const { setContext } = useContext(SimulatorPropsContext)
     const [name, setName] = useState("")
     const [value, setValue] = useState([])
+    const [error, setError] = useState(false)
 
     useEffect(() => {
         if (open) {
@@ -16,7 +17,10 @@ const DialogGroupAdd = ({ open, onClose }) => {
         }
     }, [open, context.groups])
 
-    const handleNameChange = evt => setName(evt.target.value)
+    const handleNameChange = evt => {
+        setName(evt.target.value)
+        setError(Object.values(context.cat_names).indexOf(evt.target.value) !== -1)
+    }
     const handleValueChange = evt => setValue(evt.target.value)
     const handleSubmit = () => {
         const catid = "gcat_" + ((Object.keys(context.groups)
@@ -45,7 +49,8 @@ const DialogGroupAdd = ({ open, onClose }) => {
             <DialogTitle>新增群組</DialogTitle>
             <DialogContent style={{ display: "flex", flexDirection: "column", alignItems: "center", overflowY: "clip" }}>
                 <TextField variant="outlined" label="群組名稱" size="small"
-                    value={name} onChange={handleNameChange} />
+                    value={name} onChange={handleNameChange}
+                    error={error} helperText={error ? "已有重複名稱的類別/群組存在" : null} />
 
                 <FormControl style={{ width: "100%", maxWidth: 240 }}>
                     <InputLabel>欲群組類別</InputLabel>
