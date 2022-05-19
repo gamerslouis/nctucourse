@@ -5,7 +5,7 @@ import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 const DialogMoveTo = ({ catid, catidx, open, onClose }) => {
     const context = useContext(SimulatorContext)
     const { setContext } = useContext(SimulatorPropsContext)
-    const [value, setValue] = useState(null)
+    const [value, setValue] = useState("")
 
     useEffect(() => {
         if (open) {

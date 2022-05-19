@@ -1,4 +1,4 @@
-import { pre_13 } from "./data_default"
+import { data_107, data_110 } from "./data_default"
 
 export const migrateData = (data_old) => {
     const data_new = { version: 2 }
@@ -71,13 +71,46 @@ export const migrateData = (data_old) => {
     return data_new
 }
 
+const generateDefaultData = template => {
+    const data = copyData(template)
+    data.categories = {}
+    data.layout = []
+    data.content = { unused: [] }
+    data.options = {
+        show_zero: true,
+        show_details: false,
+        show_pending: true
+    }
+    for (const catid in data.cat_names) {
+        if (!catid.startsWith("g")) {
+            data.categories[catid] = true
+            data.content[catid] = []
+        }
+        data.layout.push(catid)
+    }
+    return data
+}
+
 export const updateData = (courses, data, imported) => {
     let data_new = { ...data }
     let imported_new = [...imported]
 
     if (Object.keys(data_new).length === 0) {
-        // ! 13後的通識格式？
-        data_new = copyData(pre_13)
+        let generated = false
+        for (const course of courses) {
+            if (course.type === "通識") {
+                data_new = generateDefaultData(data_107)
+                generated = true
+                break
+            }
+            else if (course.dimension.startsWith("基本素養") || course.dimension.startsWith("領域課程")) {
+                data_new = generateDefaultData(data_110)
+                generated = true
+                break
+            }
+        }
+        if (!generated)
+            data_new = generateDefaultData(data_110)
     }
 
     // value - key table
@@ -105,7 +138,7 @@ export const updateData = (courses, data, imported) => {
     }
     imported_new = imported_new.filter(itemId => historyIds.indexOf(itemId) !== -1)
 
-    for (let item of courses) {
+    for (const item of courses) {
         const itemId = item.sem + '_' + item.id
 
         if (imported_new.indexOf(itemId) !== -1)
@@ -118,22 +151,47 @@ export const updateData = (courses, data, imported) => {
         else if (item.dimension === "藝文賞析" && cat_names["藝文賞析"]) {
             data_new.content[cat_names["藝文賞析"]].push(itemId)
         }
-        else if (item.type === "通識" && item.dimension === "核心-人文" && cat_names["通識 ─ 核心人文"]) {
+        // * 107通識
+        else if (item.dimension === "核心-人文" && cat_names["通識 ─ 核心人文"]) {
             data_new.content[cat_names["通識 ─ 核心人文"]].push(itemId)
         }
-        else if (item.type === "通識" && item.dimension === "核心-社會" && cat_names["通識 ─ 核心社會"]) {
+        else if (item.dimension === "核心-社會" && cat_names["通識 ─ 核心社會"]) {
             data_new.content[cat_names["通識 ─ 核心社會"]].push(itemId)
         }
-        else if (item.type === "通識" && item.dimension === "核心-自然" && cat_names["通識 ─ 核心自然"]) {
+        else if (item.dimension === "核心-自然" && cat_names["通識 ─ 核心自然"]) {
             data_new.content[cat_names["通識 ─ 核心自然"]].push(itemId)
         }
-        else if (item.type === "通識" && item.dimension === "跨院基本素養" && cat_names["通識 ─ 跨院"]) {
+        else if (item.dimension === "跨院基本素養" && cat_names["通識 ─ 跨院"]) {
             data_new.content[cat_names["通識 ─ 跨院"]].push(itemId)
         }
-        else if (item.type === "通識" && item.dimension === "校基本素養" && cat_names["通識 ─ 校基本"]) {
+        else if (item.dimension === "校基本素養" && cat_names["通識 ─ 校基本"]) {
             data_new.content[cat_names["通識 ─ 校基本"]].push(itemId)
         }
-        // ! 13後的通識匯入？
+        // * 110通識
+        else if (item.dimension === "基本素養-批判思考" && cat_names["基本-批判思考"]) {
+            data_new.content[cat_names["基本-批判思考"]].push(itemId)
+        }
+        else if (item.dimension === "基本素養-量性推理" && cat_names["基本-量性推理"]) {
+            data_new.content[cat_names["基本-量性推理"]].push(itemId)
+        }
+        else if (item.dimension === "基本素養-組織管理" && cat_names["基本-組織管理"]) {
+            data_new.content[cat_names["基本-組織管理"]].push(itemId)
+        }
+        else if (item.dimension === "基本素養-生命及品格教育" && cat_names["基本-生命及品格教育"]) {
+            data_new.content[cat_names["基本-生命及品格教育"]].push(itemId)
+        }
+        else if (item.dimension === "領域課程-人文與美學" && cat_names["領域-人文與美學"]) {
+            data_new.content[cat_names["領域-人文與美學"]].push(itemId)
+        }
+        else if (item.dimension === "領域課程-個人、社會與文化" && cat_names["領域-個人社會與文化"]) {
+            data_new.content[cat_names["領域-個人社會與文化"]].push(itemId)
+        }
+        else if (item.dimension === "領域課程-公民與倫理思考" && cat_names["領域-公民與倫理"]) {
+            data_new.content[cat_names["領域-公民與倫理"]].push(itemId)
+        }
+        else if (item.dimension === "領域課程-社會中的科技與自然" && cat_names["領域-科技與自然"]) {
+            data_new.content[cat_names["領域-科技與自然"]].push(itemId)
+        }
         else if (cat_names[item.type]) {
             data_new.content[cat_names[item.type]].push(itemId)
         }
