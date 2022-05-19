@@ -34,7 +34,8 @@ const UnusedItems = () => {
                                                         context.options.show_zero,
                                                         context.options.show_pending)
                                                 ).map(
-                                                    (itemId, idx) => <Course key={itemId} itemId={itemId} index={idx} details={context.options.show_details} />
+                                                    (itemId, idx) => <Course key={itemId} itemId={itemId} index={idx}
+                                                        details={context.options.show_details} unused />
                                                 )
                                             }
                                         </SimulatorContext.Consumer>

@@ -5,7 +5,7 @@ import { SimulatorContext } from "../Context"
 import Category from "./Category"
 
 const PanelBase = styled.div`
-    padding: 8px 16px;
+    padding: 8px 6px;
 `
 
 const PanelColumn = ({ index, size }) => {
@@ -36,21 +36,21 @@ const MainPanel = () => {
                 {
                     xl &&
                     <>
-                        <Grid xl={4}><PanelColumn index={0} size={3}/></Grid>
-                        <Grid xl={4}><PanelColumn index={1} size={3}/></Grid>
-                        <Grid xl={4}><PanelColumn index={2} size={3}/></Grid>
+                        <Grid item xl={4}><PanelColumn index={0} size={3}/></Grid>
+                        <Grid item xl={4}><PanelColumn index={1} size={3}/></Grid>
+                        <Grid item xl={4}><PanelColumn index={2} size={3}/></Grid>
                     </>
                 }
                 {
                     lg &&
                     <>
-                        <Grid lg={6}><PanelColumn index={0} size={2}/></Grid>
-                        <Grid lg={6}><PanelColumn index={1} size={2}/></Grid>
+                        <Grid item lg={6}><PanelColumn index={0} size={2}/></Grid>
+                        <Grid item lg={6}><PanelColumn index={1} size={2}/></Grid>
                     </>
                 }
                 {
                     md &&
-                    <Grid md={12}><PanelColumn index={0} size={1}/></Grid>
+                    <Grid item md={12}><PanelColumn index={0} size={1}/></Grid>
                 }
             </Grid>
         </div>

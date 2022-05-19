@@ -149,7 +149,7 @@ export const copyData = data => JSON.parse(JSON.stringify(data))
 
 export const getRawCourseId = courseId => courseId.match(/^[\w_]+/)[0]
 
-export const generateItemId = (courseId, clone, credits) => {
+export const generateItemId = (courseId, clone, credits = null) => {
     const itemId_raw = getRawCourseId(courseId)
     if (!clone)
         return itemId_raw

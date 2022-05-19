@@ -25,7 +25,8 @@ const Category = ({ catid }) => {
                                                 context.options.show_zero,
                                                 context.options.show_pending)
                                         ).map(
-                                            (itemId, idx) => <Course key={itemId} itemId={itemId} index={idx} details={context.options.show_details} />
+                                            (itemId, idx) => <Course key={itemId} index={idx} catid={catid} itemId={itemId}
+                                                details={context.options.show_details} />
                                         )
                                     }
                                     {provided.placeholder}

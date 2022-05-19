@@ -17,14 +17,22 @@ const getSemester = (sem) => {
     }
 }
 
-const Course = ({ details, itemId, index, ...otherProps }) => {
-    const { courses } = useContext(SimulatorPropsContext)
+const Course = ({ catid, details, itemId, index, ...otherProps }) => {
+    const { courses, handleMenuUnusedOpen, handleMenuCourseOpen } = useContext(SimulatorPropsContext)
     const course = courses[getRawCourseId(itemId)]
     const colors = ["#ef9a9a", "#a5d6a7", "#b39ddb", "#fff59d", "#ffab91", "#9fa8da"]
 
     const isClone = itemId.indexOf("@") !== -1
     const altCredit = itemId.match(/\$(\d+)/)?.[1]
     const transfer = course.sem[0] === "C"
+    const unused = otherProps.hasOwnProperty("unused")
+
+    const handleClick = evt => {
+        if (unused)
+            handleMenuUnusedOpen(index, evt.currentTarget)
+        else
+            handleMenuCourseOpen(index, catid, itemId, evt.currentTarget)
+    }
     return (
         <Draggable index={index} draggableId={itemId} type="COURSE">
             {
@@ -38,7 +46,7 @@ const Course = ({ details, itemId, index, ...otherProps }) => {
                                 <Typography variant="subtitle2">{altCredit ?? course.cos_credit}學分</Typography>
                             </Credit>
                             <Divider flexItem orientation="vertical" style={{ margin: "0px 4px" }} />
-                            <MoreButton />
+                            <MoreButton onClick={handleClick} />
                         </Content>
                         {
                             details &&

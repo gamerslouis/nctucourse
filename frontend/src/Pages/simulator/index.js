@@ -1,22 +1,24 @@
-import { CircularProgress } from "@material-ui/core"
-import { Settings } from "@material-ui/icons"
+import { CircularProgress, Divider, ListItemIcon, Menu, MenuItem } from "@material-ui/core"
+import { BarChart, Delete, FileCopy, Send, Settings, TextFields } from "@material-ui/icons"
 import axios from "axios"
 import React from "react"
 import DialogCategoryAdd from "./Components/Dialogs/DialogCategoryAdd"
 import DialogCategoryDelete from "./Components/Dialogs/DialogCategoryDelete"
 import DialogCategoryRename from "./Components/Dialogs/DialogCategoryRename"
+import DialogCloneAdjust from "./Components/Dialogs/DialogCloneAdjust"
 import DialogContextReset from "./Components/Dialogs/DialogContextReset"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
 import DialogGroupAdd from "./Components/Dialogs/DialogGroupAdd"
 import DialogGroupEdit from "./Components/Dialogs/DialogGroupEdit"
 import DialogLayoutArrange from "./Components/Dialogs/DialogLayoutArrange"
+import DialogMoveTo from "./Components/Dialogs/DialogMoveTo"
 import DialogTargetEdit from "./Components/Dialogs/DialogTargetEdit"
 import DrawerOptions from "./Components/DrawerOptions"
 import { SimulatorContext, SimulatorPropsContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
 import SimulatorMobileView from "./MobileView"
 import { Base, LoadingContext, OptionFab } from "./style"
-import { copyData, migrateData, updateData } from "./utilities"
+import { copyData, generateItemId, getRawCourseId, migrateData, updateData } from "./utilities"
 
 class Simulator extends React.PureComponent {
     constructor(props) {
@@ -34,9 +36,18 @@ class Simulator extends React.PureComponent {
             dialogGroupAdd: false,
             dialogGroupEdit: null,
             dialogLayoutArrange: false,
-            dialogContextReset: false
+            dialogContextReset: false,
+            dialogCloneAdjust: false,
+            dialogMoveTo: false
             ,
             drawerOptions: false
+            ,
+            menuUnusedIdx: null,
+            menuUnusedAnchor: null,
+            menuCourseIdx: null,
+            menuCourseCatid: null,
+            menuCourseItemid: null,
+            menuCourseAnchor: null
             ,
             importSuccess: false
         }
@@ -66,6 +77,17 @@ class Simulator extends React.PureComponent {
         this.handleContextResetClose = this.handleContextResetClose.bind(this)
         this.handleContextResetConfirm = this.handleContextResetConfirm.bind(this)
         this.handleCourseDragEnd = this.handleCourseDragEnd.bind(this)
+        this.handleMenuUnusedOpen = this.handleMenuUnusedOpen.bind(this)
+        this.handleMenuUnusedClose = this.handleMenuUnusedClose.bind(this)
+        this.handleMenuCourseOpen = this.handleMenuCourseOpen.bind(this)
+        this.handleMenuCourseClose = this.handleMenuCourseClose.bind(this)
+        this.handleCopyCourseName = this.handleCopyCourseName.bind(this)
+        this.handleCloneCourse = this.handleCloneCourse.bind(this)
+        this.handleRemoveClone = this.handleRemoveClone.bind(this)
+        this.handleCloneAdjustOpen = this.handleCloneAdjustOpen.bind(this)
+        this.handleCloneAdjustClose = this.handleCloneAdjustClose.bind(this)
+        this.handleMoveToOpen = this.handleMoveToOpen.bind(this)
+        this.handleMoveToClose = this.handleMoveToClose.bind(this)
 
         this.contextProps = {
             courses: {},
@@ -77,7 +99,9 @@ class Simulator extends React.PureComponent {
             handleGroupAddOpen: this.handleGroupAddOpen,
             handleGroupEditOpen: this.handleGroupEditOpen,
             handleLayoutArrangeOpen: this.handleLayoutArrangeOpen,
-            handleContextResetOpen: this.handleContextResetOpen
+            handleContextResetOpen: this.handleContextResetOpen,
+            handleMenuUnusedOpen: this.handleMenuUnusedOpen,
+            handleMenuCourseOpen: this.handleMenuCourseOpen
         }
     }
     setContext(value, callback = undefined) {
@@ -209,6 +233,12 @@ class Simulator extends React.PureComponent {
     handleContextResetClose() { this.setState({ dialogContextReset: false }) }
     handleContextResetConfirm() { this.fetchCourseHistory("", true) }
 
+    handleMenuUnusedOpen(idx, anchor) { this.setState({ menuUnusedIdx: idx, menuUnusedAnchor: anchor }) }
+    handleMenuUnusedClose() { this.setState({ menuUnusedIdx: null, menuUnusedAnchor: null }) }
+
+    handleMenuCourseOpen(idx, catid, itemId, anchor) { this.setState({ menuCourseIdx: idx, menuCourseCatid: catid, menuCourseItemid: itemId, menuCourseAnchor: anchor }) }
+    handleMenuCourseClose() { this.setState({ menuCourseIdx: null, menuCourseCatid: null, menuCourseItemid: null, menuCourseAnchor: null }) }
+
     handleCourseDragEnd(result) {
         const fromCatid = result.source.droppableId
         const toCatid = result.destination.droppableId
@@ -240,6 +270,40 @@ class Simulator extends React.PureComponent {
         })
     }
 
+    handleCopyCourseName() {
+        navigator.clipboard.writeText(this.contextProps.courses[getRawCourseId(this.state.menuCourseItemid)]?.cos_cname)
+        this.handleMenuCourseClose()
+    }
+    handleCloneCourse() {
+        this.handleMenuCourseClose()
+        this.setContext(ctx => {
+            const cat_content = ctx.content[this.state.menuCourseCatid].slice()
+            const item = generateItemId(this.state.menuCourseItemid, true)
+            cat_content.splice(this.state.menuCourseIdx + 1, 0, item)
+
+            const content = { ...ctx.content }
+            content[this.state.menuCourseCatid] = cat_content
+            return { ...ctx, content }
+        })
+    }
+    handleRemoveClone() {
+        this.handleMenuCourseClose()
+        this.setContext(ctx => {
+            const cat_content = ctx.content[this.state.menuCourseCatid].slice()
+            cat_content.splice(this.state.menuCourseIdx, 1)
+
+            const content = { ...ctx.content }
+            content[this.state.menuCourseCatid] = cat_content
+            return { ...ctx, content }
+        })
+    }
+
+    handleCloneAdjustOpen() { this.setState({ dialogCloneAdjust: true, menuCourseAnchor: null }) }
+    handleCloneAdjustClose() { this.setState({ dialogCloneAdjust: false, menuCourseIdx: null, menuCourseCatid: null, menuCourseItemid: null }) }
+
+    handleMoveToOpen() { this.setState({ dialogMoveTo: true, menuUnusedAnchor: null, menuCourseAnchor: null, menuCourseItemid: null }) }
+    handleMoveToClose() { this.setState({ dialogMoveTo: false, menuUnusedIdx: null, menuCourseIdx: null, menuCourseCatid: null }) }
+
     render() {
         return (
             <SimulatorPropsContext.Provider value={this.contextProps}>
@@ -250,6 +314,34 @@ class Simulator extends React.PureComponent {
                         <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
                         <DialogContextReset open={this.state.dialogContextReset}
                             onClose={this.handleContextResetClose} onSubmit={this.handleContextResetConfirm} />
+
+                        <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
+                            keepMounted onClose={this.handleMenuUnusedClose}>
+                            <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                        </Menu>
+
+                        <Menu open={Boolean(this.state.menuCourseAnchor) &&
+                            this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") === -1}
+                            anchorEl={this.state.menuCourseAnchor}
+                            keepMounted onClose={this.handleMenuCourseClose}>
+                            <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
+                            <Divider style={{ margin: "4px 0px" }} />
+                            <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                            <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
+                        </Menu>
+
+                        <Menu open={Boolean(this.state.menuCourseAnchor) &&
+                            this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") !== -1}
+                            anchorEl={this.state.menuCourseAnchor}
+                            keepMounted onClose={this.handleMenuCourseClose}>
+                            <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
+                            <Divider style={{ margin: "4px 0px" }} />
+                            <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                            <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
+                            <Divider style={{ margin: "4px 0px" }} />
+                            <MenuItem onClick={this.handleCloneAdjustOpen}><ListItemIcon><BarChart /></ListItemIcon>調整學分</MenuItem>
+                            <MenuItem onClick={this.handleRemoveClone}><ListItemIcon><Delete /></ListItemIcon>移除複製</MenuItem>
+                        </Menu>
 
                         {
                             this.state.contextReady ?
@@ -264,6 +356,11 @@ class Simulator extends React.PureComponent {
                                     <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
 
                                     <DialogLayoutArrange open={this.state.dialogLayoutArrange} onClose={this.handleLayoutArrangeClose} />
+
+                                    <DialogCloneAdjust open={this.state.dialogCloneAdjust} onClose={this.handleCloneAdjustClose}
+                                        catid={this.state.menuCourseCatid} catidx={this.state.menuCourseIdx} itemId={this.state.menuCourseItemid} />
+                                    <DialogMoveTo open={this.state.dialogMoveTo} onClose={this.handleMoveToClose}
+                                        catid={this.state.menuCourseCatid ?? "unused"} catidx={this.state.menuCourseIdx ?? this.state.menuUnusedIdx} />
 
                                     {
                                         /mobile/i.test(navigator.userAgent) ?
