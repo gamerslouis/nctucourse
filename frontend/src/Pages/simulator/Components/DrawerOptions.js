@@ -1,5 +1,5 @@
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
-import { DeleteForever, FiberNew, ImportExport, Input, Subject, Visibility } from "@material-ui/icons"
+import { DeleteForever, FiberNew, GetApp, ImportExport, Input, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../Context"
@@ -26,7 +26,7 @@ const ContextSwitch = ({ optId }) => {
 }
 
 const DrawerOptions = ({ open, onClose }) => {
-    const { handleContextResetOpen, handleTemplatePortOpen } = useContext(SimulatorPropsContext)
+    const { handleContextResetOpen, handleTemplatePortOpen, handleExportImageOpen } = useContext(SimulatorPropsContext)
     return (
         <Drawer anchor="right" open={open} onClose={onClose}>
             <Base>
@@ -41,7 +41,13 @@ const DrawerOptions = ({ open, onClose }) => {
                         <ListItemIcon>
                             <ImportExport />
                         </ListItemIcon>
-                        <ListItemText primary="匯入/匯出資料模板" />
+                        <ListItemText primary="匯入/匯出模板" />
+                    </ListItem>
+                    <ListItem button onClick={handleExportImageOpen}>
+                        <ListItemIcon>
+                            <GetApp />
+                        </ListItemIcon>
+                        <ListItemText primary="另存為圖片" />
                     </ListItem>
 
                     <Divider />

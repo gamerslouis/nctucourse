@@ -8,6 +8,7 @@ import DialogCategoryRename from "./Components/Dialogs/DialogCategoryRename"
 import DialogCloneAdjust from "./Components/Dialogs/DialogCloneAdjust"
 import DialogContextReset from "./Components/Dialogs/DialogContextReset"
 import DialogDisclaimer from "./Components/Dialogs/DialogDisclaimer"
+import DialogExportImage from "./Components/Dialogs/DialogExportImage"
 import DialogGroupAdd from "./Components/Dialogs/DialogGroupAdd"
 import DialogGroupEdit from "./Components/Dialogs/DialogGroupEdit"
 import DialogLayoutArrange from "./Components/Dialogs/DialogLayoutArrange"
@@ -19,7 +20,7 @@ import { SimulatorContext, SimulatorPropsContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
 import SimulatorMobileView from "./MobileView"
 import { Base, LoadingContext, OptionFab } from "./style"
-import { copyData, dumpTemplate, generateItemId, getRawCourseId, migrateData, updateData } from "./utilities"
+import { copyData, generateItemId, getRawCourseId, migrateData, updateData } from "./utilities"
 
 class Simulator extends React.PureComponent {
     constructor(props) {
@@ -40,7 +41,8 @@ class Simulator extends React.PureComponent {
             dialogContextReset: false,
             dialogCloneAdjust: false,
             dialogMoveTo: false,
-            dialogTemplatePort: false
+            dialogTemplatePort: false,
+            dialogExportImage: false
             ,
             drawerOptions: false
             ,
@@ -92,6 +94,8 @@ class Simulator extends React.PureComponent {
         this.handleMoveToClose = this.handleMoveToClose.bind(this)
         this.handleTemplatePortOpen = this.handleTemplatePortOpen.bind(this)
         this.handleTemplatePortClose = this.handleTemplatePortClose.bind(this)
+        this.handleExportImageOpen = this.handleExportImageOpen.bind(this)
+        this.handleExportImageClose = this.handleExportImageClose.bind(this)
 
         this.contextProps = {
             courses: {},
@@ -106,7 +110,8 @@ class Simulator extends React.PureComponent {
             handleContextResetOpen: this.handleContextResetOpen,
             handleMenuUnusedOpen: this.handleMenuUnusedOpen,
             handleMenuCourseOpen: this.handleMenuCourseOpen,
-            handleTemplatePortOpen: this.handleTemplatePortOpen
+            handleTemplatePortOpen: this.handleTemplatePortOpen,
+            handleExportImageOpen: this.handleExportImageOpen
         }
         this.course_list = []
         this.course_last_updated_time = ""
@@ -314,8 +319,11 @@ class Simulator extends React.PureComponent {
     handleMoveToOpen() { this.setState({ dialogMoveTo: true, menuUnusedAnchor: null, menuCourseAnchor: null, menuCourseItemid: null }) }
     handleMoveToClose() { this.setState({ dialogMoveTo: false, menuUnusedIdx: null, menuCourseIdx: null, menuCourseCatid: null }) }
 
-    handleTemplatePortOpen() { this.setState({ dialogTemplatePort: true }) }
+    handleTemplatePortOpen() { this.setState({ dialogTemplatePort: true, drawerOptions: false }) }
     handleTemplatePortClose() { this.setState({ dialogTemplatePort: false }) }
+
+    handleExportImageOpen() { this.setState({ dialogExportImage: true, drawerOptions: false }) }
+    handleExportImageClose() { this.setState({ dialogExportImage: false }) }
 
     render() {
         return (
@@ -327,6 +335,7 @@ class Simulator extends React.PureComponent {
                         <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
                         <DialogContextReset open={this.state.dialogContextReset}
                             onClose={this.handleContextResetClose} updateImport={this.updateImport} />
+                        <DialogExportImage open={this.state.dialogExportImage} onClose={this.handleExportImageClose} />
 
                         <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
                             keepMounted onClose={this.handleMenuUnusedClose}>

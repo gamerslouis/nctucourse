@@ -31,7 +31,7 @@ const MainPanel = () => {
     const md = !xlUp && !lgUp && mdUp
 
     return (
-        <div>
+        <div id="simulator-main-panel">
             <Grid container direction="row" style={{ overflow: "hidden" }}>
                 {
                     xl &&
