@@ -43,7 +43,7 @@ const DialogCloneAdjust = ({ catid, catidx, itemId, open, onClose }) => {
             <DialogTitle>調整這份複製用於計算和顯示的學分</DialogTitle>
             <DialogContent style={{ overflowY: "clip" }}>
                 <TextFields>
-                    <TextField variant="outlined" label="類別名稱" size="small"
+                    <TextField variant="outlined" label="調整學分" size="small" type="number"
                         value={credits} onChange={handleChange} onKeyPress={handleKeyPress} />
                 </TextFields>
             </DialogContent>

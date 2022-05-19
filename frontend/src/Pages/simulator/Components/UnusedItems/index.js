@@ -26,7 +26,7 @@ const UnusedItems = () => {
                         <Droppable droppableId="unused">
                             {
                                 provided =>
-                                    <div {...provided.droppableProps} ref={provided.innerRef} style={{ minHeight: 80 }}>
+                                    <div {...provided.droppableProps} ref={provided.innerRef} style={{ minHeight: "100%" }}>
                                         <SimulatorContext.Consumer>
                                             {
                                                 context => context.content.unused.filter(

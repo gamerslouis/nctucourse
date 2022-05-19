@@ -48,9 +48,7 @@ export const AccordionDetails = withStyles((theme) => ({
 export const Paper = withStyles(theme => ({
     root: {
         width: "100%",
-        minHeight: 80,
         padding: theme.spacing(1),
-        background: "#fafafa",
-        overflowY: "auto"
+        background: "#fafafa"
     }
 }))(MuiPaper)

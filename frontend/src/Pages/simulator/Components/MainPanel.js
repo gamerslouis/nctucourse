@@ -32,25 +32,25 @@ const MainPanel = () => {
 
     return (
         <div>
-            <Grid container direction="row">
+            <Grid container direction="row" style={{ overflow: "hidden" }}>
                 {
                     xl &&
                     <>
-                        <Grid item xl={4}><PanelColumn index={0} size={3}/></Grid>
-                        <Grid item xl={4}><PanelColumn index={1} size={3}/></Grid>
-                        <Grid item xl={4}><PanelColumn index={2} size={3}/></Grid>
+                        <Grid item xl={4}><PanelColumn index={0} size={3} /></Grid>
+                        <Grid item xl={4}><PanelColumn index={1} size={3} /></Grid>
+                        <Grid item xl={4}><PanelColumn index={2} size={3} /></Grid>
                     </>
                 }
                 {
                     lg &&
                     <>
-                        <Grid item lg={6}><PanelColumn index={0} size={2}/></Grid>
-                        <Grid item lg={6}><PanelColumn index={1} size={2}/></Grid>
+                        <Grid item lg={6}><PanelColumn index={0} size={2} /></Grid>
+                        <Grid item lg={6}><PanelColumn index={1} size={2} /></Grid>
                     </>
                 }
                 {
                     md &&
-                    <Grid item md={12}><PanelColumn index={0} size={1}/></Grid>
+                    <Grid item md={12}><PanelColumn index={0} size={1} /></Grid>
                 }
             </Grid>
         </div>

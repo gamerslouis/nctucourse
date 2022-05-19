@@ -122,7 +122,7 @@ const StatisticsPanel = () => {
         const cats = populateGroupedCategories(catids, groups)
         const credits = cats.map(
             catid => content[catid]
-                .filter(itemId => show_pending || courses[getRawCourseId(itemId)].levelScore !== "")
+                .filter(itemId => courses[getRawCourseId(itemId)].type !== "軍訓" && (show_pending || courses[getRawCourseId(itemId)].levelScore !== ""))
                 .map(itemId => parseInt(itemId.match(/\$(\d+)/)?.[1] ?? courses[getRawCourseId(itemId)].cos_credit))
         )
         return credits.reduce((prev, cur) => prev + cur.reduce((p, c) => (p + c), 0), 0)

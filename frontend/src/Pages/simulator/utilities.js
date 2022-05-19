@@ -1,4 +1,4 @@
-import { data_107, data_110 } from "./data_default"
+import { template_107, template_110 } from "./default_templates"
 
 export const migrateData = (data_old) => {
     const data_new = { version: 2 }
@@ -71,27 +71,59 @@ export const migrateData = (data_old) => {
     return data_new
 }
 
-const generateDefaultData = template => {
-    const data = copyData(template)
+export const generateEmptyDataFromTemplate = template => {
+    const data = { version: 2 }
+    data.cat_names = {}
     data.categories = {}
-    data.layout = []
     data.content = { unused: [] }
+    data.groups = {}
+    data.layout = []
     data.options = {
         show_zero: true,
         show_details: false,
         show_pending: true
     }
-    if (!data.targets.total)
-        data.targets.total = [null, null]
-    for (const catid in data.cat_names) {
-        if (!catid.startsWith("g")) {
-            data.categories[catid] = true
-            data.content[catid] = []
-        }
+    data.targets = {}
+
+    const catids = {}
+    template.categories.forEach((cat, idx) => catids[cat] = `cat_${idx}`)
+    Object.keys(template.groups).forEach((cat, idx) => catids[cat] = `gcat_${idx}`)
+    for (const cat of template.categories) {
+        const catid = catids[cat]
+        data.cat_names[catid] = cat
+        data.categories[catid] = true
+        data.content[catid] = []
         data.layout.push(catid)
-        if (!data.targets[catid])
+        if (template.targets[cat]) {
+            const c = template.targets[cat][0] === null ? null : parseInt(template.targets[cat][0])
+            const a = template.targets[cat][1] === null ? null : parseInt(template.targets[cat][1])
+            data.targets[catid] = [c, a]
+        }
+        else
             data.targets[catid] = [null, null]
     }
+    if (template.target_total) {
+        const c = template.target_total[0] === null ? null : parseInt(template.target_total[0])
+        const a = template.target_total[1] === null ? null : parseInt(template.target_total[1])
+        data.targets.total = [c, a]
+    }
+    else
+        data.targets.total = [null, null]
+
+    for (const gcat in template.groups) {
+        const catid = catids[gcat]
+        data.cat_names[catid] = gcat
+        data.groups[catid] = template.groups[gcat].map(cat => catids[cat])
+        data.layout.push(catid)
+        if (template.targets[gcat]) {
+            const c = template.targets[gcat][0] === null ? null : parseInt(template.targets[gcat][0])
+            const a = template.targets[gcat][1] === null ? null : parseInt(template.targets[gcat][1])
+            data.targets[catid] = [c, a]
+        }
+        else
+            data.targets[catid] = [null, null]
+    }
+
     return data
 }
 
@@ -99,22 +131,24 @@ export const updateData = (courses, data, imported, template = null) => {
     let data_new = { ...data }
     let imported_new = [...imported]
 
-    if (Object.keys(data_new).length === 0) {
+    if (template)
+        data_new = generateEmptyDataFromTemplate(template)
+    else if (Object.keys(data_new).length === 0) {
         let generated = false
         for (const course of courses) {
             if (course.type === "通識") {
-                data_new = generateDefaultData(data_107)
+                data_new = generateEmptyDataFromTemplate(template_107)
                 generated = true
                 break
             }
             else if (course.dimension.startsWith("基本素養") || course.dimension.startsWith("領域課程")) {
-                data_new = generateDefaultData(data_110)
+                data_new = generateEmptyDataFromTemplate(template_110)
                 generated = true
                 break
             }
         }
         if (!generated)
-            data_new = generateDefaultData(data_110)
+            data_new = generateEmptyDataFromTemplate(template_110)
     }
 
     // value - key table
@@ -123,7 +157,7 @@ export const updateData = (courses, data, imported, template = null) => {
         cat_names[data_new.cat_names[catid]] = catid
 
     // Add 軍訓 if presented in data
-    if (!cat_names.hasOwnProperty("軍訓") && courses.filter(item => (item.type === '軍訓')).length !== 0) {
+    if (!cat_names.hasOwnProperty("軍訓") && courses.filter(item => (item.type === "軍訓")).length !== 0) {
         const new_catid = "cat_" + ((Object.keys(data_new.categories)
             .map(catid => parseInt(catid.match(/^cat_(\d+)$/)[1]))
             .sort((a, b) => (b - a))[0] ?? 0) + 1)
@@ -131,10 +165,11 @@ export const updateData = (courses, data, imported, template = null) => {
         data_new.cat_names[new_catid] = "軍訓"
         cat_names["軍訓"] = new_catid
         data_new.content[new_catid] = []
+        data_new.layout.push(new_catid)
         data_new.targets[new_catid] = [null, 5]
     }
 
-    const historyIds = courses.map(item => (item.sem + '_' + item.id))
+    const historyIds = courses.map(item => (item.sem + "_" + item.id))
     const absentImported = imported_new.filter(id => historyIds.indexOf(id) === -1)
     for (let catid in data_new.content) {
         data_new.content[catid] = data_new.content[catid]
@@ -143,7 +178,7 @@ export const updateData = (courses, data, imported, template = null) => {
     imported_new = imported_new.filter(itemId => historyIds.indexOf(itemId) !== -1)
 
     for (const item of courses) {
-        const itemId = item.sem + '_' + item.id
+        const itemId = item.sem + "_" + item.id
 
         if (imported_new.indexOf(itemId) !== -1)
             continue
@@ -217,13 +252,13 @@ export const generateItemId = (courseId, clone, credits = null) => {
         return itemId_raw
     const uid = (() => {
         let d = Date.now()
-        if (typeof performance !== 'undefined') {
+        if (typeof performance !== "undefined") {
             d += performance?.now()
         }
-        return 'xxxx'.replace(/[xy]/g, c => {
+        return "xxxx".replace(/[xy]/g, c => {
             let r = (d + Math.random() * 16) % 16 | 0
             d = Math.floor(d / 16)
-            return (c === 'x' ? r : ((r & 0x3) | 0x8)).toString(16)
+            return (c === "x" ? r : ((r & 0x3) | 0x8)).toString(16)
         })
     })()
     if (credits)
@@ -255,7 +290,7 @@ export const dumpTemplate = context => {
             template.targets[context.cat_names[catid]] = context.targets[catid].slice()
     }
     if (context.targets.total[0] || context.targets.total[1])
-        template.targets.total = context.targets.total.slice()
+        template.target_total = context.targets.total.slice()
     return template
 }
 
@@ -296,7 +331,7 @@ export const templateSanityCheck = templateString => {
         // Check targets
         for (const cat in template.targets) {
             // Ban non-exist category targets
-            if (cat !== "total" && !cats_set.has(cat))
+            if (!cats_set.has(cat))
                 return false
             // Ban illegal values
             if (template.targets[cat][0] !== null) {
@@ -306,6 +341,19 @@ export const templateSanityCheck = templateString => {
             }
             if (template.targets[cat][1] !== null) {
                 const val = parseInt(template.targets[cat][1])
+                if (isNaN(val) || val <= 0)
+                    return false
+            }
+        }
+        // Check total target
+        if (template.target_total) {
+            if (template.target_total[0] !== null) {
+                const val = parseInt(template.target_total[0])
+                if (isNaN(val) || val <= 0)
+                    return false
+            }
+            if (template.target_total[1] !== null) {
+                const val = parseInt(template.target_total[1])
                 if (isNaN(val) || val <= 0)
                     return false
             }

@@ -11,23 +11,25 @@ const Category = ({ catid }) => {
     const { courses } = useContext(SimulatorPropsContext)
 
     return (
-        <Accordion defaultExpanded={true}>
+        <Accordion defaultExpanded={true} TransitionProps={{ unmountOnExit: true }}>
             <AccordionSummary expandIcon={<ExpandMore />}>{context.cat_names[catid]}</AccordionSummary>
             <AccordionDetails>
                 <Paper variant="outlined">
                     <Droppable droppableId={catid}>
                         {
                             provided =>
-                                <div {...provided.droppableProps} ref={provided.innerRef}>
+                                <div {...provided.droppableProps} ref={provided.innerRef} style={{ minHeight: 64 }}>
                                     {
-                                        context.content[catid].filter(
-                                            itemId => visibilityFilter(courses[getRawCourseId(itemId)],
-                                                context.options.show_zero,
-                                                context.options.show_pending)
-                                        ).map(
-                                            (itemId, idx) => <Course key={itemId} index={idx} catid={catid} itemId={itemId}
-                                                details={context.options.show_details} />
-                                        )
+                                        context.content[catid]
+                                            .map((itemId, idx) => [itemId, idx])
+                                            .filter(
+                                                ([itemId]) => visibilityFilter(courses[getRawCourseId(itemId)],
+                                                    context.options.show_zero,
+                                                    context.options.show_pending)
+                                            ).map(
+                                                ([itemId, idx]) => <Course key={itemId} index={idx} catid={catid} itemId={itemId}
+                                                    details={context.options.show_details} />
+                                            )
                                     }
                                     {provided.placeholder}
                                 </div>

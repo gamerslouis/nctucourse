@@ -248,6 +248,8 @@ class Simulator extends React.PureComponent {
     handleMenuCourseClose() { this.setState({ menuCourseIdx: null, menuCourseCatid: null, menuCourseItemid: null, menuCourseAnchor: null }) }
 
     handleCourseDragEnd(result) {
+        if (!result.destination)
+            return
         const fromCatid = result.source.droppableId
         const toCatid = result.destination.droppableId
         const fromIdx = result.source.index
@@ -312,10 +314,7 @@ class Simulator extends React.PureComponent {
     handleMoveToOpen() { this.setState({ dialogMoveTo: true, menuUnusedAnchor: null, menuCourseAnchor: null, menuCourseItemid: null }) }
     handleMoveToClose() { this.setState({ dialogMoveTo: false, menuUnusedIdx: null, menuCourseIdx: null, menuCourseCatid: null }) }
 
-    handleTemplatePortOpen() {
-        this.setState({ dialogTemplatePort: true })
-        console.log(dumpTemplate(this.state.context))
-    }
+    handleTemplatePortOpen() { this.setState({ dialogTemplatePort: true }) }
     handleTemplatePortClose() { this.setState({ dialogTemplatePort: false }) }
 
     render() {

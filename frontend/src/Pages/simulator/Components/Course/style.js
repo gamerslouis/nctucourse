@@ -22,7 +22,8 @@ export const Title = withStyles({
     root: {
         flexGrow: 1,
         flexBasis: 0,
-        flexShrink: 1
+        flexShrink: 1,
+        marginRight: 2
     }
 })(MuiTypography)
 

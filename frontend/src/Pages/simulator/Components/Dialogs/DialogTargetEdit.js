@@ -33,8 +33,8 @@ const DialogTargetEdit = ({ editingTarget, onClose }) => {
         }
     }, [editingTarget, context])
 
-    const handleCreditsChange = evt => setCredits(evt.target.value)
-    const handleAmountChange = evt => setAmount(evt.target.value)
+    const handleCreditsChange = evt => setCredits(parseInt(evt.target.value))
+    const handleAmountChange = evt => setAmount(parseInt(evt.target.value))
     const handleKeyPress = evt => {
         if (evt.key === "Enter")
             handleSubmit()

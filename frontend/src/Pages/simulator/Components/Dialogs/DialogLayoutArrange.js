@@ -39,6 +39,8 @@ const DialogLayoutArrange = ({ open, onClose }) => {
         onClose()
     }
     const handleDragEnd = result => {
+        if (!result.destination)
+            return
         const fromIdx = result.source.index
         const toIdx = result.destination.index
         setContext(ctx => {

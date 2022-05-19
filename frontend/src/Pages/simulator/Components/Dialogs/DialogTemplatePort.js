@@ -56,6 +56,7 @@ const DialogTemplatePort = ({ open, onClose, updateImport }) => {
     }
     const handleSubmit = () => {
         onClose()
+        updateImport(true, JSON.parse(_import))
     }
 
     return (
@@ -92,7 +93,7 @@ const DialogTemplatePort = ({ open, onClose, updateImport }) => {
                     </Tooltip>
                 </Paper>
                 {
-                    !error && <FormHelperText className={classes.warning}>此操作不可逆！</FormHelperText>
+                    !error && <FormHelperText className={classes.warning}>套用後會恢復預設值並使用此模板重新載入資料，此操作不可逆！</FormHelperText>
                 }
             </DialogContent>
             <DialogActions>
