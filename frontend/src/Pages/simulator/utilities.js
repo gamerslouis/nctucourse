@@ -81,17 +81,21 @@ const generateDefaultData = template => {
         show_details: false,
         show_pending: true
     }
+    if (!data.targets.total)
+        data.targets.total = [null, null]
     for (const catid in data.cat_names) {
         if (!catid.startsWith("g")) {
             data.categories[catid] = true
             data.content[catid] = []
         }
         data.layout.push(catid)
+        if (!data.targets[catid])
+            data.targets[catid] = [null, null]
     }
     return data
 }
 
-export const updateData = (courses, data, imported) => {
+export const updateData = (courses, data, imported, template = null) => {
     let data_new = { ...data }
     let imported_new = [...imported]
 
@@ -230,4 +234,84 @@ export const generateItemId = (courseId, clone, credits = null) => {
 export const visibilityFilter = (course, show_zero, show_pending) => {
     return (show_zero || course.cos_credit !== 0) &&
         (show_pending || course.levelScore !== "")
+}
+
+export const dumpTemplate = context => {
+    const template = {}
+    template.version = 2
+    template.categories = []
+    template.groups = {}
+    template.targets = {}
+    for (const catid in context.cat_names) {
+        if (context.cat_names[catid] === "軍訓")
+            continue
+        if (catid.startsWith("g")) {
+            template.groups[context.cat_names[catid]] = context.groups[catid].map(catid => context.cat_names[catid])
+        }
+        else {
+            template.categories.push(context.cat_names[catid])
+        }
+        if (context.targets[catid][0] || context.targets[catid][1])
+            template.targets[context.cat_names[catid]] = context.targets[catid].slice()
+    }
+    if (context.targets.total[0] || context.targets.total[1])
+        template.targets.total = context.targets.total.slice()
+    return template
+}
+
+export const templateSanityCheck = templateString => {
+    try {
+        const template = JSON.parse(templateString)
+        // Data version
+        if (template.version !== 2)
+            return false
+        // Check fields
+        if (!template.hasOwnProperty("categories") || !template.hasOwnProperty("groups") || !template.hasOwnProperty("targets"))
+            return false
+        // Check dups
+        const cats_list = template.categories.concat(Object.keys(template.groups))
+        const cats_set = new Set(cats_list)
+        if ([...cats_set].length !== cats_list.length)
+            return false
+        // Check groups
+        for (const gcat in template.groups) {
+            let cats = template.groups[gcat]
+            while (true) {
+                let cats_new = []
+                for (const cat of cats) {
+                    // Ban circular dependency
+                    if (cat === gcat)
+                        return false
+                    if (template.groups[cat])
+                        cats_new = cats_new.concat(template.groups[cat])
+                    // Ban non-exist category dependency
+                    else if (template.categories.indexOf(cat) === -1)
+                        return false
+                }
+                if (cats_new.length === 0)
+                    break
+                cats = cats_new
+            }
+        }
+        // Check targets
+        for (const cat in template.targets) {
+            // Ban non-exist category targets
+            if (cat !== "total" && !cats_set.has(cat))
+                return false
+            // Ban illegal values
+            if (template.targets[cat][0] !== null) {
+                const val = parseInt(template.targets[cat][0])
+                if (isNaN(val) || val <= 0)
+                    return false
+            }
+            if (template.targets[cat][1] !== null) {
+                const val = parseInt(template.targets[cat][1])
+                if (isNaN(val) || val <= 0)
+                    return false
+            }
+        }
+    } catch {
+        return false
+    }
+    return true
 }

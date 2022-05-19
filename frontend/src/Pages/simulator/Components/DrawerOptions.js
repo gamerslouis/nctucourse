@@ -1,5 +1,5 @@
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
-import { DeleteForever, FiberNew, Input, Subject, Visibility } from "@material-ui/icons"
+import { DeleteForever, FiberNew, ImportExport, Input, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../Context"
@@ -26,7 +26,7 @@ const ContextSwitch = ({ optId }) => {
 }
 
 const DrawerOptions = ({ open, onClose }) => {
-    const { handleContextResetOpen } = useContext(SimulatorPropsContext)
+    const { handleContextResetOpen, handleTemplatePortOpen } = useContext(SimulatorPropsContext)
     return (
         <Drawer anchor="right" open={open} onClose={onClose}>
             <Base>
@@ -36,6 +36,12 @@ const DrawerOptions = ({ open, onClose }) => {
                             <Input />
                         </ListItemIcon>
                         <ListItemText primary="匯入歷史成績" />
+                    </ListItem>
+                    <ListItem button onClick={handleTemplatePortOpen}>
+                        <ListItemIcon>
+                            <ImportExport />
+                        </ListItemIcon>
+                        <ListItemText primary="匯入/匯出資料模板" />
                     </ListItem>
 
                     <Divider />
@@ -49,7 +55,6 @@ const DrawerOptions = ({ open, onClose }) => {
                             <ContextSwitch optId="show_zero" />
                         </ListItemSecondaryAction>
                     </ListItem>
-
                     <ListItem>
                         <ListItemIcon>
                             <Subject />
@@ -59,7 +64,6 @@ const DrawerOptions = ({ open, onClose }) => {
                             <ContextSwitch optId="show_details" />
                         </ListItemSecondaryAction>
                     </ListItem>
-
                     <ListItem>
                         <ListItemIcon>
                             <FiberNew />

@@ -1,10 +1,10 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@material-ui/core"
 import React from "react"
 
-const DialogContextReset = ({ open, onClose, onSubmit }) => {
+const DialogContextReset = ({ open, onClose, updateImport }) => {
     const handleSubmit = () => {
         onClose()
-        onSubmit()
+        updateImport(true)
     }
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>

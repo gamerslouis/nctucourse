@@ -13,12 +13,13 @@ import DialogGroupEdit from "./Components/Dialogs/DialogGroupEdit"
 import DialogLayoutArrange from "./Components/Dialogs/DialogLayoutArrange"
 import DialogMoveTo from "./Components/Dialogs/DialogMoveTo"
 import DialogTargetEdit from "./Components/Dialogs/DialogTargetEdit"
+import DialogTemplatePort from "./Components/Dialogs/DialogTemplatePort"
 import DrawerOptions from "./Components/DrawerOptions"
 import { SimulatorContext, SimulatorPropsContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
 import SimulatorMobileView from "./MobileView"
 import { Base, LoadingContext, OptionFab } from "./style"
-import { copyData, generateItemId, getRawCourseId, migrateData, updateData } from "./utilities"
+import { copyData, dumpTemplate, generateItemId, getRawCourseId, migrateData, updateData } from "./utilities"
 
 class Simulator extends React.PureComponent {
     constructor(props) {
@@ -38,7 +39,8 @@ class Simulator extends React.PureComponent {
             dialogLayoutArrange: false,
             dialogContextReset: false,
             dialogCloneAdjust: false,
-            dialogMoveTo: false
+            dialogMoveTo: false,
+            dialogTemplatePort: false
             ,
             drawerOptions: false
             ,
@@ -53,6 +55,7 @@ class Simulator extends React.PureComponent {
         }
 
         this.setContext = this.setContext.bind(this)
+        this.updateImport = this.updateImport.bind(this)
         this.syncToServer = this.syncToServer.bind(this)
         this.handleDisclaimerConfirm = this.handleDisclaimerConfirm.bind(this)
         this.handleOptionsOpen = this.handleOptionsOpen.bind(this)
@@ -75,7 +78,6 @@ class Simulator extends React.PureComponent {
         this.handleLayoutArrangeClose = this.handleLayoutArrangeClose.bind(this)
         this.handleContextResetOpen = this.handleContextResetOpen.bind(this)
         this.handleContextResetClose = this.handleContextResetClose.bind(this)
-        this.handleContextResetConfirm = this.handleContextResetConfirm.bind(this)
         this.handleCourseDragEnd = this.handleCourseDragEnd.bind(this)
         this.handleMenuUnusedOpen = this.handleMenuUnusedOpen.bind(this)
         this.handleMenuUnusedClose = this.handleMenuUnusedClose.bind(this)
@@ -88,6 +90,8 @@ class Simulator extends React.PureComponent {
         this.handleCloneAdjustClose = this.handleCloneAdjustClose.bind(this)
         this.handleMoveToOpen = this.handleMoveToOpen.bind(this)
         this.handleMoveToClose = this.handleMoveToClose.bind(this)
+        this.handleTemplatePortOpen = this.handleTemplatePortOpen.bind(this)
+        this.handleTemplatePortClose = this.handleTemplatePortClose.bind(this)
 
         this.contextProps = {
             courses: {},
@@ -101,8 +105,11 @@ class Simulator extends React.PureComponent {
             handleLayoutArrangeOpen: this.handleLayoutArrangeOpen,
             handleContextResetOpen: this.handleContextResetOpen,
             handleMenuUnusedOpen: this.handleMenuUnusedOpen,
-            handleMenuCourseOpen: this.handleMenuCourseOpen
+            handleMenuCourseOpen: this.handleMenuCourseOpen,
+            handleTemplatePortOpen: this.handleTemplatePortOpen
         }
+        this.course_list = []
+        this.course_last_updated_time = ""
     }
     setContext(value, callback = undefined) {
         if (typeof value === 'function')
@@ -141,42 +148,44 @@ class Simulator extends React.PureComponent {
             })
     }
 
-    fetchCourseHistory(import_last_updated_time = "", reset = false) {
+    fetchCourseHistory(import_last_updated_time = "") {
         axios.get(`${process.env.REACT_APP_HOST}/api/accounts/courses_history`)
             .then(res => res.data).then(json => {
                 const { data, last_updated_time: course_last_updated_time } = json
                 const course_list = JSON.parse(data)
+
                 const course_map = {}
                 course_list.forEach(item => {
                     course_map[item.sem + "_" + item.id] = item
                 })
 
+                const history = course_list.filter(item => (
+                    item.levelScore === "" || item.levelScore === "抵免" || item.levelScore === "通過" || item.levelScore < "F"
+                ))
+                this.course_list = history
+                this.course_last_updated_time = course_last_updated_time
+
+                this.contextProps.courses = course_map
                 if (import_last_updated_time !== course_last_updated_time) {
-                    this.contextProps.courses = course_map
-                    this.updateImport(course_list, course_last_updated_time, reset)
+                    this.updateImport()
                 }
                 else {
-                    this.contextProps.courses = course_map
                     this.setState({ contextReady: true })
                     console.log(this.state.context)
                 }
             })
     }
 
-    updateImport(course_list, course_last_updated_time, reset = false) {
+    updateImport(reset = false, template = null) {
         axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_imported`).then(res => res.data)
             .then(json => {
                 const { imported_courses } = json
                 const imported = imported_courses === "" ? [] : JSON.parse(imported_courses)
 
-                const history = course_list.filter(item => (
-                    item.levelScore === "" || item.levelScore === "抵免" || item.levelScore === "通過" || item.levelScore < "F"
-                ))
-
-                const [data_new, imported_new] = updateData(history, reset ? {} : copyData(this.state.context), reset ? [] : imported)
+                const [data_new, imported_new] = updateData(this.course_list, reset ? {} : copyData(this.state.context), reset ? [] : imported, template)
 
                 this.setState({ context: data_new, importSuccess: true },
-                    () => this.syncToServer(imported_new, course_last_updated_time))
+                    () => this.syncToServer(imported_new, this.course_last_updated_time))
             })
     }
 
@@ -231,7 +240,6 @@ class Simulator extends React.PureComponent {
 
     handleContextResetOpen() { this.setState({ dialogContextReset: true, drawerOptions: false }) }
     handleContextResetClose() { this.setState({ dialogContextReset: false }) }
-    handleContextResetConfirm() { this.fetchCourseHistory("", true) }
 
     handleMenuUnusedOpen(idx, anchor) { this.setState({ menuUnusedIdx: idx, menuUnusedAnchor: anchor }) }
     handleMenuUnusedClose() { this.setState({ menuUnusedIdx: null, menuUnusedAnchor: null }) }
@@ -304,6 +312,12 @@ class Simulator extends React.PureComponent {
     handleMoveToOpen() { this.setState({ dialogMoveTo: true, menuUnusedAnchor: null, menuCourseAnchor: null, menuCourseItemid: null }) }
     handleMoveToClose() { this.setState({ dialogMoveTo: false, menuUnusedIdx: null, menuCourseIdx: null, menuCourseCatid: null }) }
 
+    handleTemplatePortOpen() {
+        this.setState({ dialogTemplatePort: true })
+        console.log(dumpTemplate(this.state.context))
+    }
+    handleTemplatePortClose() { this.setState({ dialogTemplatePort: false }) }
+
     render() {
         return (
             <SimulatorPropsContext.Provider value={this.contextProps}>
@@ -313,7 +327,7 @@ class Simulator extends React.PureComponent {
 
                         <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
                         <DialogContextReset open={this.state.dialogContextReset}
-                            onClose={this.handleContextResetClose} onSubmit={this.handleContextResetConfirm} />
+                            onClose={this.handleContextResetClose} updateImport={this.updateImport} />
 
                         <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
                             keepMounted onClose={this.handleMenuUnusedClose}>
@@ -361,6 +375,9 @@ class Simulator extends React.PureComponent {
                                         catid={this.state.menuCourseCatid} catidx={this.state.menuCourseIdx} itemId={this.state.menuCourseItemid} />
                                     <DialogMoveTo open={this.state.dialogMoveTo} onClose={this.handleMoveToClose}
                                         catid={this.state.menuCourseCatid ?? "unused"} catidx={this.state.menuCourseIdx ?? this.state.menuUnusedIdx} />
+
+                                    <DialogTemplatePort open={this.state.dialogTemplatePort}
+                                        onClose={this.handleTemplatePortClose} updateImport={this.updateImport} />
 
                                     {
                                         /mobile/i.test(navigator.userAgent) ?
