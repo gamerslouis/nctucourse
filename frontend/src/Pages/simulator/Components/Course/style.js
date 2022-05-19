@@ -18,13 +18,13 @@ export const Content = styled.div`
     padding: 4px 0px;
 `
 
-export const Title = withStyles(() => ({
+export const Title = withStyles({
     root: {
         flexGrow: 1,
         flexBasis: 0,
         flexShrink: 1
     }
-}))(MuiTypography)
+})(MuiTypography)
 
 export const Credit = styled.div`
     min-width: 45px;
@@ -36,7 +36,7 @@ export const Credit = styled.div`
     align-items: center;
 `
 
-export const MoreButton = withStyles(() => ({
+export const MoreButton = withStyles({
     root: {
         color: "rgba(0, 0, 0, 0.5)",
         cursor: "pointer",
@@ -46,7 +46,7 @@ export const MoreButton = withStyles(() => ({
             color: "rgba(0, 0, 0, 0.75)"
         }
     }
-}))(MoreVert)
+})(MoreVert)
 
 export const Details = styled.div`
     display: flex;

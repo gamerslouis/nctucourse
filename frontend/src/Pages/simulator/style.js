@@ -8,14 +8,14 @@ export const Base = styled.div`
     padding: 0px 24px;
 `
 
-export const LoadingContext = withStyles(() => ({
+export const LoadingContext = withStyles({
     root: {
         height: "100%",
         display: "flex",
         justifyContent: "center",
         alignItems: "center"
     }
-}))(Paper)
+})(Paper)
 
 export const OptionFab = withStyles(theme => ({
     root: {

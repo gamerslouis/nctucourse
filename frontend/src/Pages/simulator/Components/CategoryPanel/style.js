@@ -5,14 +5,14 @@ export const Base = styled.div`
     width: 100%;
 `
 
-export const TableCell = withStyles(() => ({
+export const TableCell = withStyles({
     sizeSmall: {
         padding: "6px 4px",
         "&:last-child": {
             paddingRight: 4
         }
     }
-}))(MuiTableCell)
+})(MuiTableCell)
 
 export const ButtonGroup = styled.div`
     width: 100%;
@@ -23,11 +23,11 @@ export const ButtonGroup = styled.div`
     border-bottom: 2px solid rgba(224, 224, 224, 1);
 `
 
-export const Button = withStyles(() => ({
+export const Button = withStyles({
     root: {
         flexGrow: 1
     }
-}))(MuiButton)
+})(MuiButton)
 
 export const IconButton = styled.div`
     width: fit-content;

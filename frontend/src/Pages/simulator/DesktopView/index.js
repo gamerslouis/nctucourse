@@ -4,11 +4,12 @@ import React, { useState } from 'react'
 import { DragDropContext } from "react-beautiful-dnd"
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews"
 import CategoryPanel from "../Components/CategoryPanel"
+import MainPanel from "../Components/MainPanel"
 import StatisticsPanel from "../Components/StatisticsPanel"
 import UnusedItems from "../Components/UnusedItems"
 import { CollapseButton, CollapsePaper, CollapseSave, CollapseText, ContainerGrid, ContainerPaper, Tab, TabPanel } from "./style"
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
     view: {
         flexGrow: 1,
         "& > div": {
@@ -16,7 +17,7 @@ const useStyles = makeStyles(() => ({
             transition: "transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important"
         }
     }
-}))
+})
 
 const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSuccessClose, onCourseDragEnd }) => {
     const classes = useStyles()
@@ -28,7 +29,7 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
             <ContainerGrid container direction="row" spacing={2}>
                 <ContainerGrid item sm={12} md={6} lg={4} xl={3}>
                     <ContainerPaper style={{ display: "flex", flexDirection: "column", paddingBottom: 50 }}>
-                        <Collapse in={importSuccess}>
+                        <Collapse in={importSuccess} className={classes.collapse}>
                             <CollapsePaper variant='outlined' style={{ background: '#D9EDF7', color: '#31708F' }}>
                                 <Info />
                                 <CollapseText>成功匯入新資料！</CollapseText>
@@ -37,7 +38,7 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
                                 </CollapseButton>
                             </CollapsePaper>
                         </Collapse>
-                        <Collapse in={dirty}>
+                        <Collapse in={dirty} className={classes.collapse}>
                             <CollapsePaper variant='outlined' style={{ background: '#FCF8E3', color: '#8A6D3B' }}>
                                 <Warning />
                                 <CollapseText>有未儲存的變更</CollapseText>
@@ -65,8 +66,8 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
                     </ContainerPaper>
                 </ContainerGrid>
                 <ContainerGrid item sm={12} md={6} lg={8} xl={9}>
-                    <ContainerPaper>
-
+                    <ContainerPaper style={{ overflowY: "auto" }}>
+                        <MainPanel />
                     </ContainerPaper>
                 </ContainerGrid>
             </ContainerGrid>

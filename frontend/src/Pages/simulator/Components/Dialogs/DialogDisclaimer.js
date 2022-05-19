@@ -14,15 +14,15 @@ const Submit = styled.div`
     justify-content: center;
 `
 
-const FormControlLabel = withStyles(() => ({
+const FormControlLabel = withStyles({
     root: { userSelect: "none" }
-}))(MuiFormControlLabel)
-const CircularProgress = withStyles(() => ({
+})(MuiFormControlLabel)
+const CircularProgress = withStyles({
     root: {
         width: "36px !important",
         height: "36px !important"
     }
-}))(MuiCircularProgress)
+})(MuiCircularProgress)
 
 const defaultState = {
     checked: false,

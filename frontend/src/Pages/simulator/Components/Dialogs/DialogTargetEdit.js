@@ -9,11 +9,11 @@ const TextFields = styled.div`
     display: inline-flex;
     justify-content: space-around;
 `
-const OutlinedInput = withStyles(() => ({
+const OutlinedInput = withStyles({
     root: {
         width: "45%"
     }
-}))(MuiOutlinedInput)
+})(MuiOutlinedInput)
 
 const DialogTargetEdit = ({ editingTarget, onClose }) => {
     const context = useContext(SimulatorContext)

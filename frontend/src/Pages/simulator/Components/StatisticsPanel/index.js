@@ -6,7 +6,7 @@ import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 import { getRawCourseId } from "../../utilities"
 import { Base, Button, ButtonGroup, LinearProgressBlue, ProgressCell, TableCell } from "./style"
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
     category: {
         "&:hover .td-svg-button": {
             visibility: "visible"
@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
     lgTitle: {
         fontSize: 16
     }
-}))
+})
 
 const StatisticItem = React.memo(
     ({ amount, catid, cat_name, credits, target, ...otherProps }) => {

@@ -3,7 +3,7 @@ import { Add, DeleteForever, Edit, ExpandMore, List, MoreHoriz, Visibility } fro
 import React, { useContext, useState } from "react"
 import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 import { Accordion, AccordionDetails, AccordionSummary, Base, Button, ButtonGroup, IconButton, TableCell } from "./style"
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles({
     category: {
         "&:hover svg": {
             visibility: "visible"
@@ -12,7 +12,7 @@ const useStyles = makeStyles(() => ({
     tdTight: {
         "&:first-child": { paddingLeft: 12 }
     }
-}))
+})
 
 const Category = ({ catid, cat_name, visible, onMenuOpen }) => {
     const classes = useStyles()
@@ -82,7 +82,7 @@ const CategoryPanel = () => {
                 <Button startIcon={<List />} onClick={handleGroupAddOpen}>新增群組</Button>
             </ButtonGroup>
 
-            <Accordion>
+            <Accordion defaultExpanded={true}>
                 <AccordionSummary expandIcon={<ExpandMore />}>群組</AccordionSummary>
                 <AccordionDetails>
                     <Table size="small">
@@ -101,7 +101,7 @@ const CategoryPanel = () => {
                 </AccordionDetails>
             </Accordion>
 
-            <Accordion>
+            <Accordion defaultExpanded={true}>
                 <AccordionSummary expandIcon={<ExpandMore />}>類別</AccordionSummary>
                 <AccordionDetails>
                     <Table size="small">

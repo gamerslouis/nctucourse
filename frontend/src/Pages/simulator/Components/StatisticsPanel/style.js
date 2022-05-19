@@ -17,26 +17,26 @@ export const ButtonGroup = styled.div`
     border-bottom: 2px solid rgba(224, 224, 224, 1);
 `
 
-export const Button = withStyles(() => ({
+export const Button = withStyles({
     root: {
         flexGrow: 1
     }
-}))(MuiButton)
+})(MuiButton)
 
-export const TableCell = withStyles(() => ({
+export const TableCell = withStyles({
     sizeSmall: {
         padding: "6px 4px",
         "&:last-child": {
             paddingRight: 4
         }
     }
-}))(MuiTableCell)
+})(MuiTableCell)
 
-export const ProgressCell = withStyles(() => ({
+export const ProgressCell = withStyles({
     sizeSmall: {
         padding: "0px 0px 1px 12px"
     }
-}))(TableCell)
+})(TableCell)
 
 export const LinearProgressBlue = withStyles(theme => ({
     colorPrimary: {
