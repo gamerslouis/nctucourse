@@ -74,9 +74,10 @@ export const CollapseBase = styled.div`
     pointer-events: initial;
 `
 
-export const ContainerPaper = withStyles(() => ({
+export const ContainerPaper = withStyles(theme => ({
     root: {
         height: "100%",
+        padding: theme.spacing(1),
         background: "#fafafa",
         overflowY: "auto"
     }

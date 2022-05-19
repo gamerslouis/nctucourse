@@ -111,7 +111,7 @@ export const updateData = (courses, data, imported) => {
         if (imported_new.indexOf(itemId) !== -1)
             continue
         imported_new.push(itemId)
-        
+
         if (item.cos_cname.startsWith("服務學習") && cat_names["服務學習"]) {
             data_new.content[cat_names["服務學習"]].push(itemId)
         }
@@ -167,4 +167,9 @@ export const generateItemId = (courseId, clone, credits) => {
     if (credits)
         return itemId_raw + "@" + uid + "$" + credits
     return itemId_raw + "@" + uid
+}
+
+export const visibilityFilter = (course, show_zero, show_pending) => {
+    return (show_zero || course.cos_credit !== 0) &&
+        (show_pending || course.levelScore !== "")
 }

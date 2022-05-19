@@ -65,6 +65,7 @@ class Simulator extends React.PureComponent {
         this.handleContextResetOpen = this.handleContextResetOpen.bind(this)
         this.handleContextResetClose = this.handleContextResetClose.bind(this)
         this.handleContextResetConfirm = this.handleContextResetConfirm.bind(this)
+        this.handleCourseDragEnd = this.handleCourseDragEnd.bind(this)
 
         this.contextProps = {
             courses: {},
@@ -208,6 +209,37 @@ class Simulator extends React.PureComponent {
     handleContextResetClose() { this.setState({ dialogContextReset: false }) }
     handleContextResetConfirm() { this.fetchCourseHistory("", true) }
 
+    handleCourseDragEnd(result) {
+        const fromCatid = result.source.droppableId
+        const toCatid = result.destination.droppableId
+        const fromIdx = result.source.index
+        const toIdx = result.destination.index
+        this.setContext(ctx => {
+            if (fromCatid === toCatid) {
+                const cat_content = ctx.content[fromCatid].slice()
+                const [item] = cat_content.splice(fromIdx, 1)
+                cat_content.splice(toIdx, 0, item)
+
+                const content = { ...ctx.content }
+                content[fromCatid] = cat_content
+                return { ...ctx, content }
+            }
+            else {
+                const from_content = ctx.content[fromCatid].slice()
+                const [item] = from_content.splice(fromIdx, 1)
+
+                const to_content = ctx.content[toCatid].slice()
+                if (toCatid !== "unused" || item.indexOf("@") === -1)
+                    to_content.splice(toIdx, 0, item)
+
+                const content = { ...ctx.content }
+                content[fromCatid] = from_content
+                content[toCatid] = to_content
+                return { ...ctx, content }
+            }
+        })
+    }
+
     render() {
         return (
             <SimulatorPropsContext.Provider value={this.contextProps}>
@@ -239,7 +271,8 @@ class Simulator extends React.PureComponent {
                                             <>
                                                 <SimulatorDesktopView
                                                     dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
-                                                    importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
+                                                    importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose}
+                                                    onCourseDragEnd={this.handleCourseDragEnd} />
                                                 <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
                                                     <Settings />
                                                 </OptionFab>
