@@ -18,11 +18,11 @@ const DialogCategoryAdd = ({ open, onClose }) => {
 
     useEffect(() => {
         if (open) {
-            const new_catname = "類別 " + (Object.keys(context.categories).length + 1)
+            const new_catname = "類別 " + (context.layout.filter(catid => !catid.startsWith("g")).length + 1)
             setName(new_catname)
             setError(false)
         }
-    }, [open, context.categories])
+    }, [open, context.layout])
 
     const handleChange = evt => {
         setName(evt.target.value)
@@ -33,13 +33,11 @@ const DialogCategoryAdd = ({ open, onClose }) => {
             handleSubmit()
     }
     const handleSubmit = () => {
-        const catid = "cat_" + ((Object.keys(context.categories)
+        const catid = "cat_" + ((context.layout
+            .filter(catid => !catid.startsWith("g"))
             .map(catid => parseInt(catid.match(/^cat_(\d+)$/)[1]))
             .sort((a, b) => (b - a))[0] ?? 0) + 1)
         setContext(ctx => {
-            const categories = { ...ctx.categories }
-            categories[catid] = true
-
             const cat_names = { ...ctx.cat_names }
             cat_names[catid] = name
 
@@ -52,7 +50,7 @@ const DialogCategoryAdd = ({ open, onClose }) => {
             const targets = { ...ctx.targets }
             targets[catid] = [null, null]
 
-            return { ...ctx, categories, cat_names, layout, content, targets }
+            return { ...ctx, cat_names, layout, content, targets }
         })
         onClose()
     }

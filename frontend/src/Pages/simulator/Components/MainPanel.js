@@ -21,8 +21,8 @@ const PanelColumn = ({ index, size }) => {
                     provided =>
                         <div {...provided.droppableProps} ref={provided.innerRef} style={{ height: "100%" }}>
                             {
-                                context.layout.filter(catid => context.categories[catid])
-                                    .filter((_, idx) => ((idx % size) === index))
+                                context.layout
+                                    .filter((catid, idx) => (!catid.startsWith("g") && (idx % size) === index))
                                     .map((catid, idx) => <Category key={`main-${catid}`} catid={catid} index={idx} />)
                             }
                             {provided.placeholder}

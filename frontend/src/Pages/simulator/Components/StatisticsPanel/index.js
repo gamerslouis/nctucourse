@@ -141,7 +141,7 @@ const StatisticsPanel = () => {
                             context => (
                                 <>
                                     <StatisticItem total catid="total" cat_name="總學分" target={context.targets.total}
-                                        credits={getCourseCredits(Object.keys(context.categories), context.content, context.groups, context.options.show_pending)} />
+                                        credits={getCourseCredits(context.layout.filter(catid => !catid.startsWith("g")), context.content, context.groups, context.options.show_pending)} />
                                     {
                                         context.layout.map(catid => (
                                             <StatisticItem key={`statistics-panel-${catid}`} catid={catid}

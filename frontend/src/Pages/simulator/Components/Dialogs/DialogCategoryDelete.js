@@ -45,9 +45,6 @@ const DialogCategoryDelete = ({ catid, onClose }) => {
                 return { ...ctx, groups, cat_names, layout, targets }
             }
             else {
-                const categories = { ...ctx.categories }
-                delete categories[catid]
-
                 const cat_names = { ...ctx.cat_names }
                 delete cat_names[catid]
 
@@ -62,7 +59,7 @@ const DialogCategoryDelete = ({ catid, onClose }) => {
                 const targets = { ...ctx.targets }
                 delete targets[catid]
 
-                return { ...ctx, categories, cat_names, layout, content, targets }
+                return { ...ctx, cat_names, layout, content, targets }
             }
         })
         onClose()

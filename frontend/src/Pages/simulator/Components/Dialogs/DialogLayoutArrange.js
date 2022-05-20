@@ -19,7 +19,7 @@ const Item = ({ catid, cat_name, index }) => {
     const classes = useStyles()
 
     return (
-        <Draggable key={`dialog-layout-${catid}`} index={index} draggableId={catid} type='CATEGORY'>
+        <Draggable key={`dialog-layout-${catid}`} index={index} draggableId={catid} type="CATEGORY">
             {
                 provided =>
                     <div className={classes.item}
@@ -56,7 +56,7 @@ const DialogLayoutArrange = ({ open, onClose }) => {
             <DialogTitle>調整類別顯示順序</DialogTitle>
             <DialogContent>
                 <DragDropContext onDragEnd={handleDragEnd}>
-                    <Droppable droppableId='categories' type='CATEGORY'>
+                    <Droppable droppableId="categories" type="LAYOUT">
                         {
                             provided =>
                                 <div {...provided.droppableProps} ref={provided.innerRef}>

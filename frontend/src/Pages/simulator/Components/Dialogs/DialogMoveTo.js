@@ -45,7 +45,7 @@ const DialogMoveTo = ({ catid, catidx, open, onClose }) => {
                                 style={{ fontWeight: value === "unused" ? 700 : 500 }}>未分類課程</MenuItem>
                         }
                         {
-                            context.layout.filter(catid => context.categories[catid]).map(
+                            context.layout.map(
                                 catid => <MenuItem key={`dialog-move-to-${catid}`} value={catid}
                                     style={{ fontWeight: value === catid ? 700 : 500 }}>{context.cat_names[catid]}</MenuItem>
                             )

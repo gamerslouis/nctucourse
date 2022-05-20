@@ -30,7 +30,6 @@ export const migrateData = data_old => {
         }
 
         const categories_map = {}
-        data_new.categories = {}
         data_new.cat_names = {}
         data_new.layout = []
         data_new.content = {}
@@ -40,7 +39,6 @@ export const migrateData = data_old => {
             categories_map[cat] = catid
 
             data_new.layout.push(catid)
-            data_new.categories[catid] = true
             data_new.cat_names[catid] = cat
             data_new.content[catid] = data[cat].map(migrateItemId)
             data_new.targets[catid] = parse_target(targets[cat])
@@ -74,7 +72,6 @@ export const migrateData = data_old => {
 export const generateEmptyDataFromTemplate = template => {
     const data = { version: 2 }
     data.cat_names = {}
-    data.categories = {}
     data.content = { unused: [] }
     data.groups = {}
     data.layout = []
@@ -92,7 +89,6 @@ export const generateEmptyDataFromTemplate = template => {
     for (const cat of template.categories) {
         const catid = catids[cat]
         data.cat_names[catid] = cat
-        data.categories[catid] = true
         data.content[catid] = []
         data.layout.push(catid)
         if (template.targets[cat]) {
@@ -159,10 +155,9 @@ export const updateData = (courses, data, imported, template = null) => {
 
     // Add 軍訓 if presented in data
     if (!cat_names.hasOwnProperty("軍訓") && courses.filter(item => (item.type === "軍訓")).length !== 0) {
-        const new_catid = "cat_" + ((Object.keys(data_new.categories)
+        const new_catid = "cat_" + ((data_new.layout.filter(catid => !catid.startsWith("g"))
             .map(catid => parseInt(catid.match(/^cat_(\d+)$/)[1]))
             .sort((a, b) => (b - a))[0] ?? 0) + 1)
-        data_new.categories[new_catid] = true
         data_new.cat_names[new_catid] = "軍訓"
         cat_names["軍訓"] = new_catid
         data_new.content[new_catid] = []
