@@ -1,31 +1,42 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, makeStyles, Typography } from "@material-ui/core"
-import React, { useContext } from "react"
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, ListItemIcon, makeStyles, Menu, MenuItem, Typography } from "@material-ui/core"
+import { ArrowDownward, ArrowUpward, MoreVert } from "@material-ui/icons"
+import React, { useContext, useState } from "react"
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd"
 import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles({
     item: {
         width: "100%",
         display: "flex",
         flexDirection: "row",
-        justifyContent: "center",
         alignItems: "center",
-        padding: theme.spacing(2),
         borderBottom: "1px solid rgba(224, 224, 224, 1)"
+    },
+    itemName: {
+        flexGrow: 1,
+        marginRight: -48,
+        padding: "12px 0px"
     }
-}))
+})
 
-const Item = ({ catid, cat_name, index }) => {
+const Item = ({ catid, cat_name, index, handleMenuOpen }) => {
     const classes = useStyles()
 
+    const handleClick = evt => {
+        handleMenuOpen(index, evt.currentTarget)
+        evt.stopPropagation()
+    }
     return (
         <Draggable key={`dialog-layout-${catid}`} index={index} draggableId={catid} type="CATEGORY">
             {
                 provided =>
-                    <div className={classes.item}
-                        ref={provided.innerRef} style={provided.draggableProps.style}
-                        {...provided.draggableProps} {...provided.dragHandleProps}>
-                        <Typography variant="body1">{cat_name}</Typography>
+                    <div className={classes.item} ref={provided.innerRef}
+                        style={provided.draggableProps.style} {...provided.draggableProps} >
+                        <Typography variant="body1" align="center"
+                            className={classes.itemName} {...provided.dragHandleProps}>
+                            {cat_name}
+                        </Typography>
+                        <IconButton onClick={handleClick}><MoreVert /></IconButton>
                     </div>
             }
         </Draggable>
@@ -33,16 +44,13 @@ const Item = ({ catid, cat_name, index }) => {
 }
 
 const DialogLayoutArrange = ({ open, onClose }) => {
+    const context = useContext(SimulatorContext)
     const { setContext } = useContext(SimulatorPropsContext)
+    const [catidx, setCatidx] = useState(null)
+    const [anchor, setAnchor] = useState(null)
 
-    const handleSubmit = () => {
-        onClose()
-    }
-    const handleDragEnd = result => {
-        if (!result.destination)
-            return
-        const fromIdx = result.source.index
-        const toIdx = result.destination.index
+    const move = (fromIdx, toIdx) => {
+        console.log(fromIdx, toIdx)
         setContext(ctx => {
             const layout = ctx.layout.slice()
             const [item] = layout.splice(fromIdx, 1)
@@ -50,24 +58,47 @@ const DialogLayoutArrange = ({ open, onClose }) => {
             return { ...ctx, layout }
         })
     }
+    const handleDragEnd = result => {
+        if (result.destination)
+            move(result.source.index, result.destination.index)
+    }
+    const handleMenuOpen = (catidx, anchor) => {
+        setCatidx(catidx)
+        setAnchor(anchor)
+    }
+    const handleMenuClose = () => {
+        setCatidx(null)
+        setAnchor(null)
+    }
+    const handleMoveUp = () => {
+        if (catidx > 0)
+            move(catidx, catidx - 1)
+        handleMenuClose()
+    }
+    const handleMoveDown = () => {
+        if (catidx < context.layout.length - 1)
+            move(catidx, catidx + 1)
+        handleMenuClose()
+    }
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
             <DialogTitle>調整類別顯示順序</DialogTitle>
+            <DialogContent style={{ overflowY: "visible" }}>
+                <DialogContentText>拖曳或透過選單來調整順序</DialogContentText>
+            </DialogContent>
             <DialogContent>
                 <DragDropContext onDragEnd={handleDragEnd}>
                     <Droppable droppableId="categories" type="LAYOUT">
                         {
                             provided =>
                                 <div {...provided.droppableProps} ref={provided.innerRef}>
-                                    <SimulatorContext.Consumer>
-                                        {
-                                            context => context.layout.map(
-                                                (catid, idx) => <Item key={`dialog-layout-${catid}`} catid={catid} index={idx}
-                                                    cat_name={context.cat_names[catid]} />
-                                            )
-                                        }
-                                    </SimulatorContext.Consumer>
+                                    {
+                                        context.layout.map(
+                                            (catid, idx) => <Item key={`dialog-layout-${catid}`} catid={catid} index={idx}
+                                                cat_name={context.cat_names[catid]} handleMenuOpen={handleMenuOpen} />
+                                        )
+                                    }
                                     {provided.placeholder}
                                 </div>
                         }
@@ -75,9 +106,13 @@ const DialogLayoutArrange = ({ open, onClose }) => {
                 </DragDropContext>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>取消</Button>
-                <Button onClick={handleSubmit} color="primary">確認</Button>
+                <Button onClick={onClose} color="primary">關閉</Button>
             </DialogActions>
+
+            <Menu open={Boolean(anchor)} anchorEl={anchor} keepMounted onClose={handleMenuClose}>
+                <MenuItem onClick={handleMoveUp}><ListItemIcon><ArrowUpward /></ListItemIcon>上移</MenuItem>
+                <MenuItem onClick={handleMoveDown}><ListItemIcon><ArrowDownward /></ListItemIcon>下移</MenuItem>
+            </Menu>
         </Dialog>
     )
 }
