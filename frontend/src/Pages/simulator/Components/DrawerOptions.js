@@ -26,7 +26,7 @@ const ContextSwitch = ({ optId }) => {
 }
 
 const DrawerOptions = ({ open, onClose }) => {
-    const { setContext, handleContextResetOpen, handleTemplatePortOpen, handleExportImageOpen } = useContext(SimulatorPropsContext)
+    const { setContext, mobile, handleContextResetOpen, handleTemplatePortOpen, handleExportImageOpen } = useContext(SimulatorPropsContext)
 
     const handleSort = evt => {
         evt.stopPropagation()
@@ -77,6 +77,18 @@ const DrawerOptions = ({ open, onClose }) => {
                             <ContextSwitch optId="show_pending" />
                         </ListItemSecondaryAction>
                     </ListItem>
+                    {
+                        mobile && navigator.vibrate &&
+                        <ListItem>
+                            <ListItemIcon>
+                                <FiberNew />
+                            </ListItemIcon>
+                            <ListItemText primary="拖曳時震動" />
+                            <ListItemSecondaryAction>
+                                <ContextSwitch optId="dnd_vibrate" />
+                            </ListItemSecondaryAction>
+                        </ListItem>
+                    }
 
                     <Divider />
 
@@ -106,7 +118,7 @@ const DrawerOptions = ({ open, onClose }) => {
                     </ListItem>
                 </List>
             </Base>
-        </Drawer>
+        </Drawer >
     )
 }
 

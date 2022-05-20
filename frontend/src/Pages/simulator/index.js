@@ -2,6 +2,7 @@ import { CircularProgress, Divider, ListItemIcon, Menu, MenuItem } from "@materi
 import { BarChart, Delete, FileCopy, Send, Settings, TextFields } from "@material-ui/icons"
 import axios from "axios"
 import React from "react"
+import { DragDropContext } from "react-beautiful-dnd"
 import DialogCategoryAdd from "./Components/Dialogs/DialogCategoryAdd"
 import DialogCategoryDelete from "./Components/Dialogs/DialogCategoryDelete"
 import DialogCategoryRename from "./Components/Dialogs/DialogCategoryRename"
@@ -80,7 +81,8 @@ class Simulator extends React.PureComponent {
         this.handleLayoutArrangeClose = this.handleLayoutArrangeClose.bind(this)
         this.handleContextResetOpen = this.handleContextResetOpen.bind(this)
         this.handleContextResetClose = this.handleContextResetClose.bind(this)
-        this.handleCourseDragEnd = this.handleCourseDragEnd.bind(this)
+        this.handleDragStart = this.handleDragStart.bind(this)
+        this.handleDragEnd = this.handleDragEnd.bind(this)
         this.handleMenuUnusedOpen = this.handleMenuUnusedOpen.bind(this)
         this.handleMenuUnusedClose = this.handleMenuUnusedClose.bind(this)
         this.handleMenuCourseOpen = this.handleMenuCourseOpen.bind(this)
@@ -99,6 +101,7 @@ class Simulator extends React.PureComponent {
 
         this.contextProps = {
             courses: {},
+            mobile: /mobile/i.test(navigator.userAgent),
             setContext: this.setContext,
             handleTargetEdit: this.handleTargetEdit,
             handleCategoryAddOpen: this.handleCategoryAddOpen,
@@ -252,7 +255,11 @@ class Simulator extends React.PureComponent {
     handleMenuCourseOpen(idx, catid, itemId, anchor) { this.setState({ menuCourseIdx: idx, menuCourseCatid: catid, menuCourseItemid: itemId, menuCourseAnchor: anchor }) }
     handleMenuCourseClose() { this.setState({ menuCourseIdx: null, menuCourseCatid: null, menuCourseItemid: null, menuCourseAnchor: null }) }
 
-    handleCourseDragEnd(result) {
+    handleDragStart() {
+        if (this.contextProps.mobile && this.context.options.dnd_vibrate && navigator.vibrate)
+            navigator.vibrate(20)
+    }
+    handleDragEnd(result) {
         if (!result.destination)
             return
         const fromCatid = result.source.droppableId
@@ -327,85 +334,86 @@ class Simulator extends React.PureComponent {
 
     render() {
         return (
-            <SimulatorPropsContext.Provider value={this.contextProps}>
-                <SimulatorContext.Provider value={this.state.context}>
-                    <Base>
-                        <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
+            <DragDropContext onDragStart={this.handleDragStart} onDragEnd={this.handleDragEnd}>
+                <SimulatorPropsContext.Provider value={this.contextProps}>
+                    <SimulatorContext.Provider value={this.state.context}>
+                        <Base>
+                            <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
 
-                        <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
-                        <DialogContextReset open={this.state.dialogContextReset}
-                            onClose={this.handleContextResetClose} updateImport={this.updateImport} />
-                        <DialogExportImage open={this.state.dialogExportImage} onClose={this.handleExportImageClose} />
+                            <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
+                            <DialogContextReset open={this.state.dialogContextReset}
+                                onClose={this.handleContextResetClose} updateImport={this.updateImport} />
+                            <DialogExportImage open={this.state.dialogExportImage} onClose={this.handleExportImageClose} />
 
-                        <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
-                            keepMounted onClose={this.handleMenuUnusedClose}>
-                            <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
-                        </Menu>
+                            <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
+                                keepMounted onClose={this.handleMenuUnusedClose}>
+                                <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                            </Menu>
 
-                        <Menu open={Boolean(this.state.menuCourseAnchor) &&
-                            this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") === -1}
-                            anchorEl={this.state.menuCourseAnchor}
-                            keepMounted onClose={this.handleMenuCourseClose}>
-                            <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
-                            <Divider style={{ margin: "4px 0px" }} />
-                            <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
-                            <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
-                        </Menu>
+                            <Menu open={Boolean(this.state.menuCourseAnchor) &&
+                                this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") === -1}
+                                anchorEl={this.state.menuCourseAnchor}
+                                keepMounted onClose={this.handleMenuCourseClose}>
+                                <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
+                                <Divider style={{ margin: "4px 0px" }} />
+                                <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                                <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
+                            </Menu>
 
-                        <Menu open={Boolean(this.state.menuCourseAnchor) &&
-                            this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") !== -1}
-                            anchorEl={this.state.menuCourseAnchor}
-                            keepMounted onClose={this.handleMenuCourseClose}>
-                            <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
-                            <Divider style={{ margin: "4px 0px" }} />
-                            <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
-                            <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
-                            <Divider style={{ margin: "4px 0px" }} />
-                            <MenuItem onClick={this.handleCloneAdjustOpen}><ListItemIcon><BarChart /></ListItemIcon>調整學分</MenuItem>
-                            <MenuItem onClick={this.handleRemoveClone}><ListItemIcon><Delete /></ListItemIcon>移除複製</MenuItem>
-                        </Menu>
+                            <Menu open={Boolean(this.state.menuCourseAnchor) &&
+                                this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") !== -1}
+                                anchorEl={this.state.menuCourseAnchor}
+                                keepMounted onClose={this.handleMenuCourseClose}>
+                                <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
+                                <Divider style={{ margin: "4px 0px" }} />
+                                <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                                <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
+                                <Divider style={{ margin: "4px 0px" }} />
+                                <MenuItem onClick={this.handleCloneAdjustOpen}><ListItemIcon><BarChart /></ListItemIcon>調整學分</MenuItem>
+                                <MenuItem onClick={this.handleRemoveClone}><ListItemIcon><Delete /></ListItemIcon>移除複製</MenuItem>
+                            </Menu>
 
-                        {
-                            this.state.contextReady ?
-                                <>
-                                    <DialogTargetEdit editingTarget={this.state.dialogEditingTarget} onClose={this.handleTargetEditClose} />
+                            {
+                                this.state.contextReady ?
+                                    <>
+                                        <DialogTargetEdit editingTarget={this.state.dialogEditingTarget} onClose={this.handleTargetEditClose} />
 
-                                    <DialogCategoryAdd open={this.state.dialogCategoryAdd} onClose={this.handleCategoryAddClose} />
-                                    <DialogCategoryRename catid={this.state.dialogCategoryRename} onClose={this.handleCategoryRenameClose} />
-                                    <DialogCategoryDelete catid={this.state.dialogCategoryDelete} onClose={this.handleCategoryDeleteClose} />
+                                        <DialogCategoryAdd open={this.state.dialogCategoryAdd} onClose={this.handleCategoryAddClose} />
+                                        <DialogCategoryRename catid={this.state.dialogCategoryRename} onClose={this.handleCategoryRenameClose} />
+                                        <DialogCategoryDelete catid={this.state.dialogCategoryDelete} onClose={this.handleCategoryDeleteClose} />
 
-                                    <DialogGroupAdd open={this.state.dialogGroupAdd} onClose={this.handleGroupAddClose} />
-                                    <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
+                                        <DialogGroupAdd open={this.state.dialogGroupAdd} onClose={this.handleGroupAddClose} />
+                                        <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
 
-                                    <DialogLayoutArrange open={this.state.dialogLayoutArrange} onClose={this.handleLayoutArrangeClose} />
+                                        <DialogLayoutArrange open={this.state.dialogLayoutArrange} onClose={this.handleLayoutArrangeClose} />
 
-                                    <DialogCloneAdjust open={this.state.dialogCloneAdjust} onClose={this.handleCloneAdjustClose}
-                                        catid={this.state.menuCourseCatid} catidx={this.state.menuCourseIdx} itemId={this.state.menuCourseItemid} />
-                                    <DialogMoveTo open={this.state.dialogMoveTo} onClose={this.handleMoveToClose}
-                                        catid={this.state.menuCourseCatid ?? "unused"} catidx={this.state.menuCourseIdx ?? this.state.menuUnusedIdx} />
+                                        <DialogCloneAdjust open={this.state.dialogCloneAdjust} onClose={this.handleCloneAdjustClose}
+                                            catid={this.state.menuCourseCatid} catidx={this.state.menuCourseIdx} itemId={this.state.menuCourseItemid} />
+                                        <DialogMoveTo open={this.state.dialogMoveTo} onClose={this.handleMoveToClose}
+                                            catid={this.state.menuCourseCatid ?? "unused"} catidx={this.state.menuCourseIdx ?? this.state.menuUnusedIdx} />
 
-                                    <DialogTemplatePort open={this.state.dialogTemplatePort}
-                                        onClose={this.handleTemplatePortClose} updateImport={this.updateImport} />
+                                        <DialogTemplatePort open={this.state.dialogTemplatePort}
+                                            onClose={this.handleTemplatePortClose} updateImport={this.updateImport} />
 
-                                    {
-                                        /mobile/i.test(navigator.userAgent) ?
-                                            <SimulatorMobileView /> :
-                                            <>
-                                                <SimulatorDesktopView
-                                                    dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
-                                                    importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose}
-                                                    onCourseDragEnd={this.handleCourseDragEnd} />
-                                                <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
-                                                    <Settings />
-                                                </OptionFab>
-                                            </>
-                                    }
-                                </> :
-                                <LoadingContext><CircularProgress /></LoadingContext>
-                        }
-                    </Base>
-                </SimulatorContext.Provider>
-            </SimulatorPropsContext.Provider>
+                                        {
+                                            /mobile/i.test(navigator.userAgent) ?
+                                                <SimulatorMobileView /> :
+                                                <>
+                                                    <SimulatorDesktopView
+                                                        dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
+                                                        importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
+                                                    <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
+                                                        <Settings />
+                                                    </OptionFab>
+                                                </>
+                                        }
+                                    </> :
+                                    <LoadingContext><CircularProgress /></LoadingContext>
+                            }
+                        </Base>
+                    </SimulatorContext.Provider>
+                </SimulatorPropsContext.Provider>
+            </DragDropContext>
         )
     }
 }

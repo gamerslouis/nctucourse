@@ -1,6 +1,6 @@
 import { template_107, template_110 } from "./default_templates"
 
-export const migrateData = (data_old) => {
+export const migrateData = data_old => {
     const data_new = { version: 2 }
     const version = data_old.version ?? 1
     if (version === 1) {
@@ -81,7 +81,8 @@ export const generateEmptyDataFromTemplate = template => {
     data.options = {
         show_zero: true,
         show_details: false,
-        show_pending: true
+        show_pending: true,
+        dnd_vibrate: true
     }
     data.targets = {}
 

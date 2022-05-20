@@ -1,4 +1,4 @@
-import { Paper, withStyles } from "@material-ui/core";
+import { IconButton as MuiIconButton, Paper, Typography as MuiTypography, withStyles } from "@material-ui/core";
 import styled from "styled-components";
 
 export const Base = styled.div`
@@ -41,7 +41,6 @@ export const Title = styled.div`
     height: 50px;
 
     display: inline-flex;
-    justify-content: space-between;
     align-items: center;
 
     padding: 0px 28px;
@@ -60,6 +59,14 @@ export const Title = styled.div`
         box-shadow: 0px -2px 1px -1px rgb(0 0 0 / 20%);
     `}
 `
+
+export const Typography = withStyles({
+    root: { flexGrow: 1 }
+})(MuiTypography)
+
+export const IconButton = withStyles({
+    root: { padding: 6 }
+})(MuiIconButton)
 
 export const CollapseBase = styled.div`
     width: 100%;

@@ -1,11 +1,11 @@
-import { Collapse, Typography } from "@material-ui/core"
-import { KeyboardArrowDown } from "@material-ui/icons"
+import { Collapse } from "@material-ui/core"
+import { KeyboardArrowDown, Sort } from "@material-ui/icons"
 import React, { useContext, useState } from "react"
 import { Droppable } from "react-beautiful-dnd"
 import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 import { getRawCourseId, visibilityFilter } from "../../utilities"
 import Course from "../Course"
-import { Background, Base, CollapseBase, ContainerPaper, Title } from "./style"
+import { Background, Base, CollapseBase, ContainerPaper, IconButton, Title, Typography } from "./style"
 
 const UnusedItems = () => {
     const { courses } = useContext(SimulatorPropsContext)
@@ -18,7 +18,12 @@ const UnusedItems = () => {
             <Background open={open} onClick={handleClose} />
             <Title open={open} onClick={toggleOpen}>
                 <Typography variant="h6">未分類課程</Typography>
-                <KeyboardArrowDown style={{ transform: `scaleY(${open ? 1 : -1})`, transition: "transform .3s" }} />
+                <IconButton style={{
+                    opacity: open ? 1 : 0,
+                    visibility: open ? "visible" : "hidden",
+                    transition: "visibility 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, opacity 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
+                }}><Sort /></IconButton>
+                <KeyboardArrowDown style={{ marginLeft: 6, transform: `scaleY(${open ? 1 : -1})`, transition: "transform .3s" }} />
             </Title>
             <Collapse in={open}>
                 <CollapseBase>

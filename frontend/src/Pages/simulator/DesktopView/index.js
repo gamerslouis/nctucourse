@@ -1,7 +1,6 @@
 import { Collapse, makeStyles, Tabs } from "@material-ui/core"
 import { Cancel, Info, Warning } from "@material-ui/icons"
 import React, { useState } from 'react'
-import { DragDropContext } from "react-beautiful-dnd"
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews"
 import CategoryPanel from "../Components/CategoryPanel"
 import MainPanel from "../Components/MainPanel"
@@ -19,13 +18,12 @@ const useStyles = makeStyles({
     }
 })
 
-const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSuccessClose, onCourseDragEnd }) => {
+const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSuccessClose }) => {
     const classes = useStyles()
     const [tabIndex, setTabIndex] = useState(0)
     const handleTabSwitch = (_, value) => setTabIndex(value)
 
     return (
-        <DragDropContext onDragEnd={onCourseDragEnd}>
             <ContainerGrid container direction="row" spacing={2}>
                 <ContainerGrid item sm={12} md={6} lg={4} xl={3}>
                     <ContainerPaper style={{ display: "flex", flexDirection: "column", paddingBottom: 50 }}>
@@ -71,7 +69,6 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
                     </ContainerPaper>
                 </ContainerGrid>
             </ContainerGrid>
-        </DragDropContext>
     )
 }
 

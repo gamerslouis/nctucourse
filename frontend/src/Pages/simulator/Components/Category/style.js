@@ -39,7 +39,16 @@ export const AccordionSummary = withStyles({
         "&$expanded": {
             margin: 0
         },
-        "& > button": { padding: 6 }
+        "& > button": {
+            padding: 6,
+            opacity: 0,
+            visibility: "hidden",
+            transition: "visibility 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, opacity 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
+        },
+        "&$expanded > button": {
+            opacity: 1,
+            visibility: "visible"
+        }
     },
     expanded: {},
     expandIcon: { padding: 6 }
