@@ -153,7 +153,7 @@ class Simulator extends React.PureComponent {
             })
     }
 
-    fetchCourseHistory(import_last_updated_time = "") {
+    fetchCourseHistory(import_last_updated_time = null) {
         axios.get(`${process.env.REACT_APP_HOST}/api/accounts/courses_history`)
             .then(res => res.data).then(json => {
                 const { data, last_updated_time: course_last_updated_time } = json
@@ -168,10 +168,10 @@ class Simulator extends React.PureComponent {
                     item.levelScore === "" || item.levelScore === "抵免" || item.levelScore === "通過" || item.levelScore < "F"
                 ))
                 this.course_list = history
-                this.course_last_updated_time = course_last_updated_time
+                this.course_last_updated_time = course_last_updated_time ?? ""
 
                 this.contextProps.courses = course_map
-                if (import_last_updated_time !== course_last_updated_time) {
+                if (import_last_updated_time !== this.course_last_updated_time) {
                     this.updateImport()
                 }
                 else {
@@ -190,17 +190,17 @@ class Simulator extends React.PureComponent {
                 const [data_new, imported_new] = updateData(this.course_list, reset ? {} : copyData(this.state.context), reset ? [] : imported, template)
 
                 this.setState({ context: data_new, importSuccess: true },
-                    () => this.syncToServer(imported_new, this.course_last_updated_time))
+                    () => this.syncToServer(imported_new))
             })
     }
 
-    syncToServer(imported_courses = undefined, last_updated_time = undefined) {
+    syncToServer(imported_courses = null) {
         const data = {}
         data["data"] = JSON.stringify(this.state.context)
-        if (imported_courses)
+        if (imported_courses !== null) {
             data["imported_courses"] = JSON.stringify(imported_courses)
-        if (last_updated_time)
-            data["last_updated_time"] = last_updated_time
+            data["last_updated_time"] = this.course_last_updated_time
+        }
         axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_update`, data).then(res => {
             this.setState({
                 contextReady: true,

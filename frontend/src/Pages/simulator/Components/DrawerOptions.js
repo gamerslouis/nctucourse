@@ -1,5 +1,5 @@
 import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
-import { DeleteForever, FiberNew, GetApp, ImportExport, Input, Subject, Visibility } from "@material-ui/icons"
+import { DeleteForever, FiberNew, GetApp, ImportExport, Input, Sort, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../Context"
@@ -26,28 +26,26 @@ const ContextSwitch = ({ optId }) => {
 }
 
 const DrawerOptions = ({ open, onClose }) => {
-    const { handleContextResetOpen, handleTemplatePortOpen, handleExportImageOpen } = useContext(SimulatorPropsContext)
+    const { setContext, handleContextResetOpen, handleTemplatePortOpen, handleExportImageOpen } = useContext(SimulatorPropsContext)
+
+    const handleSort = evt => {
+        evt.stopPropagation()
+        setContext(ctx => {
+            const content = { ...ctx.content }
+            for (const catid in content)
+                content[catid] = ctx.content[catid].slice().sort()
+            return { ...ctx, content }
+        })
+    }
     return (
         <Drawer anchor="right" open={open} onClose={onClose}>
             <Base>
                 <List subheader={<ListSubheader>Settings</ListSubheader>}>
-                    <ListItem button component="a" href="/gpa/import?redir=simulator">
+                    <ListItem button onClick={handleSort}>
                         <ListItemIcon>
-                            <Input />
+                            <Sort />
                         </ListItemIcon>
-                        <ListItemText primary="匯入歷史成績" />
-                    </ListItem>
-                    <ListItem button onClick={handleTemplatePortOpen}>
-                        <ListItemIcon>
-                            <ImportExport />
-                        </ListItemIcon>
-                        <ListItemText primary="匯入/匯出模板" />
-                    </ListItem>
-                    <ListItem button onClick={handleExportImageOpen}>
-                        <ListItemIcon>
-                            <GetApp />
-                        </ListItemIcon>
-                        <ListItemText primary="另存為圖片" />
+                        <ListItemText primary="排序所有類別課程" />
                     </ListItem>
 
                     <Divider />
@@ -82,6 +80,24 @@ const DrawerOptions = ({ open, onClose }) => {
 
                     <Divider />
 
+                    <ListItem button component="a" href="/gpa/import?redir=simulator">
+                        <ListItemIcon>
+                            <Input />
+                        </ListItemIcon>
+                        <ListItemText primary="匯入歷史成績" />
+                    </ListItem>
+                    <ListItem button onClick={handleTemplatePortOpen}>
+                        <ListItemIcon>
+                            <ImportExport />
+                        </ListItemIcon>
+                        <ListItemText primary="匯入/匯出模板" />
+                    </ListItem>
+                    <ListItem button onClick={handleExportImageOpen}>
+                        <ListItemIcon>
+                            <GetApp />
+                        </ListItemIcon>
+                        <ListItemText primary="另存為圖片" />
+                    </ListItem>
                     <ListItem button onClick={handleContextResetOpen}>
                         <ListItemIcon>
                             <DeleteForever />

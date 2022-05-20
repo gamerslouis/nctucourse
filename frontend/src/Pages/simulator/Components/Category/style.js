@@ -30,12 +30,16 @@ export const AccordionSummary = withStyles({
         }
     },
     content: {
+        display: "inline-flex",
+        justifyContent: "space-between",
+        alignItems: "center",
         margin: 0,
         padding: 6,
         fontSize: "1rem",
         "&$expanded": {
             margin: 0
-        }
+        },
+        "& > button": { padding: 6 }
     },
     expanded: {},
     expandIcon: { padding: 6 }
