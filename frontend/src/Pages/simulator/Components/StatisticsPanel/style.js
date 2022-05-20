@@ -23,14 +23,16 @@ export const Button = withStyles({
     }
 })(MuiButton)
 
-export const TableCell = withStyles({
+export const TableCell = withStyles(theme => ({
     sizeSmall: {
         padding: "6px 4px",
-        "&:last-child": {
-            paddingRight: 4
+        "&:last-child": { paddingRight: 4 },
+        [theme.breakpoints.down("sm")]: {
+            paddingTop: 10,
+            paddingBottom: 10
         }
     }
-})(MuiTableCell)
+}))(MuiTableCell)
 
 export const ProgressCell = withStyles({
     sizeSmall: {

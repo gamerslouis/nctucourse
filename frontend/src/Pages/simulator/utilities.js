@@ -1,4 +1,4 @@
-import { template_107, template_110 } from "./default_templates"
+import { default_options, template_107, template_110 } from "./defaults"
 
 export const migrateData = data_old => {
     const data_new = { version: 2 }
@@ -24,6 +24,7 @@ export const migrateData = data_old => {
         }
 
         data_new.options = {
+            ...default_options,
             show_pending: (controlFlag & 0b0001) !== 0,
             show_zero: (controlFlag & 0b0010) !== 0,
             show_details: (controlFlag & 0b1000) !== 0,
@@ -84,12 +85,7 @@ export const generateEmptyDataFromTemplate = template => {
     data.content = { unused: [] }
     data.groups = {}
     data.layout = []
-    data.options = {
-        show_zero: true,
-        show_details: false,
-        show_pending: true,
-        dnd_vibrate: true
-    }
+    data.options = { ...default_options }
     data.targets = {}
     data.panel_layouts = {
         md: [[]],

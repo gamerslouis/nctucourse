@@ -1,3 +1,10 @@
+export const default_options = {
+    show_zero: true,
+    show_details: false,
+    show_pending: true,
+    dnd_vibrate: true
+}
+
 export const template_107 = {
     version: 2,
     categories: [

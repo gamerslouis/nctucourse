@@ -1,4 +1,4 @@
-import { Divider, Drawer, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, Switch as MuiSwitch } from "@material-ui/core"
+import { Divider, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, SwipeableDrawer, Switch as MuiSwitch } from "@material-ui/core"
 import { DeleteForever, FiberNew, GetApp, ImportExport, Input, Sort, Subject, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
@@ -38,7 +38,7 @@ const DrawerOptions = ({ open, onClose }) => {
         })
     }
     return (
-        <Drawer anchor="right" open={open} onClose={onClose}>
+        <SwipeableDrawer anchor="right" open={open} onClose={onClose}>
             <Base>
                 <List subheader={<ListSubheader>Settings</ListSubheader>}>
                     <ListItem button onClick={handleSort}>
@@ -118,7 +118,7 @@ const DrawerOptions = ({ open, onClose }) => {
                     </ListItem>
                 </List>
             </Base>
-        </Drawer >
+        </SwipeableDrawer>
     )
 }
 

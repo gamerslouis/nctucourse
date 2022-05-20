@@ -1,12 +1,13 @@
 import { Collapse, makeStyles, Tabs } from "@material-ui/core"
 import { Cancel, Info, Warning } from "@material-ui/icons"
-import React, { useState } from 'react'
+import { useSnackbar } from "notistack"
+import React, { useEffect, useState } from 'react'
 import SwipeableViews from "react-swipeable-views/lib/SwipeableViews"
 import CategoryPanel from "../Components/CategoryPanel"
 import MainPanel from "../Components/MainPanel"
 import StatisticsPanel from "../Components/StatisticsPanel"
 import UnusedItems from "../Components/UnusedItems"
-import { CollapseButton, CollapsePaper, CollapseSave, CollapseText, ContainerGrid, ContainerPaper, Tab, TabPanel } from "./style"
+import { Base, CollapseButton, CollapsePaper, CollapseSave, CollapseText, ContainerGrid, ContainerPaper, Tab, TabPanel } from "./style"
 
 const useStyles = makeStyles({
     view: {
@@ -19,11 +20,15 @@ const useStyles = makeStyles({
 })
 
 const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSuccessClose }) => {
+    const { closeSnackbar } = useSnackbar()
     const classes = useStyles()
     const [tabIndex, setTabIndex] = useState(0)
     const handleTabSwitch = (_, value) => setTabIndex(value)
 
+    useEffect(() => closeSnackbar(), [closeSnackbar])
+
     return (
+        <Base>
             <ContainerGrid container direction="row" spacing={2}>
                 <ContainerGrid item sm={12} md={6} lg={4} xl={3}>
                     <ContainerPaper style={{ display: "flex", flexDirection: "column", paddingBottom: 50 }}>
@@ -69,6 +74,7 @@ const SimulatorDesktopView = ({ dirty, importSuccess, onDirtyClose, onImportSucc
                     </ContainerPaper>
                 </ContainerGrid>
             </ContainerGrid>
+        </Base>
     )
 }
 

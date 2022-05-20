@@ -1,6 +1,12 @@
 import { Button, Grid as MuiGrid, IconButton, Paper, Tab as MuiTab, withStyles } from "@material-ui/core"
 import styled from "styled-components"
 
+export const Base = styled.div`
+    height: 100%;
+
+    padding: 0px 24px;
+`
+
 export const ContainerGrid = withStyles({
     root: { height: "100%" }
 })(MuiGrid)

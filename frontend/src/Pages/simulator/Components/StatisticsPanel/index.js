@@ -6,7 +6,7 @@ import { SimulatorContext, SimulatorPropsContext } from "../../Context"
 import { getRawCourseId } from "../../utilities"
 import { Base, Button, ButtonGroup, LinearProgressBlue, ProgressCell, TableCell } from "./style"
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
     category: {
         "&:hover .td-svg-button": {
             visibility: "visible"
@@ -15,15 +15,21 @@ const useStyles = makeStyles({
     tdButton: {
         cursor: "pointer",
         "&:hover .td-svg-button": {
-            color: "rgba(0, 0, 0, 0.85)"
-        }
+            color: "rgba(0, 0, 0, 0.7)"
+        },
+        [theme.breakpoints.down("sm")]: { paddingLeft: 10 }
     },
     svg: {
         width: 18,
         height: 18,
-        color: "rgba(0, 0, 0, 0.6)",
+        color: "rgba(0, 0, 0, 0.4)",
         visibility: "hidden",
-        transition: "color 0.3s"
+        transition: "color 0.3s",
+        [theme.breakpoints.down("sm")]: {
+            width: 24,
+            height: 24,
+            visibility: "visible"
+        }
     },
     nullBorder: {
         borderBottom: 0
@@ -34,8 +40,14 @@ const useStyles = makeStyles({
     },
     lgTitle: {
         fontSize: 16
+    },
+    button: {
+        [theme.breakpoints.down("sm")]: {
+            paddingTop: 12,
+            paddingBottom: 12
+        }
     }
-})
+}))
 
 const StatisticItem = React.memo(
     ({ amount, catid, cat_name, credits, target, ...otherProps }) => {
@@ -69,7 +81,7 @@ const StatisticItem = React.memo(
                             {target[1] ? `${amount}/${target[1]}` : amount}門
                         </TableCell>
                     }
-                    <TableCell rowSpan={rows} className={classes.tdButton} onClick={handleClick}>
+                    <TableCell rowSpan={rows} className={clsx(classes.tdButton)} onClick={handleClick}>
                         <Edit className={clsx("td-svg-button", classes.svg)} />
                     </TableCell>
                 </TableRow>
@@ -95,6 +107,7 @@ const StatisticItem = React.memo(
     })
 
 const StatisticsPanel = () => {
+    const classes = useStyles()
     const { courses, handleLayoutArrangeOpen } = useContext(SimulatorPropsContext)
     const populateGroupedCategories = (cats, groups) => {
         let flag = true
@@ -131,7 +144,10 @@ const StatisticsPanel = () => {
     return (
         <Base>
             <ButtonGroup>
-                <Button startIcon={<LowPriority />} onClick={handleLayoutArrangeOpen}>調整類別顯示順序</Button>
+                <Button startIcon={<LowPriority />} className={classes.button}
+                    onClick={handleLayoutArrangeOpen}>
+                    調整類別顯示順序
+                </Button>
             </ButtonGroup>
 
             <Table size="small" id="simulator-statistics-table">
