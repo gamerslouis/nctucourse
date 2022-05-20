@@ -68,8 +68,8 @@ export const template_110 = {
             "領域-科技與自然"
         ],
         "核心課程": [
-            "gcat_0",
-            "gcat_1"
+            "基本素養",
+            "領域課程"
         ]
     },
     targets: {
