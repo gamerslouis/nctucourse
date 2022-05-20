@@ -2,6 +2,7 @@ import { BottomNavigationAction, Button, IconButton, Slide } from "@material-ui/
 import { Apps, BarChart, Cancel, List, Settings } from "@material-ui/icons"
 import { useSnackbar } from "notistack"
 import React, { useEffect, useState } from "react"
+import CategoryPanel from "../Components/CategoryPanel"
 import StatisticsPanel from "../Components/StatisticsPanel"
 import { Base, BottomNavigation, PanelContainer } from "./style"
 
@@ -56,6 +57,12 @@ const SimulatorMobileView = ({ dirty, importSuccess, onDirtyClose, onImportSucce
                 tabIndex === 1 &&
                 <PanelContainer style={{ paddingLeft: 24, paddingRight: 8 }}>
                     <StatisticsPanel />
+                </PanelContainer>
+            }
+            {
+                tabIndex === 2 &&
+                <PanelContainer style={{ paddingLeft: 16, paddingRight: 16 }}>
+                    <CategoryPanel />
                 </PanelContainer>
             }
             <BottomNavigation showLabels value={tabIndex} onChange={handleTabIndexChange}>

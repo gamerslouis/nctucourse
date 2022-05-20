@@ -1,18 +1,31 @@
-import { Divider, ListItemIcon, makeStyles, Menu, MenuItem, Table, TableBody, TableRow } from "@material-ui/core"
+import { Button, Divider, IconButton, ListItemIcon, makeStyles, Menu, MenuItem, Typography } from "@material-ui/core"
 import { Add, DeleteForever, Edit, ExpandMore, List, MoreHoriz } from "@material-ui/icons"
 import React, { useContext, useState } from "react"
 import { SimulatorContext, SimulatorPropsContext } from "../../Context"
-import { Accordion, AccordionDetails, AccordionSummary, Base, Button, ButtonGroup, IconButton, TableCell } from "./style"
-const useStyles = makeStyles({
+import { Accordion, AccordionDetails, AccordionSummary, Base, ButtonGroup } from "./style"
+
+const useStyles = makeStyles(theme => ({
     category: {
-        "&:hover svg": {
-            visibility: "visible"
-        }
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        padding: "0px 4px",
+        borderBottom: "1px solid rgba(224, 224, 224, 1)",
+        [theme.breakpoints.down("sm")]: { padding: "0px 6px" }
     },
-    tdTight: {
-        "&:first-child": { paddingLeft: 12 }
+    name: { flexGrow: 1 },
+    iconButton: {
+        padding: 6,
+        [theme.breakpoints.down("sm")]: { padding: 10 }
+    },
+    button: {
+        flexGrow: 1,
+        [theme.breakpoints.down("sm")]: {
+            paddingTop: 12,
+            paddingBottom: 12
+        }
     }
-})
+}))
 
 const Category = ({ catid, cat_name, onMenuOpen }) => {
     const classes = useStyles()
@@ -20,16 +33,16 @@ const Category = ({ catid, cat_name, onMenuOpen }) => {
     const handleClick = evt => onMenuOpen(catid, evt.currentTarget)
 
     return (
-        <TableRow className={classes.category}>
-            <TableCell>{cat_name}</TableCell>
-            <TableCell className={classes.tdTight} onClick={handleClick}>
-                <IconButton><MoreHoriz /></IconButton>
-            </TableCell>
-        </TableRow>
+        <div className={classes.category}>
+            <Typography className={classes.name} variant="body2">{cat_name}</Typography>
+            <IconButton className={classes.iconButton} onClick={handleClick}><MoreHoriz /></IconButton>
+        </div>
     )
 }
 
 const CategoryPanel = () => {
+    const classes = useStyles()
+
     const {
         handleCategoryAddOpen,
         handleCategoryRenameOpen,
@@ -64,44 +77,40 @@ const CategoryPanel = () => {
     return (
         <Base>
             <ButtonGroup>
-                <Button startIcon={<Add />} onClick={handleCategoryAddOpen}>新增類別</Button>
+                <Button className={classes.button} startIcon={<Add />} onClick={handleCategoryAddOpen}>新增類別</Button>
                 <Divider flexItem orientation="vertical" />
-                <Button startIcon={<List />} onClick={handleGroupAddOpen}>新增群組</Button>
+                <Button className={classes.button} startIcon={<List />} onClick={handleGroupAddOpen}>新增群組</Button>
             </ButtonGroup>
 
             <Accordion defaultExpanded={true}>
                 <AccordionSummary expandIcon={<ExpandMore />}>群組</AccordionSummary>
                 <AccordionDetails>
-                    <Table size="small">
-                        <TableBody>
-                            <SimulatorContext.Consumer>
-                                {
-                                    context => context.layout.filter(catid => catid.startsWith("g")).map(
-                                        catid => <Category key={`category-panel-${catid}`} catid={catid}
-                                            cat_name={context.cat_names[catid]} onMenuOpen={handleMenuOpen} />
-                                    )
-                                }
-                            </SimulatorContext.Consumer>
-                        </TableBody>
-                    </Table>
+                    <div style={{ width: "100%" }}>
+                        <SimulatorContext.Consumer>
+                            {
+                                context => context.layout.filter(catid => catid.startsWith("g")).map(
+                                    catid => <Category key={`category-panel-${catid}`} catid={catid}
+                                        cat_name={context.cat_names[catid]} onMenuOpen={handleMenuOpen} />
+                                )
+                            }
+                        </SimulatorContext.Consumer>
+                    </div>
                 </AccordionDetails>
             </Accordion>
 
             <Accordion defaultExpanded={true}>
                 <AccordionSummary expandIcon={<ExpandMore />}>類別</AccordionSummary>
                 <AccordionDetails>
-                    <Table size="small">
-                        <TableBody>
-                            <SimulatorContext.Consumer>
-                                {
-                                    context => context.layout.filter(catid => !catid.startsWith("g")).map(
-                                        catid => <Category key={`category-panel-${catid}`} catid={catid}
-                                            cat_name={context.cat_names[catid]} onMenuOpen={handleMenuOpen} />
-                                    )
-                                }
-                            </SimulatorContext.Consumer>
-                        </TableBody>
-                    </Table>
+                    <div style={{ width: "100%" }}>
+                        <SimulatorContext.Consumer>
+                            {
+                                context => context.layout.filter(catid => !catid.startsWith("g")).map(
+                                    catid => <Category key={`category-panel-${catid}`} catid={catid}
+                                        cat_name={context.cat_names[catid]} onMenuOpen={handleMenuOpen} />
+                                )
+                            }
+                        </SimulatorContext.Consumer>
+                    </div>
                 </AccordionDetails>
             </Accordion>
 
