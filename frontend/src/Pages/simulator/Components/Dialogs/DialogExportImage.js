@@ -12,30 +12,48 @@ const DialogExportImage = ({ open, onClose }) => {
         }
         window.scrollTo(0, 0)
         setTimeout(() => html2canvas(element).then(canvas => {
-            function iOS() {
-                return [
-                    'iPad Simulator',
-                    'iPhone Simulator',
-                    'iPod Simulator',
-                    'iPad',
-                    'iPhone',
-                    'iPod'
-                ].includes(navigator.platform)
-                    // iPad on iOS 13 detection
-                    || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+            const exportCanvas = canvas => {
+                function iOS() {
+                    return [
+                        'iPad Simulator',
+                        'iPhone Simulator',
+                        'iPod Simulator',
+                        'iPad',
+                        'iPhone',
+                        'iPod'
+                    ].includes(navigator.platform)
+                        // iPad on iOS 13 detection
+                        || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
+                }
+                if (iOS()) {
+                    const image = new Image()
+                    image.src = canvas.toDataURL()
+                    const w = window.open("")
+                    w.document.write(image.outerHTML)
+                }
+                else {
+                    const a = document.createElement('a')
+                    a.href = canvas.toDataURL("image/png")
+                    a.download = 'image.png'
+                    a.click()
+                }
             }
-            if (iOS()) {
-                const image = new Image()
-                image.src = canvas.toDataURL()
-                const w = window.open("")
-                w.document.write(image.outerHTML)
+            const statistics_table = document.getElementById('simulator-statistics-table')
+            if (statistics_table) {
+                html2canvas(statistics_table).then(canvas2 => {
+                    const merged_canvas = document.createElement("canvas")
+                    merged_canvas.width = canvas.width + canvas2.width
+                    merged_canvas.height = Math.max(canvas.height, canvas2.height)
+                    const ctx = merged_canvas.getContext("2d")
+                    ctx.fillStyle = "white"
+                    ctx.fillRect(0, 0, merged_canvas.width, merged_canvas.height)
+                    ctx.drawImage(canvas2, 0, 0)
+                    ctx.drawImage(canvas, canvas2.width, 0)
+                    exportCanvas(merged_canvas)
+                })
             }
-            else {
-                const a = document.createElement('a')
-                a.href = canvas.toDataURL("image/png")
-                a.download = 'image.png'
-                a.click()
-            }
+            else
+                exportCanvas(canvas)
         }), 500)
     }
 

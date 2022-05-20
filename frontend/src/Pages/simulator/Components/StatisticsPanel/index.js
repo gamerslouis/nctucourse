@@ -134,7 +134,7 @@ const StatisticsPanel = () => {
                 <Button startIcon={<LowPriority />} onClick={handleLayoutArrangeOpen}>調整類別顯示順序</Button>
             </ButtonGroup>
 
-            <Table size="small">
+            <Table size="small" id="simulator-statistics-table">
                 <TableBody>
                     <SimulatorContext.Consumer>
                         {
