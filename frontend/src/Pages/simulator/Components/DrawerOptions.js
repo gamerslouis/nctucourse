@@ -25,7 +25,7 @@ const ContextSwitch = ({ optId }) => {
     )
 }
 
-const DrawerOptions = ({ open, onClose }) => {
+const DrawerOptions = ({ open, onOpen, onClose }) => {
     const { setContext, mobile, handleContextResetOpen, handleTemplatePortOpen, handleExportImageOpen } = useContext(SimulatorPropsContext)
 
     const handleSort = evt => {
@@ -38,7 +38,7 @@ const DrawerOptions = ({ open, onClose }) => {
         })
     }
     return (
-        <SwipeableDrawer anchor="right" open={open} onClose={onClose}>
+        <SwipeableDrawer anchor="right" open={open} onOpen={onOpen} onClose={onClose}>
             <Base>
                 <List subheader={<ListSubheader>Settings</ListSubheader>}>
                     <ListItem button onClick={handleSort}>

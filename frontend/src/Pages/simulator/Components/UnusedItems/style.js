@@ -2,13 +2,14 @@ import { IconButton as MuiIconButton, Paper, Typography as MuiTypography, withSt
 import styled from "styled-components";
 
 export const Base = styled.div`
-    width: 100%;
-    height: 100%;
+    width: ${props => props.mobile ? "100vw" : "100%"};
+    height: ${props => props.mobile ? "calc(100vh - 160px)" : "100%"};
 
     display: flex;
     flex-direction: column;
     justify-content: end;
 
+    ${props => props.mobile && "margin-top: 56px;"}
     position: absolute;
     top: 0;
     left: 0;

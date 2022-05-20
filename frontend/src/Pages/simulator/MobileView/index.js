@@ -3,7 +3,9 @@ import { Apps, BarChart, Cancel, List, Settings } from "@material-ui/icons"
 import { useSnackbar } from "notistack"
 import React, { useEffect, useState } from "react"
 import CategoryPanel from "../Components/CategoryPanel"
+import MainPanel from "../Components/MainPanel"
 import StatisticsPanel from "../Components/StatisticsPanel"
+import UnusedItems from "../Components/UnusedItems"
 import { Base, BottomNavigation, PanelContainer } from "./style"
 
 const SimulatorMobileView = ({ dirty, importSuccess, onDirtyClose, onImportSuccessClose, handleOptionsOpen }) => {
@@ -53,6 +55,13 @@ const SimulatorMobileView = ({ dirty, importSuccess, onDirtyClose, onImportSucce
 
     return (
         <Base>
+            {
+                tabIndex === 0 &&
+                <PanelContainer style={{ paddingLeft: 8, paddingRight: 8 }}>
+                    <MainPanel />
+                    <UnusedItems mobile />
+                </PanelContainer>
+            }
             {
                 tabIndex === 1 &&
                 <PanelContainer style={{ paddingLeft: 24, paddingRight: 8 }}>

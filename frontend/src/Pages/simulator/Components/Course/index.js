@@ -26,6 +26,7 @@ const Course = ({ catid, details, itemId, index, ...otherProps }) => {
     const altCredit = itemId.match(/\$(\d+)/)?.[1]
     const transfer = course.sem[0] === "C"
     const unused = otherProps.hasOwnProperty("unused")
+    const dragDisabled = unused && otherProps.mobile
 
     const handleClick = evt => {
         if (unused)
@@ -34,7 +35,7 @@ const Course = ({ catid, details, itemId, index, ...otherProps }) => {
             handleMenuCourseOpen(index, catid, itemId, evt.currentTarget)
     }
     return (
-        <Draggable index={index} draggableId={itemId} type="COURSE">
+        <Draggable index={index} draggableId={itemId} type="COURSE" isDragDisabled={dragDisabled}>
             {
                 provided =>
                     <Base ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}

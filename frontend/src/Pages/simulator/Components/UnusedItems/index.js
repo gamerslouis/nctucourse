@@ -7,9 +7,11 @@ import { getRawCourseId, visibilityFilter } from "../../utilities"
 import Course from "../Course"
 import { Background, Base, CollapseBase, ContainerPaper, IconButton, Title, Typography } from "./style"
 
-const UnusedItems = () => {
+const UnusedItems = props => {
     const { courses, setContext } = useContext(SimulatorPropsContext)
     const [open, setOpen] = useState(false)
+    const mobile = props.hasOwnProperty("mobile")
+
     const toggleOpen = () => setOpen(p => !p)
     const handleClose = () => setOpen(false)
 
@@ -22,7 +24,7 @@ const UnusedItems = () => {
         })
     }
     return (
-        <Base>
+        <Base mobile={mobile}>
             <Background open={open} onClick={handleClose} />
             <Title open={open} onClick={toggleOpen}>
                 <Typography variant="h6">未分類課程</Typography>
@@ -33,7 +35,7 @@ const UnusedItems = () => {
                 }}><Sort /></IconButton>
                 <KeyboardArrowDown style={{ marginLeft: 6, transform: `scaleY(${open ? 1 : -1})`, transition: "transform .3s" }} />
             </Title>
-            <Collapse in={open}>
+            <Collapse in={open} unmountOnExit={true}>
                 <CollapseBase>
                     <ContainerPaper variant="outlined">
                         <Droppable droppableId="unused" type="COURSE">
@@ -48,7 +50,7 @@ const UnusedItems = () => {
                                                         context.options.show_pending)
                                                 ).map(
                                                     (itemId, idx) => <Course key={itemId} itemId={itemId} index={idx}
-                                                        details={context.options.show_details} unused />
+                                                        details={context.options.show_details} unused mobile={mobile} />
                                                 )
                                             }
                                         </SimulatorContext.Consumer>

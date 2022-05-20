@@ -34,13 +34,13 @@ const PanelColumn = ({ index, size }) => {
 }
 
 const MainPanel = () => {
-    const mdUp = useMediaQuery(theme => theme.breakpoints.up("md"))
+    const mdDown = useMediaQuery(theme => theme.breakpoints.down("md"))
     const lgUp = useMediaQuery(theme => theme.breakpoints.up("lg"))
     const xlUp = useMediaQuery(theme => theme.breakpoints.up("xl"))
 
     const xl = xlUp
     const lg = !xlUp && lgUp
-    const md = !xlUp && !lgUp && mdUp
+    const md = mdDown
 
     return (
         <div id="simulator-main-panel">

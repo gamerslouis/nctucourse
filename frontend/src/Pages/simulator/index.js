@@ -257,7 +257,7 @@ class Simulator extends React.PureComponent {
     handleMenuCourseClose() { this.setState({ menuCourseIdx: null, menuCourseCatid: null, menuCourseItemid: null, menuCourseAnchor: null }) }
 
     handleDragStart() {
-        if (this.contextProps.mobile && this.context.options.dnd_vibrate && navigator.vibrate)
+        if (this.contextProps.mobile && this.state.context.options.dnd_vibrate && navigator.vibrate)
             navigator.vibrate(20)
     }
     handleDragEnd(result) {
@@ -378,7 +378,7 @@ class Simulator extends React.PureComponent {
                     <SimulatorPropsContext.Provider value={this.contextProps}>
                         <SimulatorContext.Provider value={this.state.context}>
                             <Base>
-                                <DrawerOptions open={this.state.drawerOptions} onClose={this.handleOptionsClose} />
+                                <DrawerOptions open={this.state.drawerOptions} onOpen={this.handleOptionsOpen} onClose={this.handleOptionsClose} />
 
                                 <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
                                 <DialogContextReset open={this.state.dialogContextReset}
