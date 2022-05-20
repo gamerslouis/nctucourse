@@ -189,6 +189,7 @@ export const updateData = (courses, data, imported, template = null) => {
     }
     imported_new = imported_new.filter(itemId => historyIds.indexOf(itemId) !== -1)
 
+    const check_catid = cat_name => cat_names[cat_name] && !cat_names[cat_name].startsWith("g")
     for (const item of courses) {
         const itemId = item.sem + "_" + item.id
 
@@ -196,54 +197,54 @@ export const updateData = (courses, data, imported, template = null) => {
             continue
         imported_new.push(itemId)
 
-        if (item.cos_cname.startsWith("服務學習") && cat_names["服務學習"]) {
+        if (item.cos_cname.startsWith("服務學習") && check_catid("服務學習")) {
             data_new.content[cat_names["服務學習"]].push(itemId)
         }
-        else if (item.dimension === "藝文賞析" && cat_names["藝文賞析"]) {
+        else if (item.dimension === "藝文賞析" && check_catid("藝文賞析")) {
             data_new.content[cat_names["藝文賞析"]].push(itemId)
         }
         // * 107通識
-        else if (item.dimension === "核心-人文" && cat_names["通識 ─ 核心人文"]) {
+        else if (item.dimension === "核心-人文" && check_catid("通識 ─ 核心人文")) {
             data_new.content[cat_names["通識 ─ 核心人文"]].push(itemId)
         }
-        else if (item.dimension === "核心-社會" && cat_names["通識 ─ 核心社會"]) {
+        else if (item.dimension === "核心-社會" && check_catid("通識 ─ 核心社會")) {
             data_new.content[cat_names["通識 ─ 核心社會"]].push(itemId)
         }
-        else if (item.dimension === "核心-自然" && cat_names["通識 ─ 核心自然"]) {
+        else if (item.dimension === "核心-自然" && check_catid("通識 ─ 核心自然")) {
             data_new.content[cat_names["通識 ─ 核心自然"]].push(itemId)
         }
-        else if (item.dimension === "跨院基本素養" && cat_names["通識 ─ 跨院"]) {
+        else if (item.dimension === "跨院基本素養" && check_catid("通識 ─ 跨院")) {
             data_new.content[cat_names["通識 ─ 跨院"]].push(itemId)
         }
-        else if (item.dimension === "校基本素養" && cat_names["通識 ─ 校基本"]) {
+        else if (item.dimension === "校基本素養" && check_catid("通識 ─ 校基本")) {
             data_new.content[cat_names["通識 ─ 校基本"]].push(itemId)
         }
         // * 110通識
-        else if (item.dimension === "基本素養-批判思考" && cat_names["基本-批判思考"]) {
+        else if (item.dimension === "基本素養-批判思考" && check_catid("基本-批判思考")) {
             data_new.content[cat_names["基本-批判思考"]].push(itemId)
         }
-        else if (item.dimension === "基本素養-量性推理" && cat_names["基本-量性推理"]) {
+        else if (item.dimension === "基本素養-量性推理" && check_catid("基本-量性推理")) {
             data_new.content[cat_names["基本-量性推理"]].push(itemId)
         }
-        else if (item.dimension === "基本素養-組織管理" && cat_names["基本-組織管理"]) {
+        else if (item.dimension === "基本素養-組織管理" && check_catid("基本-組織管理")) {
             data_new.content[cat_names["基本-組織管理"]].push(itemId)
         }
-        else if (item.dimension === "基本素養-生命及品格教育" && cat_names["基本-生命及品格教育"]) {
+        else if (item.dimension === "基本素養-生命及品格教育" && check_catid("基本-生命及品格教育")) {
             data_new.content[cat_names["基本-生命及品格教育"]].push(itemId)
         }
-        else if (item.dimension === "領域課程-人文與美學" && cat_names["領域-人文與美學"]) {
+        else if (item.dimension === "領域課程-人文與美學" && check_catid("領域-人文與美學")) {
             data_new.content[cat_names["領域-人文與美學"]].push(itemId)
         }
-        else if (item.dimension === "領域課程-個人、社會與文化" && cat_names["領域-個人社會與文化"]) {
+        else if (item.dimension === "領域課程-個人、社會與文化" && check_catid("領域-個人社會與文化")) {
             data_new.content[cat_names["領域-個人社會與文化"]].push(itemId)
         }
-        else if (item.dimension === "領域課程-公民與倫理思考" && cat_names["領域-公民與倫理"]) {
+        else if (item.dimension === "領域課程-公民與倫理思考" && check_catid("領域-公民與倫理")) {
             data_new.content[cat_names["領域-公民與倫理"]].push(itemId)
         }
-        else if (item.dimension === "領域課程-社會中的科技與自然" && cat_names["領域-科技與自然"]) {
+        else if (item.dimension === "領域課程-社會中的科技與自然" && check_catid("領域-科技與自然")) {
             data_new.content[cat_names["領域-科技與自然"]].push(itemId)
         }
-        else if (cat_names[item.type]) {
+        else if (check_catid(item.type)) {
             data_new.content[cat_names[item.type]].push(itemId)
         }
         else {
