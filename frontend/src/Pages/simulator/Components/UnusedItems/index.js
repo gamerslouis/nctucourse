@@ -8,17 +8,25 @@ import Course from "../Course"
 import { Background, Base, CollapseBase, ContainerPaper, IconButton, Title, Typography } from "./style"
 
 const UnusedItems = () => {
-    const { courses } = useContext(SimulatorPropsContext)
+    const { courses, setContext } = useContext(SimulatorPropsContext)
     const [open, setOpen] = useState(false)
     const toggleOpen = () => setOpen(p => !p)
     const handleClose = () => setOpen(false)
 
+    const handleSort = evt => {
+        evt.stopPropagation()
+        setContext(ctx => {
+            const content = { ...ctx.content }
+            content.unused = ctx.content.unused.slice().sort()
+            return { ...ctx, content }
+        })
+    }
     return (
         <Base>
             <Background open={open} onClick={handleClose} />
             <Title open={open} onClick={toggleOpen}>
                 <Typography variant="h6">未分類課程</Typography>
-                <IconButton style={{
+                <IconButton onClick={handleSort} style={{
                     opacity: open ? 1 : 0,
                     visibility: open ? "visible" : "hidden",
                     transition: "visibility 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, opacity 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms"
@@ -28,7 +36,7 @@ const UnusedItems = () => {
             <Collapse in={open}>
                 <CollapseBase>
                     <ContainerPaper variant="outlined">
-                        <Droppable droppableId="unused">
+                        <Droppable droppableId="unused" type="COURSE">
                             {
                                 provided =>
                                     <div {...provided.droppableProps} ref={provided.innerRef} style={{ minHeight: "100%" }}>

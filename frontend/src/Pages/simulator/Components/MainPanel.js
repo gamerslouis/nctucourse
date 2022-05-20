@@ -14,15 +14,15 @@ const PanelBase = styled.div`
 const PanelColumn = ({ index, size }) => {
     const context = useContext(SimulatorContext)
     const sizes = [null, "md", "lg", "xl"]
+    const plSize = sizes[size]
     return (
         <PanelBase>
-            <Droppable droppableId={`${sizes[size]}-${index}`} type="CATEGORY">
+            <Droppable droppableId={`${plSize}-${index}`} type="CATEGORY">
                 {
                     provided =>
                         <div {...provided.droppableProps} ref={provided.innerRef} style={{ height: "100%" }}>
                             {
-                                context.layout
-                                    .filter((catid, idx) => (!catid.startsWith("g") && (idx % size) === index))
+                                context.panel_layouts[plSize][index]
                                     .map((catid, idx) => <Category key={`main-${catid}`} catid={catid} index={idx} />)
                             }
                             {provided.placeholder}

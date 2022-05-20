@@ -2,6 +2,7 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } 
 import React, { useContext, useEffect, useState } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../../Context"
+import { insertPanelLayout } from "../../utilities"
 
 const TextFields = styled.div`
     width: 100%;
@@ -50,7 +51,11 @@ const DialogCategoryAdd = ({ open, onClose }) => {
             const targets = { ...ctx.targets }
             targets[catid] = [null, null]
 
-            return { ...ctx, cat_names, layout, content, targets }
+            const panel_layouts = {}
+            for (const plSize in ctx.panel_layouts)
+                panel_layouts[plSize] = insertPanelLayout(ctx.panel_layouts[plSize], catid)
+
+            return { ...ctx, cat_names, layout, content, targets, panel_layouts }
         })
         onClose()
     }

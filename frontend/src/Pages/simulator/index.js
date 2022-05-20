@@ -292,7 +292,40 @@ class Simulator extends React.PureComponent {
                 })
             }
             if (result.type === "CATEGORY") {
+                const plSize = result.source.droppableId.slice(0, 2)
+                const fromPanelIdx = parseInt(result.source.droppableId.slice(3))
+                const toPanelIdx = parseInt(result.destination.droppableId.slice(3))
+                const fromIdx = result.source.index
+                const toIdx = result.destination.index
+                this.setContext(ctx => {
+                    if (fromPanelIdx === toPanelIdx) {
+                        const panel = ctx.panel_layouts[plSize][fromPanelIdx].slice()
+                        const [item] = panel.splice(fromIdx, 1)
+                        panel.splice(toIdx, 0, item)
 
+                        const pl = ctx.panel_layouts[plSize].slice()
+                        pl[fromPanelIdx] = panel
+
+                        const panel_layouts = { ...ctx.panel_layouts }
+                        panel_layouts[plSize] = pl
+                        return { ...ctx, panel_layouts }
+                    }
+                    else {
+                        const from_panel = ctx.panel_layouts[plSize][fromPanelIdx].slice()
+                        const [item] = from_panel.splice(fromIdx, 1)
+
+                        const to_panel = ctx.panel_layouts[plSize][toPanelIdx].slice()
+                        to_panel.splice(toIdx, 0, item)
+
+                        const pl = ctx.panel_layouts[plSize].slice()
+                        pl[fromPanelIdx] = from_panel
+                        pl[toPanelIdx] = to_panel
+
+                        const panel_layouts = { ...ctx.panel_layouts }
+                        panel_layouts[plSize] = pl
+                        return { ...ctx, panel_layouts }
+                    }
+                })
             }
         }
     }

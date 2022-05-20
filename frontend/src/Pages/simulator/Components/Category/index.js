@@ -22,6 +22,7 @@ const Category = ({ catid, index }) => {
             return { ...ctx, content }
         })
     }
+    const stopPropagation = evt => evt.stopPropagation()
     return (
         <Draggable index={index} draggableId={catid} type="CATEGORY">
             {
@@ -29,7 +30,7 @@ const Category = ({ catid, index }) => {
                     <Accordion expanded={expanded} onChange={handleToggle} ref={provided.innerRef} {...provided.draggableProps}
                         TransitionProps={{ unmountOnExit: true }} style={provided.draggableProps.style}>
                         <AccordionSummary expandIcon={<ExpandMore />}>
-                            <div {...provided.dragHandleProps}><DragHandle /></div>
+                            <div onClick={stopPropagation} {...provided.dragHandleProps}><DragHandle /></div>
                             <Typography>{context.cat_names[catid]}</Typography>
                             <IconButton onClick={handleSort}><Sort /></IconButton>
                         </AccordionSummary>

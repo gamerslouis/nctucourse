@@ -59,7 +59,11 @@ const DialogCategoryDelete = ({ catid, onClose }) => {
                 const targets = { ...ctx.targets }
                 delete targets[catid]
 
-                return { ...ctx, cat_names, layout, content, targets }
+                const panel_layouts = {}
+                for (const plSize in ctx.panel_layouts)
+                    panel_layouts[plSize] = ctx.panel_layouts[plSize].map(pl => pl.filter(_catid => _catid !== catid))
+
+                return { ...ctx, cat_names, layout, content, targets, panel_layouts }
             }
         })
         onClose()
