@@ -260,36 +260,41 @@ class Simulator extends React.PureComponent {
             navigator.vibrate(20)
     }
     handleDragEnd(result) {
-        if (!result.destination)
-            return
-        const fromCatid = result.source.droppableId
-        const toCatid = result.destination.droppableId
-        const fromIdx = result.source.index
-        const toIdx = result.destination.index
-        this.setContext(ctx => {
-            if (fromCatid === toCatid) {
-                const cat_content = ctx.content[fromCatid].slice()
-                const [item] = cat_content.splice(fromIdx, 1)
-                cat_content.splice(toIdx, 0, item)
+        if (result.destination) {
+            if (result.type === "COURSE") {
+                const fromCatid = result.source.droppableId
+                const toCatid = result.destination.droppableId
+                const fromIdx = result.source.index
+                const toIdx = result.destination.index
+                this.setContext(ctx => {
+                    if (fromCatid === toCatid) {
+                        const cat_content = ctx.content[fromCatid].slice()
+                        const [item] = cat_content.splice(fromIdx, 1)
+                        cat_content.splice(toIdx, 0, item)
 
-                const content = { ...ctx.content }
-                content[fromCatid] = cat_content
-                return { ...ctx, content }
+                        const content = { ...ctx.content }
+                        content[fromCatid] = cat_content
+                        return { ...ctx, content }
+                    }
+                    else {
+                        const from_content = ctx.content[fromCatid].slice()
+                        const [item] = from_content.splice(fromIdx, 1)
+
+                        const to_content = ctx.content[toCatid].slice()
+                        if (toCatid !== "unused" || item.indexOf("@") === -1)
+                            to_content.splice(toIdx, 0, item)
+
+                        const content = { ...ctx.content }
+                        content[fromCatid] = from_content
+                        content[toCatid] = to_content
+                        return { ...ctx, content }
+                    }
+                })
             }
-            else {
-                const from_content = ctx.content[fromCatid].slice()
-                const [item] = from_content.splice(fromIdx, 1)
+            if (result.type === "CATEGORY") {
 
-                const to_content = ctx.content[toCatid].slice()
-                if (toCatid !== "unused" || item.indexOf("@") === -1)
-                    to_content.splice(toIdx, 0, item)
-
-                const content = { ...ctx.content }
-                content[fromCatid] = from_content
-                content[toCatid] = to_content
-                return { ...ctx, content }
             }
-        })
+        }
     }
 
     handleCopyCourseName() {

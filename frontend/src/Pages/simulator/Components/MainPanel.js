@@ -1,22 +1,34 @@
 import { Grid, useMediaQuery } from "@material-ui/core"
 import React, { useContext } from "react"
+import { Droppable } from "react-beautiful-dnd"
 import styled from "styled-components"
 import { SimulatorContext } from "../Context"
 import Category from "./Category"
 
 const PanelBase = styled.div`
+    height: 100%;
+
     padding: 8px 6px;
 `
 
 const PanelColumn = ({ index, size }) => {
     const context = useContext(SimulatorContext)
+    const sizes = [null, "md", "lg", "xl"]
     return (
         <PanelBase>
-            {
-                context.layout.filter(catid => context.categories[catid])
-                    .filter((_, idx) => ((idx % size) === index))
-                    .map(catid => <Category key={`main-${catid}`} catid={catid} />)
-            }
+            <Droppable droppableId={`${sizes[size]}-${index}`} type="CATEGORY">
+                {
+                    provided =>
+                        <div {...provided.droppableProps} ref={provided.innerRef} style={{ height: "100%" }}>
+                            {
+                                context.layout.filter(catid => context.categories[catid])
+                                    .filter((_, idx) => ((idx % size) === index))
+                                    .map((catid, idx) => <Category key={`main-${catid}`} catid={catid} index={idx} />)
+                            }
+                            {provided.placeholder}
+                        </div>
+                }
+            </Droppable>
         </PanelBase>
     )
 }

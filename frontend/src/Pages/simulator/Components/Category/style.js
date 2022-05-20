@@ -31,7 +31,7 @@ export const AccordionSummary = withStyles({
     },
     content: {
         display: "inline-flex",
-        justifyContent: "space-between",
+        justifyContent: "start",
         alignItems: "center",
         margin: 0,
         padding: 6,
@@ -39,6 +39,11 @@ export const AccordionSummary = withStyles({
         "&$expanded": {
             margin: 0
         },
+        "& > div": {
+            height: 36,
+            padding: 6
+        },
+        "& > p": { flexGrow: 1 },
         "& > button": {
             padding: 6,
             opacity: 0,
