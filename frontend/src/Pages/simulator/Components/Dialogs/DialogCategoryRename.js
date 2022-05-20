@@ -23,7 +23,7 @@ const DialogCategoryRename = ({ catid, onClose }) => {
     }, [catid, context.cat_names])
 
     const handleChange = evt => {
-        setName(evt.target.value)
+        setName(evt.target.value.slice(0, 20))
         setError(Object.keys(context.cat_names).filter(_catid => _catid !== catid).map(catid => context.cat_names[catid]).indexOf(evt.target.value) !== -1)
     }
     const handleKeyPress = evt => {

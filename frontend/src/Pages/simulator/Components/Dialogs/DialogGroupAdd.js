@@ -18,7 +18,7 @@ const DialogGroupAdd = ({ open, onClose }) => {
     }, [open, context.groups])
 
     const handleNameChange = evt => {
-        setName(evt.target.value)
+        setName(evt.target.value.slice(0, 20))
         setError(Object.values(context.cat_names).indexOf(evt.target.value) !== -1)
     }
     const handleValueChange = evt => setValue(evt.target.value)

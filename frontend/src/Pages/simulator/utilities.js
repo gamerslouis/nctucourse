@@ -34,6 +34,11 @@ export const migrateData = data_old => {
         data_new.layout = []
         data_new.content = {}
         data_new.targets = {}
+        data_new.panel_layouts = {
+            md: [[]],
+            lg: [[], []],
+            xl: [[], [], []]
+        }
         categories.forEach((cat, catidx) => {
             const catid = `cat_${catidx}`
             categories_map[cat] = catid
@@ -42,6 +47,10 @@ export const migrateData = data_old => {
             data_new.cat_names[catid] = cat
             data_new.content[catid] = data[cat].map(migrateItemId)
             data_new.targets[catid] = parse_target(targets[cat])
+
+            data_new.panel_layouts.md[0].push(catid)
+            data_new.panel_layouts.lg[catidx % 2].push(catid)
+            data_new.panel_layouts.xl[catidx % 3].push(catid)
         })
         data_new.content["unused"] = data["unused"]
 
@@ -82,11 +91,16 @@ export const generateEmptyDataFromTemplate = template => {
         dnd_vibrate: true
     }
     data.targets = {}
+    data.panel_layouts = {
+        md: [[]],
+        lg: [[], []],
+        xl: [[], [], []]
+    }
 
     const catids = {}
     template.categories.forEach((cat, idx) => catids[cat] = `cat_${idx}`)
     Object.keys(template.groups).forEach((cat, idx) => catids[cat] = `gcat_${idx}`)
-    for (const cat of template.categories) {
+    template.categories.forEach((cat, catidx) => {
         const catid = catids[cat]
         data.cat_names[catid] = cat
         data.content[catid] = []
@@ -98,7 +112,11 @@ export const generateEmptyDataFromTemplate = template => {
         }
         else
             data.targets[catid] = [null, null]
-    }
+
+        data.panel_layouts.md[0].push(catid)
+        data.panel_layouts.lg[catidx % 2].push(catid)
+        data.panel_layouts.xl[catidx % 3].push(catid)
+    })
     if (template.target_total) {
         const c = template.target_total[0] === null ? null : parseInt(template.target_total[0])
         const a = template.target_total[1] === null ? null : parseInt(template.target_total[1])
@@ -163,6 +181,8 @@ export const updateData = (courses, data, imported, template = null) => {
         data_new.content[new_catid] = []
         data_new.layout.push(new_catid)
         data_new.targets[new_catid] = [null, 5]
+        for (const pl in data_new.panel_layouts)
+            data_new.panel_layouts[pl] = insertPanelLayout(data_new.panel_layouts[pl], new_catid)
     }
 
     const historyIds = courses.map(item => (item.sem + "_" + item.id))
@@ -358,4 +378,14 @@ export const templateSanityCheck = templateString => {
         return false
     }
     return true
+}
+
+export const insertPanelLayout = (panelLayout, catid) => {
+    const newPanelLayout = []
+    panelLayout.forEach(pl => newPanelLayout.push(pl.slice()))
+    const plCounts = panelLayout.map(pl => pl.length)
+    const plMin = plCounts.reduce((p, c) => Math.min(p, c), plCounts[0])
+    const plMinIdx = plCounts.indexOf(plMin)
+    newPanelLayout[plMinIdx].push(catid)
+    return newPanelLayout
 }

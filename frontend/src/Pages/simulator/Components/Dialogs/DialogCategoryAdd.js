@@ -25,7 +25,7 @@ const DialogCategoryAdd = ({ open, onClose }) => {
     }, [open, context.layout])
 
     const handleChange = evt => {
-        setName(evt.target.value)
+        setName(evt.target.value.slice(0, 20))
         setError(Object.values(context.cat_names).indexOf(evt.target.value) !== -1)
     }
     const handleKeyPress = evt => {
