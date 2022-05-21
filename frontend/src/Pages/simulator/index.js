@@ -18,6 +18,7 @@ import DialogMoveTo from "./Components/Dialogs/DialogMoveTo"
 import DialogTargetEdit from "./Components/Dialogs/DialogTargetEdit"
 import DialogTemplatePort from "./Components/Dialogs/DialogTemplatePort"
 import DrawerOptions from "./Components/DrawerOptions"
+import SimulatorErrorBoundary from "./Components/SimulatorErrorBoundary"
 import { SimulatorContext, SimulatorPropsContext } from "./Context"
 import SimulatorDesktopView from "./DesktopView"
 import SimulatorMobileView from "./MobileView"
@@ -55,7 +56,10 @@ class Simulator extends React.PureComponent {
             menuCourseItemid: null,
             menuCourseAnchor: null
             ,
-            importSuccess: false
+            importSuccess: false,
+            importError: null,
+            importErrorInfo: null,
+            importTemplate: null
         }
 
         this.setContext = this.setContext.bind(this)
@@ -180,7 +184,7 @@ class Simulator extends React.PureComponent {
                 }
                 else {
                     this.setState({ contextReady: true })
-                    console.log(this.state.context)
+                    // console.log(this.state.context)
                 }
             })
     }
@@ -191,10 +195,29 @@ class Simulator extends React.PureComponent {
                 const { imported_courses } = json
                 const imported = imported_courses === "" ? [] : JSON.parse(imported_courses)
 
-                const [data_new, imported_new] = updateData(this.course_list, reset ? {} : copyData(this.state.context), reset ? [] : imported, template)
+                try {
+                    const [data_new, imported_new] = updateData(this.course_list, reset ? {} : copyData(this.state.context), reset ? [] : imported, template)
 
-                this.setState({ context: data_new, importSuccess: true },
-                    () => this.syncToServer(imported_new))
+                    this.setState({ context: data_new, importSuccess: true },
+                        () => this.syncToServer(imported_new))
+                } catch (err) {
+                    if (err instanceof Error) {
+                        const error = err.stack ? `${err.name}: ${err.message}` : err.name
+                        const errorInfo = err.stack ?? err.message
+                        this.setState({
+                            importError: error,
+                            importErrorInfo: errorInfo,
+                            importTemplate: template
+                        })
+                    }
+                    else {
+                        this.setState({
+                            importError: err,
+                            importErrorInfo: err,
+                            importTemplate: template
+                        })
+                    }
+                }
             })
     }
 
@@ -211,7 +234,7 @@ class Simulator extends React.PureComponent {
                 contextDirty: false,
                 dialogDisclaimer: false
             })
-            console.log(this.state.context)
+            // console.log(this.state.context)
         })
     }
 
@@ -378,86 +401,89 @@ class Simulator extends React.PureComponent {
                     <SimulatorPropsContext.Provider value={this.contextProps}>
                         <SimulatorContext.Provider value={this.state.context}>
                             <Base>
-                                <DrawerOptions open={this.state.drawerOptions} onOpen={this.handleOptionsOpen} onClose={this.handleOptionsClose} />
+                                <SimulatorErrorBoundary context={this.state.context} importError={this.state.importError}
+                                    importErrorInfo={this.state.importErrorInfo} importTemplate={this.state.importTemplate}>
+                                    <DrawerOptions open={this.state.drawerOptions} onOpen={this.handleOptionsOpen} onClose={this.handleOptionsClose} />
 
-                                <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
-                                <DialogContextReset open={this.state.dialogContextReset}
-                                    onClose={this.handleContextResetClose} updateImport={this.updateImport} />
-                                <DialogExportImage open={this.state.dialogExportImage} onClose={this.handleExportImageClose} />
+                                    <DialogDisclaimer open={this.state.dialogDisclaimer} onClose={this.handleDisclaimerConfirm} />
+                                    <DialogContextReset open={this.state.dialogContextReset}
+                                        onClose={this.handleContextResetClose} updateImport={this.updateImport} />
+                                    <DialogExportImage open={this.state.dialogExportImage} onClose={this.handleExportImageClose} />
 
-                                <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
-                                    keepMounted onClose={this.handleMenuUnusedClose}>
-                                    <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
-                                </Menu>
+                                    <Menu open={Boolean(this.state.menuUnusedAnchor)} anchorEl={this.state.menuUnusedAnchor}
+                                        keepMounted onClose={this.handleMenuUnusedClose}>
+                                        <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                                    </Menu>
 
-                                <Menu open={Boolean(this.state.menuCourseAnchor) &&
-                                    this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") === -1}
-                                    anchorEl={this.state.menuCourseAnchor}
-                                    keepMounted onClose={this.handleMenuCourseClose}>
-                                    <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
-                                    <Divider style={{ margin: "4px 0px" }} />
-                                    <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
-                                    <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
-                                </Menu>
+                                    <Menu open={Boolean(this.state.menuCourseAnchor) &&
+                                        this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") === -1}
+                                        anchorEl={this.state.menuCourseAnchor}
+                                        keepMounted onClose={this.handleMenuCourseClose}>
+                                        <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
+                                        <Divider style={{ margin: "4px 0px" }} />
+                                        <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                                        <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
+                                    </Menu>
 
-                                <Menu open={Boolean(this.state.menuCourseAnchor) &&
-                                    this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") !== -1}
-                                    anchorEl={this.state.menuCourseAnchor}
-                                    keepMounted onClose={this.handleMenuCourseClose}>
-                                    <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
-                                    <Divider style={{ margin: "4px 0px" }} />
-                                    <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
-                                    <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
-                                    <Divider style={{ margin: "4px 0px" }} />
-                                    <MenuItem onClick={this.handleCloneAdjustOpen}><ListItemIcon><BarChart /></ListItemIcon>調整學分</MenuItem>
-                                    <MenuItem onClick={this.handleRemoveClone}><ListItemIcon><Delete /></ListItemIcon>移除複製</MenuItem>
-                                </Menu>
+                                    <Menu open={Boolean(this.state.menuCourseAnchor) &&
+                                        this.state.menuCourseItemid !== null && this.state.menuCourseItemid.indexOf("@") !== -1}
+                                        anchorEl={this.state.menuCourseAnchor}
+                                        keepMounted onClose={this.handleMenuCourseClose}>
+                                        <MenuItem onClick={this.handleCopyCourseName}><ListItemIcon><TextFields /></ListItemIcon>複製課名</MenuItem>
+                                        <Divider style={{ margin: "4px 0px" }} />
+                                        <MenuItem onClick={this.handleMoveToOpen}><ListItemIcon><Send /></ListItemIcon>移至...</MenuItem>
+                                        <MenuItem onClick={this.handleCloneCourse}><ListItemIcon><FileCopy /></ListItemIcon>複製一份</MenuItem>
+                                        <Divider style={{ margin: "4px 0px" }} />
+                                        <MenuItem onClick={this.handleCloneAdjustOpen}><ListItemIcon><BarChart /></ListItemIcon>調整學分</MenuItem>
+                                        <MenuItem onClick={this.handleRemoveClone}><ListItemIcon><Delete /></ListItemIcon>移除複製</MenuItem>
+                                    </Menu>
 
-                                {
-                                    this.state.contextReady ?
-                                        <>
-                                            <DialogTargetEdit editingTarget={this.state.dialogEditingTarget} onClose={this.handleTargetEditClose} />
+                                    {
+                                        this.state.contextReady ?
+                                            <>
+                                                <DialogTargetEdit editingTarget={this.state.dialogEditingTarget} onClose={this.handleTargetEditClose} />
 
-                                            <DialogCategoryAdd open={this.state.dialogCategoryAdd} onClose={this.handleCategoryAddClose} />
-                                            <DialogCategoryRename catid={this.state.dialogCategoryRename} onClose={this.handleCategoryRenameClose} />
-                                            <DialogCategoryDelete catid={this.state.dialogCategoryDelete} onClose={this.handleCategoryDeleteClose} />
+                                                <DialogCategoryAdd open={this.state.dialogCategoryAdd} onClose={this.handleCategoryAddClose} />
+                                                <DialogCategoryRename catid={this.state.dialogCategoryRename} onClose={this.handleCategoryRenameClose} />
+                                                <DialogCategoryDelete catid={this.state.dialogCategoryDelete} onClose={this.handleCategoryDeleteClose} />
 
-                                            <DialogGroupAdd open={this.state.dialogGroupAdd} onClose={this.handleGroupAddClose} />
-                                            <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
+                                                <DialogGroupAdd open={this.state.dialogGroupAdd} onClose={this.handleGroupAddClose} />
+                                                <DialogGroupEdit catid={this.state.dialogGroupEdit} onClose={this.handleGroupEditClose} />
 
-                                            <DialogLayoutArrange open={this.state.dialogLayoutArrange} onClose={this.handleLayoutArrangeClose} />
+                                                <DialogLayoutArrange open={this.state.dialogLayoutArrange} onClose={this.handleLayoutArrangeClose} />
 
-                                            <DialogCloneAdjust open={this.state.dialogCloneAdjust} onClose={this.handleCloneAdjustClose}
-                                                catid={this.state.menuCourseCatid} catidx={this.state.menuCourseIdx} itemId={this.state.menuCourseItemid} />
-                                            <DialogMoveTo open={this.state.dialogMoveTo} onClose={this.handleMoveToClose}
-                                                catid={this.state.menuCourseCatid ?? "unused"} catidx={this.state.menuCourseIdx ?? this.state.menuUnusedIdx} />
+                                                <DialogCloneAdjust open={this.state.dialogCloneAdjust} onClose={this.handleCloneAdjustClose}
+                                                    catid={this.state.menuCourseCatid} catidx={this.state.menuCourseIdx} itemId={this.state.menuCourseItemid} />
+                                                <DialogMoveTo open={this.state.dialogMoveTo} onClose={this.handleMoveToClose}
+                                                    catid={this.state.menuCourseCatid ?? "unused"} catidx={this.state.menuCourseIdx ?? this.state.menuUnusedIdx} />
 
-                                            <DialogTemplatePort open={this.state.dialogTemplatePort}
-                                                onClose={this.handleTemplatePortClose} updateImport={this.updateImport} />
+                                                <DialogTemplatePort open={this.state.dialogTemplatePort}
+                                                    onClose={this.handleTemplatePortClose} updateImport={this.updateImport} />
 
-                                            <Hidden smDown>
-                                                <SimulatorDesktopView
-                                                    dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
-                                                    importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
-                                                <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
-                                                    <Settings />
-                                                </OptionFab>
-                                            </Hidden>
+                                                <Hidden smDown>
+                                                    <SimulatorDesktopView
+                                                        dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
+                                                        importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose} />
+                                                    <OptionFab size="small" color="secondary" onClick={this.handleOptionsOpen}>
+                                                        <Settings />
+                                                    </OptionFab>
+                                                </Hidden>
 
-                                            <Hidden mdUp>
-                                                <SimulatorMobileView
-                                                    dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
-                                                    importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose}
-                                                    handleOptionsOpen={this.handleOptionsOpen} />
-                                            </Hidden>
-                                        </> :
-                                        <LoadingContext><CircularProgress /></LoadingContext>
-                                }
+                                                <Hidden mdUp>
+                                                    <SimulatorMobileView
+                                                        dirty={this.state.contextDirty} onDirtyClose={this.handleDirtyClose}
+                                                        importSuccess={this.state.importSuccess} onImportSuccessClose={this.handleImportSuccessClose}
+                                                        handleOptionsOpen={this.handleOptionsOpen} />
+                                                </Hidden>
+                                            </> :
+                                            <LoadingContext><CircularProgress /></LoadingContext>
+                                    }
+                                </SimulatorErrorBoundary>
                             </Base>
                         </SimulatorContext.Provider>
                     </SimulatorPropsContext.Provider>
                 </DragDropContext>
-            </SnackbarProvider>
+            </SnackbarProvider >
         )
     }
 }
