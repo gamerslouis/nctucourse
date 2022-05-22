@@ -53,8 +53,8 @@ const style = theme => ({
         alignItems: 'center',
         flexDirection: 'row',
         boxShadow: '0px -6px 8px 0px #dddddd',
-        columnGap: `${theme.spacing(0.5)}px`,
-        background: 'white'
+        background: 'white',
+        "& > button": { marginRight: theme.spacing(0.5) }
     },
     btn: {
         fontWeight: 'bold'

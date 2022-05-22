@@ -46,9 +46,6 @@ const DialogDisclaimer = ({ open, onClose }) => {
             <DialogTitle>交大課程助理學分模擬器 免責聲明</DialogTitle>
             <DialogContent>
                 <DialogContentText>
-                    本系統目前處於<Strong>Beta測試階段</Strong>，如使用過程中有任何異常或建議，歡迎透過頁面右下方<Strong>意見回饋</Strong>表單回應。
-                </DialogContentText>
-                <DialogContentText>
                     本系統只提供同學模擬自己已修過的學分狀況，<br />
                     系統<Strong>並不會檢查</Strong>同學們分配學分的方式是否正確，<br />
                     僅是做為一個工具，方便同學檢視自己的學分狀況。

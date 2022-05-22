@@ -30,7 +30,7 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: `${theme.spacing(6)}px`
+        "& > *:not(:last-child)": { marginRight: theme.spacing(6) }
     },
     mdCont: {
         display: 'flex',
@@ -41,7 +41,7 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: `${theme.spacing(1)}px`,
+        "& > *:not(:last-child)": { marginRight: theme.spacing(1) },
         userSelect: 'none'
     },
     loginout: {
@@ -49,7 +49,7 @@ const styles = (theme) => ({
         flexDirection: 'row',
         margin: '20px auto',
         width: 'fit-content',
-        columnGap: `${theme.spacing(2)}px`
+        "& > *:not(:last-child)": { marginRight: theme.spacing(2) }
     },
     lgRoot: {
         display: 'flex',
@@ -60,7 +60,7 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: `${theme.spacing(1)}px`,
+        "& > *:not(:last-child)": { marginRight: theme.spacing(1) },
         userSelect: 'none',
         marginTop: 'calc(25vh - 32px)',
         marginBottom: '10px',
@@ -112,7 +112,7 @@ class Login extends React.Component {
                                     <img src='/logo256.png' alt='logo' width='192px' />
                                     <div>
                                         <Typography variant="h3">交大課程助理</Typography>
-                                        <Typography variant="subtitle1">非官方的課程管理工具</Typography>
+                                        <Typography variant="subtitle1">學生自製的課程管理工具</Typography>
                                     </div>
                                 </div>
                             </div>
@@ -151,7 +151,7 @@ class Login extends React.Component {
                             <img src='/logo256.png' alt='logo' width='96px' />
                             <div>
                                 <Typography variant="h4">交大課程助理</Typography>
-                                <Typography variant="subtitle1">非官方的課程管理工具</Typography>
+                                <Typography variant="subtitle1">學生自製的課程管理工具</Typography>
                             </div>
                         </div>
                         <div style={{ flexShrink: 0 }}>
