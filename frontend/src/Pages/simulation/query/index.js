@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -10,11 +10,12 @@ import IconButton from '@material-ui/core/IconButton';
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 import CourseList from '../../../Components/CourseList'
-import { getCoursesIdByDepId, getCoursesFromIds } from '../../../Util/dataUtil/course'
+import { getCoursesIdByDepId, getCoursesFromIds, campusCodeMap } from '../../../Util/dataUtil/course'
 import CourseListItem from '../../../Components/CourseListItem'
 import { addCollectCourse, removeCollectCourse, setSearchCourseList } from '../../../Redux/Actions/index'
 import SearchBar from '../../../Components/SearchBar'
-
+import PlaceIcon from '@material-ui/icons/Place';
+import { Checkbox, FormGroup, Menu } from '@material-ui/core';
 
 const styles = (theme) => ({
     root: {
@@ -69,6 +70,77 @@ function CategorySelect({ classes, cateMap, values, index, handleChange }) {
     )
 }
 
+function CampusFilterSelect({onFilterChange}) {
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const open = Boolean(anchorEl);
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const [filters, setFilters] = useState(new Set(Object.keys(campusCodeMap)));
+
+  useEffect(() => {
+    const defaults = JSON.stringify(Object.keys(campusCodeMap))
+    if (
+      window.localStorage &&
+      window.localStorage.getItem("campus_filter") != null
+    ) {
+      try {
+        setFilters(
+          new Set(JSON.parse(window.localStorage.getItem("campus_filter")))
+        );
+      } catch {
+        window.localStorage.setItem("campus_filter", defaults);
+      }
+    } else {
+      window.localStorage.setItem("campus_filter", defaults);
+    }
+  }, []);
+  const updateStorage = useCallback((set) => {
+    window.localStorage.setItem("campus_filter", JSON.stringify([...set]));
+  }, []);
+  useEffect(() => {
+    onFilterChange(filters);
+  }, [filters]);
+
+  return (
+    <>
+      <IconButton onClick={handleClick}>
+        <PlaceIcon />
+      </IconButton>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <FormGroup>
+          {Object.keys(campusCodeMap).map((key, i) => (
+            <FormControlLabel
+              style={{ marginLeft: 5 }}
+              key={i}
+              name={key}
+              control={
+                <Checkbox
+                  checked={filters.has(key)}
+                  onChange={() => {
+                    let newSet = null;
+                    if (filters.has(key)) {
+                      newSet = new Set([...filters].filter((x) => x !== key));
+                    } else {
+                      newSet = new Set([...filters, key]);
+                    }
+                    setFilters(newSet);
+                    updateStorage(newSet);
+                  }}
+                />
+              }
+              label={`${campusCodeMap[key]} [${key}]`}
+            />
+          ))}
+        </FormGroup>
+      </Menu>
+    </>
+  );
+}
+
 class Index extends React.Component {
     constructor(props) {
         super(props)
@@ -78,9 +150,11 @@ class Index extends React.Component {
             enableSelectSearch: false,
             courseList: [],
             searchText: '',
-            showCategorySearch: false
+            showCategorySearch: false,
+            campusToIgnore: []
         }
         this.handleSelectChange = this.handleSelectChange.bind(this)
+        this.handleCampusFilterChange = this.handleCampusFilterChange.bind(this)
     }
 
     handleSelectChange(index, value, curCate) {
@@ -93,11 +167,17 @@ class Index extends React.Component {
         this.setState({ selects: newarr, enableSelectSearch, depId: curCate[value] })
     }
 
+    handleCampusFilterChange(newFilters) {
+        this.setState({ campusToIgnore: Object.keys(campusCodeMap).filter(x=>!newFilters.has(x)) })
+    }
+
     searchText() {
         if (this.state.searchText === '') return
         let regString = '^.*' + this.state.searchText.split('').reduce((s, v) => s + '.*' + v) + '.*$'
         this.props.setCourses(Object.values(this.props.allCourses).filter(course => (
             course.cos_cname.indexOf(this.state.searchText) !== -1 ||
+            (course['meta'] !== undefined && course['meta']['cos_ename'] !== undefined &&
+                course['meta']['cos_ename'].toLowerCase().indexOf(this.state.searchText.toLowerCase()) !== -1) ||
             course.teacher.indexOf(this.state.searchText) !== -1 ||
             course.cos_id.split('_')[1] === this.state.searchText ||
             (new RegExp(regString, "i")).test(course.cos_cname)
@@ -121,6 +201,7 @@ class Index extends React.Component {
                                 onChange={(event, value) => this.setState({ showCategorySearch: value })} />}
                             label="分類搜尋"
                         />
+                        <CampusFilterSelect onFilterChange={this.handleCampusFilterChange} />
                     </div>
                     {this.state.showCategorySearch &&
                         <div style={{ marginTop: 5 }}>
@@ -138,7 +219,7 @@ class Index extends React.Component {
                                 <Button variant="outlined" color="primary" disabled={!this.state.enableSelectSearch}
                                     onClick={() => this.props.setCourses(getCoursesFromIds(allCourses, getCoursesIdByDepId(category, this.state.depId)))}>
                                     搜尋
-                        </Button>
+                                </Button>
                             </FormControl>
                         </div>
                     }
@@ -147,6 +228,7 @@ class Index extends React.Component {
                     <CourseList courseListItems={this.props.courseList
                         .filter(course => ((course.cos_cname.indexOf('大一英文') === -1) || (!this.props.queryOptions.ignoreFreshEnglish)))
                         .filter(course => ((course.cos_cname.indexOf('大一體育') === -1) || (!this.props.queryOptions.ignoreFreshPhysical)))
+                        .filter(course => !this.state.campusToIgnore.some(campus=>course.cos_time.indexOf(campus) !== -1))
                         .map(ele =>
                             <CourseListItem
                                 key={ele.cos_id}

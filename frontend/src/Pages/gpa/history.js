@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Typography, Button, Paper, useTheme } from '@material-ui/core';
 import useAxios from 'axios-hooks'
 
-import CourseTable from '../../Components/CourseTable'
+import CourseTable from './import/CourseTable'
 import FullLoading from '../../Components/FullLoading';
 import { useSnackbar } from 'notistack';
 
@@ -30,7 +30,7 @@ const History = (props) => {
         <Paper style={{ padding: theme.spacing(2) }}>
             <Typography variant="h5" gutterBottom align="center" >
                 總計: {courses.length} 門課(含退選及未送出) 實得 {gpaTool.getCredits(
-                courses.filter(gpaTool.filterNotCourse).concat(
+                courses.filter(gpaTool.filterEffectiveCreditCourse).concat(
                     courses.filter(gpaTool.filterTransCourse)
                 ))} 學分
             </Typography>

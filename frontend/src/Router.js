@@ -13,7 +13,7 @@ import Simulation from './Pages/simulation'
 import GPA from './Pages/gpa'
 import GPAImport from './Pages/gpa/import'
 import CourseHistory from './Pages/gpa/history'
-import Sim from './Pages/simulator'
+import Simulator from './Pages/simulator'
 import SimulationHistory from './Pages/simulation/history'
 import Profile from './Pages/profile'
 import CourseList from './Pages/courses/list'
@@ -50,7 +50,7 @@ const Router = (props) => {
                                 <AuthRoute exact path='/gpa/import' component={GPAImport} />
                                 <AuthRoute exact path='/coursehistory' component={CourseHistory} />
                                 <AuthRoute exact path='/simulation/history' component={SimulationHistory} />
-                                <AuthRoute exact path='/simulator' component={Sim} />
+                                <AuthRoute exact path='/simulator' component={Simulator} />
                                 <AuthRoute exact path='/profile' component={Profile} />
                                 <Route render={() => {
                                     window.location.pathname = '/'

@@ -52,6 +52,15 @@ export const roomCodeMap = {
     HK: "客家大樓",
 }
 
+export const campusCodeMap = {
+    'YM': '台北陽明校區',
+    'BA': '新竹博愛校區',
+    'GF': '新竹光復校區',
+    'BM': '台北北門校區',
+    'GR': '台南歸仁校區',
+    'LJ': '新竹六家校區',
+}
+
 export function getCourseTimesAndRooms(course) {
     let { cos_time } = course
     let times = []
