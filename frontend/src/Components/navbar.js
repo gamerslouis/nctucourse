@@ -250,7 +250,7 @@ const Navbar = (props) => {
                             <ListItem disabled >學分工具</ListItem>
                             <ListItem button onClick={() => window.location.href = "/coursehistory"}>修課記錄</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"}>GPA計算機</ListItem>
-                            <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器 (Beta)</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器</ListItem>
                         </List>
                         <Divider />
                         <List>

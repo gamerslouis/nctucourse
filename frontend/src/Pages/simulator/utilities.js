@@ -252,6 +252,8 @@ export const updateData = (courses, data, imported, template = null) => {
         }
     }
 
+    // Update potential option changes
+    data_new.options = { ...default_options, ...data_new.options }
     return [data_new, imported_new]
 }
 

@@ -18,11 +18,7 @@ export const BottomNavigation = withStyles({
 
 export const PanelContainer = styled.div`
     width: 100%;
-    max-height: calc(100vh - 170px);
 
-    margin-top: 4px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-
-    overflow-y: auto;
+    padding-top: 8px;
+    padding-bottom: 110px;
 `

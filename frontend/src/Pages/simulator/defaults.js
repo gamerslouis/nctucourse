@@ -2,7 +2,8 @@ export const default_options = {
     show_zero: true,
     show_details: false,
     show_pending: true,
-    dnd_vibrate: true
+    dnd_vibrate: true,
+    dnd_mobile_enabled: true
 }
 
 export const template_107 = {

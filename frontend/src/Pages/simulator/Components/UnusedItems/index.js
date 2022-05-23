@@ -50,7 +50,7 @@ const UnusedItems = props => {
                                                         context.options.show_pending)
                                                 ).map(
                                                     (itemId, idx) => <Course key={itemId} itemId={itemId} index={idx}
-                                                        details={context.options.show_details} unused mobile={mobile} />
+                                                        details={context.options.show_details} unused dragDisabled={mobile} />
                                                 )
                                             }
                                         </SimulatorContext.Consumer>

@@ -17,7 +17,7 @@ const getSemester = (sem) => {
     }
 }
 
-const Course = ({ catid, details, itemId, index, ...otherProps }) => {
+const Course = ({ catid, details, dragDisabled, itemId, index, ...otherProps }) => {
     const { courses, handleMenuUnusedOpen, handleMenuCourseOpen } = useContext(SimulatorPropsContext)
     const course = courses[getRawCourseId(itemId)]
     const colors = ["#ef9a9a", "#a5d6a7", "#b39ddb", "#fff59d", "#ffab91", "#9fa8da"]
@@ -26,7 +26,6 @@ const Course = ({ catid, details, itemId, index, ...otherProps }) => {
     const altCredit = itemId.match(/\$(\d+)/)?.[1]
     const transfer = course.sem[0] === "C"
     const unused = otherProps.hasOwnProperty("unused")
-    const dragDisabled = unused && otherProps.mobile
 
     const handleClick = evt => {
         if (unused)

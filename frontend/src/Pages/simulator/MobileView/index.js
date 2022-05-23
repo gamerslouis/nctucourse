@@ -57,7 +57,7 @@ const SimulatorMobileView = ({ dirty, importSuccess, onDirtyClose, onImportSucce
         <Base>
             {
                 tabIndex === 0 &&
-                <PanelContainer style={{ paddingLeft: 8, paddingRight: 8 }}>
+                <PanelContainer style={{ paddingLeft: 8, paddingRight: 8, paddingBottom: 160 }}>
                     <MainPanel />
                     <UnusedItems mobile />
                 </PanelContainer>

@@ -10,7 +10,7 @@ import { Accordion, AccordionDetails, AccordionSummary, Paper } from "./style"
 
 const Category = ({ catid, index }) => {
     const context = useContext(SimulatorContext)
-    const { courses, setContext } = useContext(SimulatorPropsContext)
+    const { courses, setContext, mobile } = useContext(SimulatorPropsContext)
     const [expanded, setExpanded] = useState(true)
 
     const handleToggle = (_, value) => setExpanded(value)
@@ -49,7 +49,7 @@ const Category = ({ catid, index }) => {
                                                                 context.options.show_pending)
                                                         ).map(
                                                             ([itemId, idx]) => <Course key={itemId} index={idx} catid={catid} itemId={itemId}
-                                                                details={context.options.show_details} />
+                                                                details={context.options.show_details} dragDisabled={mobile && !context.options.dnd_mobile_enabled} />
                                                         )
                                                 }
                                                 {provided.placeholder}

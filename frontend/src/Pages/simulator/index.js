@@ -281,7 +281,7 @@ class Simulator extends React.PureComponent {
 
     handleDragStart() {
         if (this.contextProps.mobile && this.state.context.options.dnd_vibrate && navigator.vibrate)
-            navigator.vibrate(20)
+            navigator.vibrate(25)
     }
     handleDragEnd(result) {
         if (result.destination) {
@@ -290,30 +290,31 @@ class Simulator extends React.PureComponent {
                 const toCatid = result.destination.droppableId
                 const fromIdx = result.source.index
                 const toIdx = result.destination.index
-                this.setContext(ctx => {
-                    if (fromCatid === toCatid) {
-                        const cat_content = ctx.content[fromCatid].slice()
-                        const [item] = cat_content.splice(fromIdx, 1)
-                        cat_content.splice(toIdx, 0, item)
+                if (fromCatid !== toCatid || fromIdx !== toIdx)
+                    this.setContext(ctx => {
+                        if (fromCatid === toCatid) {
+                            const cat_content = ctx.content[fromCatid].slice()
+                            const [item] = cat_content.splice(fromIdx, 1)
+                            cat_content.splice(toIdx, 0, item)
 
-                        const content = { ...ctx.content }
-                        content[fromCatid] = cat_content
-                        return { ...ctx, content }
-                    }
-                    else {
-                        const from_content = ctx.content[fromCatid].slice()
-                        const [item] = from_content.splice(fromIdx, 1)
+                            const content = { ...ctx.content }
+                            content[fromCatid] = cat_content
+                            return { ...ctx, content }
+                        }
+                        else {
+                            const from_content = ctx.content[fromCatid].slice()
+                            const [item] = from_content.splice(fromIdx, 1)
 
-                        const to_content = ctx.content[toCatid].slice()
-                        if (toCatid !== "unused" || item.indexOf("@") === -1)
-                            to_content.splice(toIdx, 0, item)
+                            const to_content = ctx.content[toCatid].slice()
+                            if (toCatid !== "unused" || item.indexOf("@") === -1)
+                                to_content.splice(toIdx, 0, item)
 
-                        const content = { ...ctx.content }
-                        content[fromCatid] = from_content
-                        content[toCatid] = to_content
-                        return { ...ctx, content }
-                    }
-                })
+                            const content = { ...ctx.content }
+                            content[fromCatid] = from_content
+                            content[toCatid] = to_content
+                            return { ...ctx, content }
+                        }
+                    })
             }
             if (result.type === "CATEGORY") {
                 const plSize = result.source.droppableId.slice(0, 2)
@@ -321,35 +322,36 @@ class Simulator extends React.PureComponent {
                 const toPanelIdx = parseInt(result.destination.droppableId.slice(3))
                 const fromIdx = result.source.index
                 const toIdx = result.destination.index
-                this.setContext(ctx => {
-                    if (fromPanelIdx === toPanelIdx) {
-                        const panel = ctx.panel_layouts[plSize][fromPanelIdx].slice()
-                        const [item] = panel.splice(fromIdx, 1)
-                        panel.splice(toIdx, 0, item)
+                if (fromPanelIdx !== toPanelIdx || fromIdx !== toIdx)
+                    this.setContext(ctx => {
+                        if (fromPanelIdx === toPanelIdx) {
+                            const panel = ctx.panel_layouts[plSize][fromPanelIdx].slice()
+                            const [item] = panel.splice(fromIdx, 1)
+                            panel.splice(toIdx, 0, item)
 
-                        const pl = ctx.panel_layouts[plSize].slice()
-                        pl[fromPanelIdx] = panel
+                            const pl = ctx.panel_layouts[plSize].slice()
+                            pl[fromPanelIdx] = panel
 
-                        const panel_layouts = { ...ctx.panel_layouts }
-                        panel_layouts[plSize] = pl
-                        return { ...ctx, panel_layouts }
-                    }
-                    else {
-                        const from_panel = ctx.panel_layouts[plSize][fromPanelIdx].slice()
-                        const [item] = from_panel.splice(fromIdx, 1)
+                            const panel_layouts = { ...ctx.panel_layouts }
+                            panel_layouts[plSize] = pl
+                            return { ...ctx, panel_layouts }
+                        }
+                        else {
+                            const from_panel = ctx.panel_layouts[plSize][fromPanelIdx].slice()
+                            const [item] = from_panel.splice(fromIdx, 1)
 
-                        const to_panel = ctx.panel_layouts[plSize][toPanelIdx].slice()
-                        to_panel.splice(toIdx, 0, item)
+                            const to_panel = ctx.panel_layouts[plSize][toPanelIdx].slice()
+                            to_panel.splice(toIdx, 0, item)
 
-                        const pl = ctx.panel_layouts[plSize].slice()
-                        pl[fromPanelIdx] = from_panel
-                        pl[toPanelIdx] = to_panel
+                            const pl = ctx.panel_layouts[plSize].slice()
+                            pl[fromPanelIdx] = from_panel
+                            pl[toPanelIdx] = to_panel
 
-                        const panel_layouts = { ...ctx.panel_layouts }
-                        panel_layouts[plSize] = pl
-                        return { ...ctx, panel_layouts }
-                    }
-                })
+                            const panel_layouts = { ...ctx.panel_layouts }
+                            panel_layouts[plSize] = pl
+                            return { ...ctx, panel_layouts }
+                        }
+                    })
             }
         }
     }

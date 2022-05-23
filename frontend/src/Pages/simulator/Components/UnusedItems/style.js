@@ -3,22 +3,24 @@ import styled from "styled-components";
 
 export const Base = styled.div`
     width: ${props => props.mobile ? "100vw" : "100%"};
-    height: ${props => props.mobile ? "calc(100vh - 160px)" : "100%"};
+    height: 100%;
 
     display: flex;
     flex-direction: column;
     justify-content: end;
 
-    ${props => props.mobile && "margin-top: 56px;"}
-    position: absolute;
-    top: 0;
+    position: ${props => props.mobile ? "fixed" : "absolute"};
     left: 0;
+    bottom: 0;
+
+    ${props => props.mobile && "margin-bottom: 106px;"}
 
     pointer-events: none;
 `
 
 export const Background = styled.div`
     width: 100%;
+    height: 100vh;
 
     ${props => !props.open && "visibility: hidden;"}
 

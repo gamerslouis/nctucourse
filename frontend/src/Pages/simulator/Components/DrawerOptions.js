@@ -1,5 +1,5 @@
 import { Divider, List, ListItem, ListItemIcon, ListItemSecondaryAction, ListItemText, ListSubheader, SwipeableDrawer, Switch as MuiSwitch } from "@material-ui/core"
-import { DeleteForever, FiberNew, GetApp, ImportExport, Input, Sort, Subject, Visibility } from "@material-ui/icons"
+import { DeleteForever, FiberNew, GetApp, ImportExport, Input, PanTool, Sort, Subject, Vibration, Visibility } from "@material-ui/icons"
 import React, { useContext } from "react"
 import styled from "styled-components"
 import { SimulatorContext, SimulatorPropsContext } from "../Context"
@@ -77,17 +77,33 @@ const DrawerOptions = ({ open, onOpen, onClose }) => {
                             <ContextSwitch optId="show_pending" />
                         </ListItemSecondaryAction>
                     </ListItem>
+                    
                     {
-                        mobile && navigator.vibrate &&
-                        <ListItem>
-                            <ListItemIcon>
-                                <FiberNew />
-                            </ListItemIcon>
-                            <ListItemText primary="拖曳時震動" />
-                            <ListItemSecondaryAction>
-                                <ContextSwitch optId="dnd_vibrate" />
-                            </ListItemSecondaryAction>
-                        </ListItem>
+                        mobile &&
+                        <>
+                            <Divider />
+                            <ListItem>
+                                <ListItemIcon>
+                                    <PanTool />
+                                </ListItemIcon>
+                                <ListItemText primary="行動裝置啟用拖曳" />
+                                <ListItemSecondaryAction>
+                                    <ContextSwitch optId="dnd_mobile_enabled" />
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                            {
+                                navigator.vibrate &&
+                                <ListItem>
+                                    <ListItemIcon>
+                                        <Vibration />
+                                    </ListItemIcon>
+                                    <ListItemText primary="拖曳時震動" />
+                                    <ListItemSecondaryAction>
+                                        <ContextSwitch optId="dnd_vibrate" />
+                                    </ListItemSecondaryAction>
+                                </ListItem>
+                            }
+                        </>
                     }
 
                     <Divider />
@@ -104,12 +120,15 @@ const DrawerOptions = ({ open, onOpen, onClose }) => {
                         </ListItemIcon>
                         <ListItemText primary="匯入/匯出模板" />
                     </ListItem>
-                    <ListItem button onClick={handleExportImageOpen}>
-                        <ListItemIcon>
-                            <GetApp />
-                        </ListItemIcon>
-                        <ListItemText primary="另存為圖片" />
-                    </ListItem>
+                    {
+                        !mobile &&
+                        <ListItem button onClick={handleExportImageOpen}>
+                            <ListItemIcon>
+                                <GetApp />
+                            </ListItemIcon>
+                            <ListItemText primary="另存為圖片" />
+                        </ListItem>
+                    }
                     <ListItem button onClick={handleContextResetOpen}>
                         <ListItemIcon>
                             <DeleteForever />

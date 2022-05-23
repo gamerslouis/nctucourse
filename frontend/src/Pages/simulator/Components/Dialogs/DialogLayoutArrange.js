@@ -45,18 +45,22 @@ const Item = ({ catid, cat_name, index, handleMenuOpen }) => {
 
 const DialogLayoutArrange = ({ open, onClose }) => {
     const context = useContext(SimulatorContext)
-    const { setContext } = useContext(SimulatorPropsContext)
+    const { setContext, mobile } = useContext(SimulatorPropsContext)
     const [catidx, setCatidx] = useState(null)
     const [anchor, setAnchor] = useState(null)
 
     const move = (fromIdx, toIdx) => {
-        console.log(fromIdx, toIdx)
-        setContext(ctx => {
-            const layout = ctx.layout.slice()
-            const [item] = layout.splice(fromIdx, 1)
-            layout.splice(toIdx, 0, item)
-            return { ...ctx, layout }
-        })
+        if (fromIdx !== toIdx)
+            setContext(ctx => {
+                const layout = ctx.layout.slice()
+                const [item] = layout.splice(fromIdx, 1)
+                layout.splice(toIdx, 0, item)
+                return { ...ctx, layout }
+            })
+    }
+    const handleDragStart = () => {
+        if (mobile && context.options.dnd_vibrate && navigator.vibrate)
+            navigator.vibrate(25)
     }
     const handleDragEnd = result => {
         if (result.destination)
@@ -88,7 +92,7 @@ const DialogLayoutArrange = ({ open, onClose }) => {
                 <DialogContentText>拖曳或透過選單來調整順序</DialogContentText>
             </DialogContent>
             <DialogContent>
-                <DragDropContext onDragEnd={handleDragEnd}>
+                <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                     <Droppable droppableId="categories" type="LAYOUT">
                         {
                             provided =>
