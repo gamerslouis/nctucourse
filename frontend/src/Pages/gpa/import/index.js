@@ -37,6 +37,7 @@ export default (props) => {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(true);
   const [parsedCourses, setParsedCources] = useState(null);
+  const [toRemoveCourses, setToRemoveCourses] = useState(null);
   const [mergeOldData, setMergeOldData] = useState(true);
   const [{ data: respData, loading: fetching, error }, refetch] = useAxios(
     "/api/accounts/courses_history/"
@@ -114,6 +115,13 @@ export default (props) => {
                 return;
               }
               setParsedCources(data);
+              const keys = data.map(makeKey);
+              setToRemoveCourses(
+                JSON.parse(respData.data).filter((record) =>
+                  !keys.includes(makeKey(record))
+                )
+              );
+
               setTimeout(
                 () =>
                   myRef.current.scrollIntoView({
@@ -154,6 +162,12 @@ export default (props) => {
             oldCourses={oldCourses}
             merge={Object.keys(oldCourses).length > 0 && mergeOldData}
           ></CourseTable>
+          <Box marginTop={3}>
+            <Typography variant="h5" gutterBottom>
+              即將移除
+            </Typography>
+            <CourseTable courses={toRemoveCourses}></CourseTable>
+          </Box>
           <Box marginTop={3}>
             <Button
               variant="contained"

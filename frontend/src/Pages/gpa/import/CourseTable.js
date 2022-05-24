@@ -6,6 +6,8 @@ import {
   TableCell,
   TableHead,
   TableBody,
+  Tooltip,
+  Typography,
 } from "@material-ui/core";
 import { makeKey, shouldMerge } from "./utils";
 
@@ -43,7 +45,23 @@ const CourseTable = (props) => {
                   {oldCourses[makeKey(row)].score}
                 </TableCell>
               ) : (
-                <TableCell style={{ fontSize: 12 }}>{row.score}</TableCell>
+                <TableCell style={{ fontSize: 12 }}>
+                  {row.score === "無資料" ? (
+                    <>
+                      {row.score}
+                      <Tooltip title="由於學校未公告各科目具體成績，因此以無資料標示">
+                        <Typography
+                          variant="caption"
+                          style={{ color: "darkgray" }}
+                        >
+                          [?]
+                        </Typography>
+                      </Tooltip>
+                    </>
+                  ) : (
+                    row.score
+                  )}
+                </TableCell>
               )}
 
               <TableCell style={{ fontSize: 12 }}>{row.levelScore}</TableCell>

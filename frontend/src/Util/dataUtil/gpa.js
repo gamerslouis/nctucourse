@@ -75,7 +75,7 @@ const parseBlockV2 = (lines, head) => {
             })
         } else {
             const _levelscore = eles[7] === 'W' || eles[8] === 'W' ? 'W' : eles[7]
-            const scoreField = _levelscore === 'W' ? 'W' : (_levelscore ? '無資料' : '')
+            const scoreField = ['W', '通過', '不通過'].includes(_levelscore) ? _levelscore: (_levelscore ? '無資料' : '')
             const typeField = _levelscore ? ( _levelscore === '通過' || _levelscore === '不通過' ? '通過不通過' : '等第制' ) : ''
 
             courses.push({
