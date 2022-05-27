@@ -4,7 +4,7 @@ cffi==1.14.4
 chardet==4.0.0
 cryptography==3.3.1
 defusedxml==0.7.0rc2
-Django==3.2.7
+Django==3.2.13
 django-filter==2.4.0
 djangorestframework==3.12.2
 gitdb==4.0.5
