@@ -14,19 +14,13 @@ jobs:
         with:
           fetch-depth: 0
       
-      - uses: actions/setup-node@v3
+      - uses: borales/actions-yarn@v2.3.0
         with:
-          node-version: 16
-          cache: 'yarn'
-          cache-dependency-path: frontend/yarn.lock
+          cmd: --cwd frontend install --frozen-lockfile
 
-      - name: Install dependency
-        working-directory: ./frontend
-        run: yarn install --frozen-lockfile
-
-      - name: Build frontend
-        working-directory: ./frontend
-        run: yarn build
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: --cwd frontend build
 
       - name: Tar files
         working-directory: ./frontend
