@@ -9,47 +9,47 @@ const trim = str => str.replace(/^\s+|\s+$/g, '')
 const isNum = str => str.match(/^\d+$/)
 
 // duplicate
-const parseBlockV1 = (lines, head) => {
-    let courses = []
-    const credit = head === '學生抵免紀錄'
-    for (let line of lines.slice(lines.indexOf(head) + 2)) {
-        let eles = line.split('\t').map(trim)
-        if (eles.length === 0 || !isNum(eles[0])) break
-        if (eles.length < 6) continue
-        if (credit) {
-            courses.push({
-                sem: '',
-                id: eles[1],
-                dep: '',
-                cos_cname: eles[2],
-                type: eles[4],
-                cos_credit: Number(eles[3]),
-                score: '抵免',
-                levelScore: '抵免',
-                scoreType: '抵免',
-                state: eles[5],
-                teacher: '',
-                dimension: ''
-            })
-        } else {
-            courses.push({
-                sem: eles[1],
-                id: eles[2],
-                dep: eles[3],
-                cos_cname: eles[4],
-                type: eles[5],
-                cos_credit: Number(eles[6]),
-                score: isNum(eles[7]) ? Number(eles[7]) : (eles[7] || ''),
-                levelScore: eles[8] || '',
-                scoreType: eles[9] || '',
-                state: eles[10] || '',
-                teacher: eles[11] || '',
-                dimension: eles[12] || ''
-            })
-        }
-    }
-    return courses
-}
+// const parseBlockV1 = (lines, head) => {
+//     let courses = []
+//     const credit = head === '學生抵免紀錄'
+//     for (let line of lines.slice(lines.indexOf(head) + 2)) {
+//         let eles = line.split('\t').map(trim)
+//         if (eles.length === 0 || !isNum(eles[0])) break
+//         if (eles.length < 6) continue
+//         if (credit) {
+//             courses.push({
+//                 sem: '',
+//                 id: eles[1],
+//                 dep: '',
+//                 cos_cname: eles[2],
+//                 type: eles[4],
+//                 cos_credit: Number(eles[3]),
+//                 score: '抵免',
+//                 levelScore: '抵免',
+//                 scoreType: '抵免',
+//                 state: eles[5],
+//                 teacher: '',
+//                 dimension: ''
+//             })
+//         } else {
+//             courses.push({
+//                 sem: eles[1],
+//                 id: eles[2],
+//                 dep: eles[3],
+//                 cos_cname: eles[4],
+//                 type: eles[5],
+//                 cos_credit: Number(eles[6]),
+//                 score: isNum(eles[7]) ? Number(eles[7]) : (eles[7] || ''),
+//                 levelScore: eles[8] || '',
+//                 scoreType: eles[9] || '',
+//                 state: eles[10] || '',
+//                 teacher: eles[11] || '',
+//                 dimension: eles[12] || ''
+//             })
+//         }
+//     }
+//     return courses
+// }
 
 const parseBlockV2 = (lines, head) => {
     let courses = []
@@ -98,7 +98,6 @@ const parseBlockV2 = (lines, head) => {
 }
 
 const handleTrans = (courses) => {
-    let ids = []
     courses.forEach((c, idx) => {
         let s = 0
         for (let i = 0; i <= idx; i++) {

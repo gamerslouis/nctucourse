@@ -39,14 +39,14 @@ export default (props) => {
   const [parsedCourses, setParsedCources] = useState(null);
   const [toRemoveCourses, setToRemoveCourses] = useState(null);
   const [mergeOldData, setMergeOldData] = useState(true);
-  const [{ data: respData, loading: fetching, error }, refetch] = useAxios(
+  const [{ data: respData, loading: fetching, error }] = useAxios(
     "/api/accounts/courses_history/"
   );
   useEffect(() => {
     if (!fetching && error) {
       enqueueSnackbar("載入舊資料失敗!(網路錯誤)", { variant: "error" });
     }
-  }, [fetching]);
+  }, [fetching, error, enqueueSnackbar]);
 
   if (fetching) {
     return <FullLoading />;

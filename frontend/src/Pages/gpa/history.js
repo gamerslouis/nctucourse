@@ -8,8 +8,8 @@ import { useSnackbar } from 'notistack';
 
 import * as gpaTool from '../../Util/dataUtil/gpa'
 
-const History = (props) => {
-    const [{ data, loading, error }, refetch] = useAxios(
+const History = () => {
+    const [{ data, loading, error }] = useAxios(
         '/api/accounts/courses_history/'
     )
     const { enqueueSnackbar } = useSnackbar();

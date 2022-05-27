@@ -103,7 +103,7 @@ function CampusFilterSelect({onFilterChange}) {
   }, []);
   useEffect(() => {
     onFilterChange(filters);
-  }, [filters]);
+  }, [filters, onFilterChange]);
 
   return (
     <>
