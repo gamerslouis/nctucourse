@@ -14,6 +14,7 @@ def work(sem, root):
     bachelor = load_json(root, 'bachelor.json')
     graduated = load_json(root, 'graduated.json')
     common = load_json(root, 'common.json')
+    common_college = load_json(root, 'common_college.json')
     program = load_json(root, 'program.json')
     cross = load_json(root, 'cross.json')
     others = load_json(root, 'others.json')
@@ -76,12 +77,33 @@ def work(sem, root):
 
         # 通識
         category_map['通識'] = OrderedDict()
-        graduateds.extend(['核心-人文', '核心-社會', '核心-自然', '跨院', '校基本'])
+        # 所有通識
+        graduateds.append('所有通識')
+        did = graduateds.index('所有通識')
+        category_map['通識']['所有通識'] = did
+        for cid in common['通識']:
+            writer.writerow([did, 'all', cid])
+        # 106 通識制度
+        graduateds.extend(['▼▼▼以下為106舊制分類▼▼▼', '核心-人文', '核心-社會', '核心-自然', '跨院', '校基本'])
         did = graduateds.index('核心-人文')
+        category_map['通識']['▼▼▼以下為106舊制分類▼▼▼'] = None
         for idx, name in enumerate(['核心-人文', '核心-社會', '核心-自然', '跨院', '校基本']):
             category_map['通識'][name] = did+idx
         for cid in common['通識']:
             for idx, bid in enumerate(['A501', 'A502', 'A503', 'A504', 'A505']):
+                if bid in courses_map[cid]['brief_code']:
+                    writer.writerow([did+idx, 'all', cid])
+        
+        # 110 通識制度
+        graduateds.extend(['▼▼▼以下為110新制分類▼▼▼', '基本素養-批判思考', '基本素養-量性推理', '基本素養-組織管理', '基本素養-生命及品格教育',
+                           '領域課程-人文與美學', '領域課程-個人、社會與文化', '領域課程-公民與倫理思考', '領域課程-社會中的科技與自然'])
+        did = graduateds.index('基本素養-批判思考')
+        category_map['通識']['▼▼▼以下為110新制分類▼▼▼'] = None
+        for idx, name in enumerate(['基本素養-批判思考', '基本素養-量性推理', '基本素養-組織管理', '基本素養-生命及品格教育',
+                           '領域課程-人文與美學', '領域課程-個人、社會與文化', '領域課程-公民與倫理思考', '領域課程-社會中的科技與自然']):
+            category_map['通識'][name] = did+idx
+        for cid in common['通識']:
+            for idx, bid in enumerate(['Z101', 'Z102', 'Z103', 'Z104', 'Z105', 'Z106', 'Z107', 'Z108']):
                 if bid in courses_map[cid]['brief_code']:
                     writer.writerow([did+idx, 'all', cid])
 
@@ -104,12 +126,25 @@ def work(sem, root):
 
         # 其他共同課程
         category_map['學士班共同課程'] = OrderedDict()
+        graduateds.append('▼▼▼校共同課程▼▼▼')
+        category_map['學士班共同課程']['▼▼▼校共同課程▼▼▼'] = None
         for type in common.keys() - ['通識', '外語', '體育']:
             graduateds.append(type)
             did = graduateds.index(type)
             category_map['學士班共同課程'][type] = did
             for cid in common[type]:
                 writer.writerow([did, 'all', cid])
+
+        # 各學院共同必修
+        graduateds.append('▼▼▼各院共同必修課程▼▼▼')
+        category_map['學士班共同課程']['▼▼▼各院共同必修課程▼▼▼'] = None
+        for type in common_college.keys():
+            graduateds.append(type)
+            did = graduateds.index(type)
+            category_map['學士班共同課程'][type] = did
+            for cid in common_college[type]:
+                writer.writerow([did, 'all', cid])
+
 
         # 學分學程、跨域學程、其他課程
         for type_name, type in [('學分學程', program), ('跨領域學程', cross), ('其他課程', others)]:

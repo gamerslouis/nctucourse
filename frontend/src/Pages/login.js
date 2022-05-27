@@ -30,7 +30,7 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: `${theme.spacing(6)}px`
+        "& > *:not(:last-child)": { marginRight: theme.spacing(6) }
     },
     mdCont: {
         display: 'flex',
@@ -41,7 +41,7 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: `${theme.spacing(1)}px`,
+        "& > *:not(:last-child)": { marginRight: theme.spacing(1) },
         userSelect: 'none'
     },
     loginout: {
@@ -49,7 +49,7 @@ const styles = (theme) => ({
         flexDirection: 'row',
         margin: '20px auto',
         width: 'fit-content',
-        columnGap: `${theme.spacing(2)}px`
+        "& > *:not(:last-child)": { marginRight: theme.spacing(2) }
     },
     lgRoot: {
         display: 'flex',
@@ -60,7 +60,7 @@ const styles = (theme) => ({
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
-        columnGap: `${theme.spacing(1)}px`,
+        "& > *:not(:last-child)": { marginRight: theme.spacing(1) },
         userSelect: 'none',
         marginTop: 'calc(25vh - 32px)',
         marginBottom: '10px',
@@ -110,7 +110,10 @@ class Login extends React.Component {
                             <div className={classes.mdCont}>
                                 <div className={classes.mdTitle}>
                                     <img src='/logo256.png' alt='logo' width='192px' />
-                                    <Typography variant="h3">交大課程助理</Typography>
+                                    <div>
+                                        <Typography variant="h3">交大課程助理</Typography>
+                                        <Typography variant="subtitle1">學生自製的課程管理工具</Typography>
+                                    </div>
                                 </div>
                             </div>
                             <div className={classes.mdCont}>
@@ -121,10 +124,10 @@ class Login extends React.Component {
                                         <Typography variant='h5' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 21px)', background: '#fafafa' }}>Login</Typography>
                                         <Divider style={{ background: '#999999', margin: '8px 0px' }} />
                                         <div className={classes.loginout}>
+                                            {/* <Button variant="contained" color="primary"
+                                                className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button> */}
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button>
-                                                <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">NYCU&nbsp;OAuth</Button>
+                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">單一入口帳號登入</Button>
                                             <GoogleButton variant="contained" color="primary"
                                                 href="/api/login/google-oauth2"
                                                 className={classes.button}
@@ -145,10 +148,11 @@ class Login extends React.Component {
                 <Hidden lgUp>
                     <div className={classes.lgRoot}>
                         <div className={classes.lgTitle}>
-                            <img src='/logo256.png' alt='logo' width='72px' />
-                            <Typography variant="h4">
-                                交大課程助理
-                        </Typography>
+                            <img src='/logo256.png' alt='logo' width='96px' />
+                            <div>
+                                <Typography variant="h4">交大課程助理</Typography>
+                                <Typography variant="subtitle1">學生自製的課程管理工具</Typography>
+                            </div>
                         </div>
                         <div style={{ flexShrink: 0 }}>
                             {
@@ -157,10 +161,10 @@ class Login extends React.Component {
                                     <Typography variant='subtitle1' style={{ width: 'fit-content', margin: '0 auto', padding: '0px 8px', transform: 'translate(0px, 18px)', background: '#fafafa' }}>Login</Typography>
                                     <Divider style={{ background: '#999999', margin: '4px 0px' }} />
                                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        {/* <Button variant="contained" color="primary"
+                                            className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button> */}
                                         <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button>
-                                        <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">NYCU&nbsp;OAuth</Button>
+                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">單一入口帳號登入</Button>
                                         <GoogleButton variant="contained" color="primary"
                                             href="/api/login/google-oauth2"
                                             className={classes.button}

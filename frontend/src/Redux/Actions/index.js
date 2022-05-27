@@ -133,7 +133,7 @@ export const fetchDatabase = (semester) => dispatch => {
 
 export const fetchUserInfo = () => dispatch => {
     dispatch(actions.user.store({ status: FETCH_STATUS.FETCHING }))
-    axios.get('/api/accounts/me/')
+    axios.get(`${process.env.REACT_APP_HOST}/api/accounts/me/`)
         .then(res => {
             dispatch(actions.user.store({ ...res.data, status: FETCH_STATUS.SUCCESS }))
         }).catch(err => {

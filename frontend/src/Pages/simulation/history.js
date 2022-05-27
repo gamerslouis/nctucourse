@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Container, Typography, Link } from "@material-ui/core";
 import useAxios from 'axios-hooks'
+import { useSnackbar } from "notistack";
 
 const HistoryLink = (props) => (
   <div style={{ marginTop: 5 }}>
@@ -21,9 +22,16 @@ const toText = sem => {
   return`${sem.substr(0, 3)}學年度${mapp[s]}`
 }
 
-const History = (props) => {
+const History = () => {
   let url = `/api/simulation/semesters/`
-  const [{ data, loading, error }, refetch] = useAxios(url)
+  const [{ data, loading, error }] = useAxios(url)
+  const { enqueueSnackbar } = useSnackbar();
+  useEffect(() => {
+    if (!loading && error) {
+      enqueueSnackbar("載入失敗!(網路錯誤)", { variant: "error" });
+    }
+  }, [loading, error, enqueueSnackbar]);
+
 
   return (
     <Container>
