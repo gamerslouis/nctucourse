@@ -2,9 +2,9 @@ asgiref==3.4.1
 certifi==2020.12.5
 cffi==1.14.4
 chardet==4.0.0
-cryptography==3.3.1
+cryptography==3.3.2
 defusedxml==0.7.0rc2
-Django==3.2.7
+Django==3.2.13
 django-filter==2.4.0
 djangorestframework==3.12.2
 gitdb==4.0.5
@@ -13,7 +13,7 @@ gunicorn==20.0.4
 idna==2.10
 oauthlib==3.1.0
 pycparser==2.20
-PyJWT==2.0.1
+PyJWT==2.4.0
 PyMySQL==0.10.1
 python-dotenv==0.15.0
 python3-openid==3.2.0
@@ -24,5 +24,5 @@ six==1.15.0
 smmap==3.0.5
 social-auth-app-django==4.0.0
 social-auth-core==4.0.3
-sqlparse==0.4.1
+sqlparse==0.4.2
 urllib3==1.26.6
