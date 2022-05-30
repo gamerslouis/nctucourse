@@ -28,7 +28,7 @@ jobs:
 
       - name: Make release id
         run: |
-          echo "release_id=$(date +'%Y.%m.%d').${{ github.run_id }" >> $GITHUB_ENV        
+          echo "release_id=$(date +'%Y.%m.%d').${{ github.run_id }}" >> $GITHUB_ENV        
 
       - name: Create Release
         id: create_release
