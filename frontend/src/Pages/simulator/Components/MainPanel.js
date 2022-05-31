@@ -44,7 +44,7 @@ const MainPanel = () => {
 
     return (
         <div id="simulator-main-panel">
-            <Grid container direction="row" style={{ overflow: "hidden" }}>
+            <Grid container direction="row" style={{ justifyContent: "center", overflow: "hidden" }}>
                 {
                     xl &&
                     <>

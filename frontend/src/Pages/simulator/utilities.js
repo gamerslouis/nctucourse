@@ -15,7 +15,7 @@ export const migrateData = data_old => {
             return [null, null]
         }
         const migrateItemId = itemId_old => {
-            const match = itemId_old.match(/^@?([\d_]+)(\$\d+)?$/)
+            const match = itemId_old.match(/^@?(\w+)(\$\d+)?$/)
             const itemId_raw = match[1]
             const isClone = itemId_old.startsWith("@")
             const mod_credit_str = match[2]
@@ -259,7 +259,7 @@ export const updateData = (courses, data, imported, template = null) => {
 
 export const copyData = data => JSON.parse(JSON.stringify(data))
 
-export const getRawCourseId = courseId => courseId.match(/^[\w_]+/)[0]
+export const getRawCourseId = courseId => courseId.match(/^\w+/)[0]
 
 export const generateItemId = (courseId, clone, credits = null) => {
     const itemId_raw = getRawCourseId(courseId)
