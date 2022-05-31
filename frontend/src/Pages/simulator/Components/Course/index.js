@@ -38,15 +38,21 @@ const Course = ({ catid, details, dragDisabled, itemId, index, ...otherProps }) 
             {
                 provided =>
                     <Base ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
-                        style={{ background: transfer ? "#fab9f8" : colors[parseInt(course.sem.substr(0, 3)) % 6], ...provided.draggableProps.style }} >
+                        style={{ background: transfer ? "#fab9f8" : colors[parseInt(course.sem.substr(0, 3)) % 6], ...provided.draggableProps.style }}
+                        onClick={dragDisabled ? handleClick : null} >
                         <Content>
                             <Title variant="subtitle2">{course.cos_cname}</Title>
                             <Credit>
                                 {isClone && <Link />}
                                 <Typography variant="subtitle2">{altCredit ?? course.cos_credit}學分</Typography>
                             </Credit>
-                            <Divider flexItem orientation="vertical" style={{ margin: "0px 4px" }} />
-                            <MoreButton onClick={handleClick} />
+                            {
+                                !dragDisabled &&
+                                <>
+                                    <Divider flexItem orientation="vertical" style={{ margin: "0px 4px" }} />
+                                    <MoreButton onClick={handleClick} />
+                                </>
+                            }
                         </Content>
                         {
                             details &&
