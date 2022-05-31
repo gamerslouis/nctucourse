@@ -53,7 +53,7 @@ const DialogCategoryDelete = ({ catid, onClose }) => {
                     layout.splice(layout.indexOf(catid), 1)
 
                 const content = { ...ctx.content }
-                content.unused = content.unused.slice().concat(content[catid])
+                content.unused = content.unused.slice().concat(content[catid].filter(itemId => itemId.indexOf("@") === -1))
                 delete content[catid]
 
                 const targets = { ...ctx.targets }
