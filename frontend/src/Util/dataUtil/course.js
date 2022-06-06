@@ -89,6 +89,23 @@ export function getCourseTimesAndRooms(course) {
             }
         }
     }
+
+    // merge diff classroom same time
+    let newTimes = {}
+    for (let i = 0; i < times.length; i++) {
+        const element = times[i];
+        const key = `${element[0]}_${element[1]}`
+        console.log(key)
+        if (newTimes[key] !== undefined) {
+            newTimes[key][2] += ',' + element[2]
+            newTimes[key][3] += ',' + element[3]
+        }
+        else {
+            newTimes[key] = [...element]
+        }
+    }
+    times = Object.values(newTimes)
+    
     return times
 }
 
