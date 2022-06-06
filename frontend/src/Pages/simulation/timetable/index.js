@@ -142,7 +142,12 @@ class TimeTable extends React.Component {
             let times = getCourseTimesAndRooms(course)
             hours += times.length
             for (let time of times) {
-                classes[this.secs.indexOf(time[1])][time[0] - 1].push({
+                const secIdx = this.secs.indexOf(time[1])
+                const timeIdx = time[0] - 1
+                const l = classes[secIdx][timeIdx].length
+                if (l > 0 && classes[secIdx][timeIdx][l-1].course.cos_id === course.cos_id) 
+                    continue
+                classes[secIdx][timeIdx].push({
                     course: course,
                     roomCode: time[2],
                     roomName: time[3],
