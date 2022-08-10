@@ -3,10 +3,7 @@ from collections import OrderedDict
 import json
 import csv
 import code
-from utils import _NewOldTimeConvert, load_json
-
-
-clean_new_time = _NewOldTimeConvert().clean_time
+from utils import load_json
 
 
 def work(sem, root):
@@ -27,7 +24,6 @@ def work(sem, root):
         c['cos_cname'] = c['cos_cname'].replace("（", "(").replace("）", ")")
         c['cos_hours'] = str(float(c['cos_hours']))
         c['cos_credit'] = str(float(c['cos_credit']))
-        c['cos_time'] = clean_new_time(c['cos_time'])
         del c['cos_type_e']
         del c['cos_ename']
 

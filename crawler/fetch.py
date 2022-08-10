@@ -55,8 +55,8 @@ def work_type_category(t, lang, sem, category ,allcourses):
                     sem,
                     dep
                 )
-                allcourses.extend(api.course_pipe(courses))
-                courses = api.course_id_pipe(courses)
+                allcourses.extend(api.parse_course(courses))
+                courses = api.map_course_to_id(courses)
                 data[collage_name][dep_name]['all'] = courses
             else:
                 for level in grades:
@@ -65,8 +65,8 @@ def work_type_category(t, lang, sem, category ,allcourses):
                         dep,
                         str(level)
                     )
-                    allcourses.extend(api.course_pipe(courses))
-                    courses = api.course_id_pipe(courses)
+                    allcourses.extend(api.parse_course(courses))
+                    courses = api.map_course_to_id(courses)
                     data[collage_name][dep_name][level] = (courses)
     return data
 
@@ -78,8 +78,8 @@ def work_common_class(t, lang, sem, category ,allcourses):
     for dep, dep_name in deps.items():
         logging.debug("Fetch " + dep_name)
         courses = api.get_cos_list(sem, dep)
-        allcourses.extend(api.course_pipe(courses))
-        courses = api.course_id_pipe(courses)
+        allcourses.extend(api.parse_course(courses))
+        courses = api.map_course_to_id(courses)
         data[dep_name] = courses
     return data
 

@@ -1,9 +1,11 @@
 import requests
 import json
-import typing
+
+from utils import _NewOldTimeConvert
 
 headers = {'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
 
+clean_new_time = _NewOldTimeConvert().clean_time
 
 def get_type() -> list:
     """
@@ -116,7 +118,7 @@ def get_all_cos(acysem):
     return res.json()
 
 
-def course_pipe(_data):
+def parse_course(_data):
     courses = []
     for did in _data:
         data = _data[did]
@@ -135,6 +137,7 @@ def course_pipe(_data):
                 obj['brief_code'] = list(data['brief'][cid])[0]
                 obj['lang'] = data['language'][cid]['授課語言代碼']
                 obj['cos_code'] = obj['cos_code'].strip()
+                obj['cos_time'] = clean_new_time(obj['cos_time'])
                 try:
                     geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院']['GECIName']
                     meta['geci'] = geci_name
@@ -148,7 +151,7 @@ def course_pipe(_data):
     return courses
 
 
-def course_id_pipe(_data):
+def map_course_to_id(_data):
     courses = []
     for did in _data:
         data = _data[did]

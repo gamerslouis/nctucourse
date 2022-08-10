@@ -11,6 +11,7 @@ import { Hidden, Drawer, List, ListItem, Divider, ButtonBase, Menu, MenuItem, wi
 import logo256 from '../Resources/logo256.png'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import { KeyboardArrowDown } from '@material-ui/icons';
+import { api_url } from '../Util/dev';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -145,7 +146,7 @@ const NavProfile = withStyles(theme => ({
                 }}
             >
                 <NavMenuItem href="/profile">關於我</NavMenuItem>
-                <NavMenuItem href="/api/accounts/logout">Logout</NavMenuItem>
+                <NavMenuItem href={api_url("/api/accounts/logout")}>Logout</NavMenuItem>
             </NavMenuDropdown>
         </>
     )
@@ -235,7 +236,7 @@ const Navbar = (props) => {
                                             {user.nickname === '' ? user.username : user.nickname}
                                         </ListItem>
                                         <ListItem button onClick={() => window.location.href = "/profile"}>關於我</ListItem>
-                                        <ListItem button onClick={() => window.location.href = "/api/accounts/logout"}>Logout</ListItem>
+                                        <ListItem button onClick={() => window.location.href = api_url("/api/accounts/logout")}>Logout</ListItem>
                                     </List>
                                     <Divider />
                                 </>
