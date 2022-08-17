@@ -25,3 +25,8 @@ DATABASES = {
 }
 
 COURSE_FILE_ROOT = 'http://127.0.0.1:5000/nctucourse/coursedata/'
+
+REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (
+    'utils.authentication.CsrfExemptSessionAuthentication',
+    'rest_framework.authentication.BasicAuthentication'
+)
