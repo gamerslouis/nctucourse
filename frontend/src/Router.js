@@ -16,6 +16,10 @@ import CourseHistory from './Pages/gpa/history'
 import Simulator from './Pages/simulator'
 import SimulationHistory from './Pages/simulation/history'
 import Profile from './Pages/profile'
+import CourseList from './Pages/courses/list'
+import CoursePage from './Pages/courses/single'
+import FeedbackList from './Pages/courses/feedback/list'
+import NewFeedback from './Pages/courses/feedback/new'
 
 const Router = (props) => {
     if (isMaintaining) return <Maintain />
@@ -28,6 +32,11 @@ const Router = (props) => {
                     <ErrorBoundary>
                         <Switch>
                             <Route exact path='/' component={Login} />
+                            <Route exact path='/courses' component={CourseList} />
+                            <Route exact path='/courses/:cid' component={CoursePage} />
+                            <Route exact path='/feedbacks' component={FeedbackList} />
+                            <Route exact path='/feedbacks/edit' component={NewFeedback} />
+                            <Route exact path='/feedbacks/edit/:fid' component={NewFeedback} />
                             <AuthRoute exact path='/simulation' render={() => {
                                 let urlParams = new URLSearchParams(window.location.search);
                                 if (urlParams.has('sem')) {

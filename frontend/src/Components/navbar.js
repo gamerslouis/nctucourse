@@ -175,6 +175,10 @@ const Navbar = (props) => {
                             <NavMenuItem color="inherit" href="/gpa">GPA計算機</NavMenuItem>
                             <NavMenuItem color="inherit" href="/simulator">學分模擬器</NavMenuItem>
                         </NavMenu>
+                        <NavMenu text="全校課程">
+                            <NavMenuItem href="/courses">全校課程</NavMenuItem>
+                            <NavMenuItem href="/feedbacks">心得</NavMenuItem>
+                        </NavMenu>
                         <NavMenu text="外部連結">
                             <NavMenuItem blank href="https://timetable.nycu.edu.tw/">課程時間表</NavMenuItem>
                             <NavMenuItem blank href="https://course.nycu.edu.tw/">選課系統</NavMenuItem>
@@ -247,6 +251,12 @@ const Navbar = (props) => {
                             <ListItem button onClick={() => window.location.href = "/coursehistory"}>修課記錄</ListItem>
                             <ListItem button onClick={() => window.location.href = "/gpa"}>GPA計算機</ListItem>
                             <ListItem button onClick={() => window.location.href = "/simulator"}>學分模擬器</ListItem>
+                        </List>
+                        <Divider />
+                        <List>
+                            <ListItem disabled >課程 / 心得</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/courses"}>全校課程</ListItem>
+                            <ListItem button onClick={() => window.location.href = "/feedbacks"}>心得</ListItem>
                         </List>
                         <Divider />
                         <List>
