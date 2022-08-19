@@ -1,0 +1,53 @@
+name: release
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  build:
+    name: Upload Release Asset
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: --cwd frontend install --frozen-lockfile
+
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: --cwd frontend build
+
+      - name: Tar files
+        working-directory: ./frontend
+        run: tar -zcvf build.tar.gz build
+
+      - name: Make release id
+        run: |
+          echo "release_id=$(date +'%Y.%m.%d').${{ github.run_id }}" >> $GITHUB_ENV        
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.release_id }}
+          release_name: Release ${{ env.release_id }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./frontend/build.tar.gz
+          asset_name: build.tar.gz
+          asset_content_type: application/tar+gzip
