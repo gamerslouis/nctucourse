@@ -24,7 +24,7 @@ const Title = (props) => (
 
 const CoursePage = (props) => {
     let url = `/api/courses/courses/${props.match.params.cid}/?detail=true`
-    const [{ data, loading, error }, refetch] = useAxios(url)
+    const [{ data }] = useAxios(url)
     let [thisTeacherOnly, setThisTeacherOnly] = useState(false)
     let [teacher, setTeacher] = useState("0")
     let [teachers, setTeachers] = useState([])

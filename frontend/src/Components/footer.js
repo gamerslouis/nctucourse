@@ -8,7 +8,7 @@ const Footer = (props) => {
     return (
         <footer style={{ padding: "10px 30px" }}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
-                Copyright &copy; {year} course.nctu.xyz &nbsp;&nbsp;
+                Copyright &copy; {year} nctucourse.louisif.me &nbsp;&nbsp;
                 <IconButton href="https://github.com/gamerslouis/nctucourse"
                     size="small" style={{ marginRight: 'auto' }} color="primary"
                 >
