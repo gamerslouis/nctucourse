@@ -183,6 +183,7 @@ const Navbar = (props) => {
                             <NavMenuItem blank href="https://timetable.nycu.edu.tw/">課程時間表</NavMenuItem>
                             <NavMenuItem blank href="https://course.nycu.edu.tw/">選課系統</NavMenuItem>
                         </NavMenu>
+                        <Button color="inherit" href="/tutorial">使用介紹</Button>
                         <div className={classes.grow} />
                         {
                             user.is_anonymous
@@ -263,6 +264,10 @@ const Navbar = (props) => {
                             <ListItem disabled >外部連結</ListItem>
                             <ListItem button onClick={() => window.location.href = "https://timetable.nctu.edu.tw/"}>交大課程時間表</ListItem>
                             <ListItem button onClick={() => window.location.href = "https://course.nctu.edu.tw/"}>交大選課系統</ListItem>
+                        </List>
+                        <Divider />
+                        <List>
+                            <ListItem button onClick={() => window.location.href = "/tutorial"}>使用介紹</ListItem>
                         </List>
                     </div>
                 </Drawer>
