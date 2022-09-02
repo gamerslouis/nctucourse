@@ -20,6 +20,7 @@ import CourseList from './Pages/courses/list'
 import CoursePage from './Pages/courses/single'
 import FeedbackList from './Pages/courses/feedback/list'
 import NewFeedback from './Pages/courses/feedback/new'
+import TutorialPage from './Pages/tutorial'
 
 const Router = (props) => {
     if (isMaintaining) return <Maintain />
@@ -37,6 +38,7 @@ const Router = (props) => {
                             <Route exact path='/feedbacks' component={FeedbackList} />
                             <Route exact path='/feedbacks/edit' component={NewFeedback} />
                             <Route exact path='/feedbacks/edit/:fid' component={NewFeedback} />
+                            <Route exact path='/tutorial' component={TutorialPage} />
                             <AuthRoute exact path='/simulation' render={() => {
                                 let urlParams = new URLSearchParams(window.location.search);
                                 if (urlParams.has('sem')) {
