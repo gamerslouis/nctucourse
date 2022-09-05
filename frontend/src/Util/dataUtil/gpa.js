@@ -129,17 +129,25 @@ export const courseTo43Point = (course) => {
 }
 
 export const courseTo40Point = (course) => {
-    if (course.score >= 80) return 4
-    if (course.score >= 70) return 3
-    if (course.score >= 60) return 2
-    if (course.score >= 50) return 1
+    if (course.score === '無資料') {
+        let level = course.levelScore[0]
+        if (level === 'A') return 4.0
+        if (level === 'B') return 3.0
+        if (level === 'C') return 2.0
+        if (level === 'D') return 1.0
+    } else {
+        if (course.score >= 80) return 4
+        if (course.score >= 70) return 3
+        if (course.score >= 60) return 2
+        if (course.score >= 50) return 1
+    }
     return 0
 }
 
 export const filterEffectiveCreditCourse = (course) => {
     return course.cos_credit > 0 && 
         course.levelScore !== 'W' && 
-        (course.scoreType === '百分法' || course.scoreType === '等第制') 
+        (course.scoreType === '百分法' || (course.scoreType === '等第制' && ['A', 'B', 'C', 'D', 'E', 'X'].includes(course.levelScore[0]))) 
         && course.state === '已送註冊組'
 }
 
