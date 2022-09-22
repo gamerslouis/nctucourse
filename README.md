@@ -31,7 +31,7 @@ Require nodejs v16 and python3
     python3 -m venv venv
     source venv/bin/activate
     pip install -r requirements.txt
-    python3 manager.py migrate
+    python3 manage.py migrate
     ```
 
 4. setup nycu oauth
@@ -51,7 +51,7 @@ Require nodejs v16 and python3
    
    Start frontend may take a lot of time. You should wait until `Starting the development server...` appear and then disappear
    ```
-   cd nctucourse/frontent
+   cd nctucourse/frontend
    yarn start
    ```
    ```
