@@ -11,26 +11,27 @@ clean_new_time = _NewOldTimeConvert().clean_time
 
 
 def work(root):
-    courses = load_json(root, 'courses.json')
-    cos_objs = []
-    for c in courses:
-        aycsem, cos_id = c['cos_id'].split('_')
-        cos = {'cname': c['cos_cname'].replace('(英文授課)', ''),
-               'ename': c['cos_ename'],
-               'ayc': aycsem[:-1],
-               'sem': aycsem[-1:],
-               'cos_id': cos_id,
-               'perm_id': c['cos_code'].strip(),
-               'english': c['lang'] != 'zh-tw',
-               'credit': float(c['cos_credit']),
-               'hours': float(c['cos_hours']),
-               'time': clean_new_time(c['cos_time']),
-               'num_limit': c['num_limit'],
-               'reg_number': c['reg_num'],
-               'teacher_name': c['teacher'],
-               'memo': c['memo']}
-        cos_objs.append(Course(**cos))
-    Course.objects.bulk_create(cos_objs, ignore_conflicts=True)
+    pass
+    # courses = load_json(root, 'courses.json')
+    # cos_objs = []
+    # for c in courses:
+    #     aycsem, cos_id = c['cos_id'].split('_')
+    #     cos = {'cname': c['cos_cname'].replace('(英文授課)', ''),
+    #            'ename': c['cos_ename'],
+    #            'ayc': aycsem[:-1],
+    #            'sem': aycsem[-1:],
+    #            'cos_id': cos_id,
+    #            'perm_id': c['cos_code'].strip(),
+    #            'english': c['lang'] != 'zh-tw',
+    #            'credit': float(c['cos_credit']),
+    #            'hours': float(c['cos_hours']),
+    #            'time': clean_new_time(c['cos_time']),
+    #            'num_limit': c['num_limit'],
+    #            'reg_number': c['reg_num'],
+    #            'teacher_name': c['teacher'],
+    #            'memo': c['memo']}
+    #     cos_objs.append(Course(**cos))
+    # Course.objects.bulk_create(cos_objs, ignore_conflicts=True)
 
 if __name__ == '__main__':
 
