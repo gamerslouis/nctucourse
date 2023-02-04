@@ -1,4 +1,5 @@
 from .base import *
+from corsheaders.defaults import default_headers
 
 DEBUG = True
 
@@ -8,7 +9,10 @@ MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 SESSION_COOKIE_SAMESITE = None
-ALLOWED_HOSTS=['*']
+ALLOWED_HOSTS = ['*']
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    'x-xsrf-token',
+]
 
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://127.0.0.1:3000/'
 LOGIN_REDIRECT_URL = 'http://127.0.0.1:3000/'
@@ -24,7 +28,7 @@ DATABASES = {
     }
 }
 
-COURSE_FILE_ROOT = 'http://127.0.0.1:5000/nctucourse/coursedata/'
+COURSE_FILE_ROOT = 'http://127.0.0.1:5000/'
 
 REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (
     'utils.authentication.CsrfExemptSessionAuthentication',
