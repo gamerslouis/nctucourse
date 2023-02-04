@@ -144,7 +144,7 @@ class Simulator extends React.PureComponent {
             }
         })
 
-        axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_data`).then(res => res.data)
+        axios.post("/api/accounts/sim_data").then(res => res.data)
             .then(json => {
                 if (!json.success || json.data === "") {
                     // requestConfirm
@@ -162,7 +162,7 @@ class Simulator extends React.PureComponent {
     }
 
     fetchCourseHistory(import_last_updated_time = null) {
-        axios.get(`${process.env.REACT_APP_HOST}/api/accounts/courses_history`)
+        axios.get("/api/accounts/courses_history")
             .then(res => res.data).then(json => {
                 const { data, last_updated_time: course_last_updated_time } = json
                 const course_list = JSON.parse(data)
@@ -190,7 +190,7 @@ class Simulator extends React.PureComponent {
     }
 
     updateImport(reset = false, template = null) {
-        axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_imported`).then(res => res.data)
+        axios.post("/api/accounts/sim_imported").then(res => res.data)
             .then(json => {
                 const { imported_courses } = json
                 const imported = imported_courses === "" ? [] : JSON.parse(imported_courses)
@@ -228,7 +228,7 @@ class Simulator extends React.PureComponent {
             data["imported_courses"] = JSON.stringify(imported_courses)
             data["last_updated_time"] = this.course_last_updated_time
         }
-        axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_update`, data).then(res => {
+        axios.post("/api/accounts/sim_update", data).then(res => {
             this.setState({
                 contextReady: true,
                 contextDirty: false,
@@ -239,7 +239,7 @@ class Simulator extends React.PureComponent {
     }
 
     handleDisclaimerConfirm() {
-        axios.post(`${process.env.REACT_APP_HOST}/api/accounts/sim_confirm`, {})
+        axios.post("/api/accounts/sim_confirm", {})
             .then(() => {
                 this.setState({ dialogDisclaimer: false })
                 this.fetchCourseHistory()

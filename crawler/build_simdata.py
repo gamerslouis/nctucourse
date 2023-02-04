@@ -1,9 +1,9 @@
 from collections import OrderedDict
 import code
-from utils import _NewOldTimeConvert
 
-
-clean_new_time = _NewOldTimeConvert().clean_time
+course_row_keys = ['cos_id', 'TURL', 'cos_cname', 'cos_code', 'cos_credit',
+                   'cos_hours', 'cos_type', 'memo', 'num_limit',
+                   'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang', 'meta']
 
 
 def work(fetch_result):
@@ -24,7 +24,6 @@ def work(fetch_result):
         c['cos_cname'] = c['cos_cname'].replace("（", "(").replace("）", ")")
         c['cos_hours'] = str(float(c['cos_hours']))
         c['cos_credit'] = str(float(c['cos_credit']))
-        c['cos_time'] = clean_new_time(c['cos_time'])
         del c['cos_type_e']
         del c['cos_ename']
 
@@ -147,11 +146,8 @@ def work(fetch_result):
     category_map['教育學程'] = did
     categories.extend([[did, 'all', cid]for cid in education['教育學程']])
 
-    keys = ['cos_id', 'TURL', 'cos_cname', 'cos_code', 'cos_credit',
-            'cos_hours', 'cos_type', 'memo', 'num_limit',
-            'reg_num', 'teacher', 'cos_time', 'brief_code', 'lang', 'meta']
     return {
-        "courses": list([c[k] for k in keys] for c in courses_map.values()),
+        "courses": list([c[k] for k in course_row_keys] for c in courses_map.values()),
         "category": categories,
         "category_map": category_map
     }

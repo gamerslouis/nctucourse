@@ -9,6 +9,7 @@ import django
 
 import fetch
 import build_simdata
+import migrate_course_table
 
 sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../backend')))
@@ -23,15 +24,8 @@ from django.db import transaction
 FORMAT = '%(asctime)s %(levelname)s: %(message)s'
 logging.basicConfig(level=logging.DEBUG, filename='crawler.log', format=FORMAT)
 
-if __name__ == "__main__":
+def main(args):
     try:
-        # use argparser, accept semester, flag force-update, flag fromfile
-        parser = argparse.ArgumentParser()
-        parser.add_argument("semester", help="semester")
-        parser.add_argument("-f", "--force", action="store_true",
-                            help="force update database")
-        parser.add_argument("-i", "--input", help="input file")
-        args = parser.parse_args()
         sem = args.semester
 
         file = ''
@@ -57,33 +51,47 @@ if __name__ == "__main__":
             print("Finish timestamp: ", timestamp)
             file = f'{sem}/{timestamp}/all.json'
 
-        ### Update sql setting ###
-        logging.info("Update sql setting")
-        with transaction.atomic():
-            if file != '':
-                obj, created = SemesterCoursesMapping.objects.get_or_create(semester=sem, defaults={
-                    'file': file
-                })
-                if not created:
-                    obj.file = file
-                    obj.save()
+        if args.type == 'sim':
+            ### Update sql setting ###
+            logging.info("Update sql setting")
+            with transaction.atomic():
+                if file != '':
+                    obj, created = SemesterCoursesMapping.objects.get_or_create(semester=sem, defaults={
+                        'file': file
+                    })
+                    if not created:
+                        obj.file = file
+                        obj.save()
 
-            ids = set(SimCollect.objects.filter(semester=sem).values_list(
-                'course_id', flat=True).distinct())
-            dids = set(list(map(lambda v: v[0], builded_data['courses'])))
-            deletedIds = ids.difference(dids)
-            if len(deletedIds) > 0:
-                if len(deletedIds) > 20 and not args.force:
-                    logging.warn(
-                        "delete courses too many, reject: " + str(len(deletedIds)))
-                    raise Exception("Abort")
+                ids = set(SimCollect.objects.filter(semester=sem).values_list(
+                    'course_id', flat=True).distinct())
+                dids = set(list(map(lambda v: v[0], builded_data['courses'])))
+                deletedIds = ids.difference(dids)
+                if len(deletedIds) > 0:
+                    if len(deletedIds) > 20 and not args.force:
+                        logging.warn(
+                            "delete courses too many, reject: " + str(len(deletedIds)))
+                        raise Exception("Abort")
+                    else:
+                        SimCollect.objects.filter(
+                            semester=sem, course_id__in=deletedIds).delete()
+                        logging.info("delete courses: " + str(deletedIds))
                 else:
-                    SimCollect.objects.filter(
-                        semester=sem, course_id__in=deletedIds).delete()
-                    logging.info("delete courses: " + str(deletedIds))
-            else:
-                logging.info("no course deleted")
+                    logging.info("no course deleted")
+        else:
+            migrate_course_table.work(build_simdata['courses'])
 
         logging.info("Finish")
     except:
         logging.error("Crawler fail", exc_info=True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("semester", help="semester")
+    parser.add_argument("-f", "--force", action="store_true",
+                        help="force update database")
+    parser.add_argument("-i", "--input", help="input file")
+    parser.add_argument('-t', '--type', choices=['sim', 'course'], default='sim')
+    args = parser.parse_args()
+    main(args)

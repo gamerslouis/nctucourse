@@ -5,6 +5,8 @@ import requests
 headers = {
     'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
 
+from utils import _NewOldTimeConvert
+
 session = requests.Session()
 session.verify = False
 
@@ -13,6 +15,7 @@ class Lang(Enum):
     TW = 'zh-tw'
     US = 'en-us'
 
+clean_new_time = _NewOldTimeConvert().clean_time
 
 def get_type() -> list:
     """
@@ -190,6 +193,7 @@ def parse_course_list(_data):
                 obj['brief_code'] = list(data['brief'][cid])[0]
                 obj['lang'] = data['language'][cid]['授課語言代碼']
                 obj['cos_code'] = obj['cos_code'].strip()
+                obj['cos_time'] = clean_new_time(obj['cos_time'])
                 try:
                     geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院']['GECIName']
                     meta['geci'] = geci_name
