@@ -1,6 +1,5 @@
 from enum import Enum
 import json
-from typing import TypedDict
 import requests
 
 headers = {
@@ -15,7 +14,7 @@ class Lang(Enum):
     US = 'en-us'
 
 
-class TimetableType(TypedDict):
+def get_type() -> list:
     """
     {
         "uid": "870A5373-5B3A-415A-AF8F-BB01B733444F",
@@ -24,13 +23,6 @@ class TimetableType(TypedDict):
         "ename": "Undergraduate courses"
     }
     """
-    uid: str
-    type: str
-    cnmae: str
-    ename: str
-
-
-def get_type() -> list[TimetableType]:
     res = session.get(
         'https://timetable.nycu.edu.tw/?r=main/get_type', headers=headers)
     return res.json()
@@ -155,29 +147,29 @@ def get_all_cos(acysem):
     return parse_course_list(res.json())
 
 
-class Course(TypedDict):
-    cos_id: str
-    brief_code: str
-    lang: str
-    meta: str
-
-    TURL: str
-    cos_cname: str
-    cos_code: str
-    cos_credit: str
-    cos_ename: str
-    cos_hours: str
-    cos_type: str
-    cos_type_e: str
-    memo: str
-    num_limit: str
-    reg_num: str
-    teacher: str
-    cos_time: str
-
 
 def parse_course_list(_data):
-    courses: list[Course] = []
+    """
+    response:
+        cos_id: str
+        brief_code: str
+        lang: str
+        meta: str
+        TURL: str
+        cos_cname: str
+        cos_code: str
+        cos_credit: str
+        cos_ename: str
+        cos_hours: str
+        cos_type: str
+        cos_type_e: str
+        memo: str
+        num_limit: str
+        reg_num: str
+        teacher: str
+        cos_time: str
+    """
+    courses = []
     ids = []
     for did in _data:
         data = _data[did]
