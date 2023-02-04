@@ -3,6 +3,7 @@ from datetime import datetime
 import json
 import logging
 import os
+import re
 import sys
 import django
 
@@ -37,6 +38,8 @@ if __name__ == "__main__":
         if args.input:
             with open(args.input, 'r', encoding="utf-8") as f:
                 builded_data = json.load(f)
+            # use regex to get string '{any word}/{any word}/all.json' from input file
+            file = re.search(r'[\w]+\/[\w-]+\/all.json$', args.input).group(0)
         else:
             storage = "storage"
 
