@@ -54,7 +54,6 @@ def get_college(ftype, flang, acysem, fcategory):
         'acysemend': acysem,
         'fcategory': fcategory
     }, headers=headers)
-    print(res.json())
     return res.json()
 
 
@@ -67,7 +66,6 @@ def get_dep(ftype, flang, acysem, fcategory, fcollege):
         'fcategory': fcategory,
         'fcollege': fcollege
     }, headers=headers)
-    print(ftype, flang, acysem, fcategory, fcollege, res.json())
     return res.json()
 
 
