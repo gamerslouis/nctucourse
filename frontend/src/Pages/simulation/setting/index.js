@@ -22,6 +22,7 @@ import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
 import html2canvas from 'html2canvas';
 import { actions, clearAllUserCourse, updateSetting, loadSavedSettings } from '../../../Redux/Actions/index'
+import { DownloadAsImage } from '../../../Util/dataUtil/imageExport';
 
 const styles = theme => ({
     fab: {
@@ -157,34 +158,7 @@ class Setting extends React.Component {
                         }
                         let temp = settings.hideOverflowText
                         updateSetting('hideOverflowText', false)
-                        window.scrollTo(0, 0);
-                        setTimeout(() => {
-                            html2canvas(document.getElementById('timetable')).then(canvas => {
-                                function iOS() {
-                                    return [
-                                        'iPad Simulator',
-                                        'iPhone Simulator',
-                                        'iPod Simulator',
-                                        'iPad',
-                                        'iPhone',
-                                        'iPod'
-                                    ].includes(navigator.platform)
-                                        // iPad on iOS 13 detection
-                                        || (navigator.userAgent.includes("Mac") && "ontouchend" in document)
-                                }
-                                if (iOS()) {
-                                    let image = new Image();
-                                    image.src = canvas.toDataURL()
-                                    let w = window.open("");
-                                    w.document.write(image.outerHTML);
-                                } else {
-                                    let a = document.createElement('a');
-                                    a.href = canvas.toDataURL("image/png");
-                                    a.download = '課表.png';
-                                    a.click();
-                                }
-                            }).then(() => updateSetting('hideOverflowText', temp))
-                        }, 500)
+                        DownloadAsImage(document.getElementById("timetable"))
                     }}>
                         <ListItemIcon>
                             <GetAppIcon />

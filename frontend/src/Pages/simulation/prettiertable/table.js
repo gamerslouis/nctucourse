@@ -1,0 +1,316 @@
+import React from "react";
+import { withStyles } from "@material-ui/core/styles";
+import clsx from "clsx";
+import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
+import {
+    ConvertCourseType2StyleType,
+    ConvertToNewCode,
+    secs,
+    timeCode,
+} from "../../../Util/style";
+import { difference } from "lodash";
+
+const styles = (theme) => ({
+    root: (props) => ({
+        width: props.tableWidth,
+        height: props.tableHeight,
+        backgroundColor: props.tableTheme.mainBackgroundColor,
+        position: "relative",
+        fontSize: 12,
+        padding: 20,
+        paddingTop: 20 + props.notchHeight,
+        margin: "0 auto",
+    }),
+    tablecontainer: (props) => ({
+        width: props.tableWidth - 40,
+        height: props.tableHeight - 40 - props.notchHeight,
+        border: `1.5px solid ${props.tableTheme.borderColor}`,
+    }),
+    table: (props) => ({
+        width: "100%",
+        height: "100%",
+        borderCollapse: "collapse",
+        textAlign: "center",
+        tableLayout: "fixed",
+    }),
+    tr: {
+        lineHeight: 0,
+    },
+    thd: (props) => ({
+        backgroundColor: props.tableTheme.headerBackgroundColor,
+    }),
+    td: (props) => ({
+        borderWidth: 1,
+        borderColor: props.tableTheme.borderColor,
+        borderStyle: "solid",
+    }),
+    td1: (props) => ({
+        width: "2.5rem",
+        whiteSpace: "nowrap",
+        backgroundColor: props.tableTheme.indexColumnBackgroundColor,
+    }),
+    tdx: (props) => ({
+        verticalAlign: "top",
+        padding: 1,
+        color: props.tableTheme.courseFontColor,
+        lineHeight: 1.66,
+    }),
+    courseContainer: {
+        height: 0,
+        width: "100%",
+    },
+});
+
+const courseStyles = (theme) => ({
+    course: (props) => ({
+        height: props.cellHeight * props.length - 2,
+        padding: "0.2rem 0.1rem",
+        borderRadius: 10,
+        boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+        display: "inline-table",
+        width: "100%",
+    }),
+    textSpan: {
+        display: "inline-block",
+        width: "100%",
+        wordBreak: "normal",
+        wordWrap: "break-word",
+    },
+    teacher: (props) => ({
+        display: props.showTeacher ? "inline" : "none",
+    }),
+    room: (props) => ({
+        display: props.showRoom ? "inline" : "none",
+    }),
+});
+
+const TimeTableCourse = withStyles(courseStyles)((props) => {
+    const {
+        course,
+        roomCode,
+        roomName,
+        showRoomCode,
+        classes,
+        tableTheme,
+        fontSize,
+    } = props;
+    return (
+        <div
+            className={classes.course}
+            style={{
+                backgroundColor:
+                    tableTheme.courseBackgroundColor[
+                        ConvertCourseType2StyleType(course.cos_type)
+                    ],
+            }}
+        >
+            <div className={classes.textSpan} style={{ fontSize: fontSize }}>
+                {course.cos_cname}
+                <br />
+                {course.teacher} <br />
+                {showRoomCode ? roomCode : roomName}
+            </div>
+        </div>
+    );
+});
+
+class TimeTable extends React.Component {
+    constructor(props) {
+        super(props);
+        this.ref = React.createRef();
+        this.state = {
+            cellHeight: 0,
+        };
+    }
+
+    componentDidMount() {
+        this.resizeObserver = new ResizeObserver((entries) => {
+            this.setState({
+                cellHeight: entries[0].target.clientHeight,
+            });
+        });
+
+        this.resizeObserver.observe(this.ref.current);
+    }
+
+    makeCourseClasses(localTimeCode, localSecCode) {
+        let classes = [...Array(localSecCode.length)].map((e) =>
+            [...Array(localTimeCode.length)].map((e2) => Array(0))
+        );
+
+        let { courseIds, allCourses } = this.props;
+
+        for (let course of Array.from(courseIds).map((id) => allCourses[id])) {
+            let times = getCourseTimesAndRooms(course);
+            let lastSec = "";
+            let lastTime = "";
+            let lastObj = null;
+            for (let time of times) {
+                if (localTimeCode.indexOf(timeCode[time[0] - 1]) === -1)
+                    continue;
+                if (localSecCode.indexOf(time[1]) === -1) continue;
+                if (
+                    localSecCode.indexOf(time[1]) - 1 === lastSec &&
+                    time[0] - 1 === lastTime
+                ) {
+                    lastObj.length += 1;
+                } else {
+                    const secIdx = localSecCode.indexOf(time[1]);
+                    const timeIdx = localTimeCode.indexOf(
+                        timeCode[time[0] - 1]
+                    );
+                    lastObj = {
+                        course: course,
+                        roomCode: time[2],
+                        roomName: time[3],
+                        time: time.slice(0, 2),
+                        length: 1,
+                    };
+                    classes[secIdx][timeIdx].push(lastObj);
+                }
+                lastSec = localSecCode.indexOf(time[1]);
+                lastTime = time[0] - 1;
+            }
+        }
+        return classes;
+    }
+
+    render() {
+        const {
+            extendTimetable,
+            classes,
+            hideOverflowText,
+            showRoom,
+            showRoomCode,
+            newTimeCode,
+            tableTheme,
+            showTeacher,
+        } = this.props;
+        let timeC = timeCode
+            .slice(0, 5)
+            .concat(extendTimetable["六"] ? ["六"] : [])
+            .concat(extendTimetable["日"] ? ["日"] : []);
+        let secC = difference(
+            secs,
+            Object.keys(extendTimetable).filter((e) => !extendTimetable[e])
+        );
+        let courseClasses = this.makeCourseClasses(timeC, secC);
+        let titles = newTimeCode ? timeC.map(ConvertToNewCode) : timeC;
+        let indexColumn = newTimeCode ? secC.map(ConvertToNewCode) : secC;
+
+        return (
+            <div className={classes.root} id="table">
+                <div className={classes.tablecontainer}>
+                    <table
+                        className={classes.table}
+                        id="prettiertable"
+                        cellpadding="1"
+                        cellspacing="1"
+                    >
+                        <thead>
+                            <tr>
+                                <td
+                                    className={clsx(
+                                        classes.td,
+                                        classes.td1,
+                                        classes.thd
+                                    )}
+                                >
+                                    節數
+                                </td>
+                                {titles.map((text) => (
+                                    <td
+                                        className={clsx(
+                                            classes.td,
+                                            classes.thd
+                                        )}
+                                        key={text}
+                                    >
+                                        {text}
+                                    </td>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {courseClasses
+                                .map((rowClasses, index) => (
+                                    <tr className={classes.tr} key={index}>
+                                        <td
+                                            className={clsx(
+                                                classes.td,
+                                                classes.td1
+                                            )}
+                                        >
+                                            {indexColumn[index]}
+                                        </td>
+                                        {rowClasses.map(
+                                            (cellClasses, index2) => (
+                                                <td
+                                                    className={clsx(
+                                                        classes.td,
+                                                        classes.tdx
+                                                    )}
+                                                    key={index2}
+                                                    ref={this.ref}
+                                                >
+                                                    <div
+                                                        className={
+                                                            classes.courseContainer
+                                                        }
+                                                    >
+                                                        {cellClasses.map(
+                                                            (courseData) => (
+                                                                <TimeTableCourse
+                                                                    {...courseData}
+                                                                    tableTheme={
+                                                                        tableTheme
+                                                                    }
+                                                                    hideOverflowText={
+                                                                        hideOverflowText
+                                                                    }
+                                                                    showRoom={
+                                                                        showRoom
+                                                                    }
+                                                                    showRoomCode={
+                                                                        showRoomCode
+                                                                    }
+                                                                    key={
+                                                                        courseData
+                                                                            .course
+                                                                            .cos_id
+                                                                    }
+                                                                    cellHeight={
+                                                                        this
+                                                                            .state
+                                                                            .cellHeight
+                                                                    }
+                                                                    showTeacher={
+                                                                        showTeacher
+                                                                    }
+                                                                    fontSize={
+                                                                        this
+                                                                            .props
+                                                                            .fontSize
+                                                                    }
+                                                                />
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            )
+                                        )}
+                                    </tr>
+                                ))
+                                .splice(
+                                    extendTimetable ? 0 : 2,
+                                    secs.length - (extendTimetable ? 0 : 7)
+                                )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        );
+    }
+}
+
+export default withStyles(styles)(TimeTable);
