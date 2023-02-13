@@ -5,6 +5,7 @@ DEBUG = True
 
 MIDDLEWARE.remove('django.middleware.csrf.CsrfViewMiddleware')
 MIDDLEWARE.insert(0, 'corsheaders.middleware.CorsMiddleware')
+MIDDLEWARE.insert(10, 'utils.middleware.TestAccountLoginMiddleware')
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
@@ -28,9 +29,9 @@ DATABASES = {
     }
 }
 
-COURSE_FILE_ROOT = 'http://127.0.0.1:5000/'
-
 REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (
     'utils.authentication.CsrfExemptSessionAuthentication',
     'rest_framework.authentication.BasicAuthentication'
 )
+
+TEST_AUTH_USER_ID = os.environ.get('TEST_AUTH_USER_ID', -1)
