@@ -1,6 +1,6 @@
 import html2canvas from "html2canvas";
 
-export const DownloadAsImage = (element) => {
+export const DownloadAsImage = (element, onFinish) => {
     window.scrollTo(0, 0);
     setTimeout(() => {
         html2canvas(element, { scale: 2 }).then((canvas) => {
@@ -31,6 +31,6 @@ export const DownloadAsImage = (element) => {
                 a.download = "課表.png";
                 a.click();
             }
-        });
+        }).then(onFinish);
     }, 500);
 };

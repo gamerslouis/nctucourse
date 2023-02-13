@@ -67,7 +67,7 @@ const PositiveValidatedTextField = ({ value, onChange, ...props }) => {
         } else {
             setErrorMessage("無效數值");
         }
-    });
+    }, [setLocalValue, onChange, setErrorMessage]);
 
     return (
         <TextField
@@ -142,6 +142,7 @@ const Setting = ({ handleConfigChange }) => {
         if (detectMob()) {
             handleSetScreenSizeClick();
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -160,6 +161,7 @@ const Setting = ({ handleConfigChange }) => {
                 tableTheme: themes[selectTheme],
             });
     }, [
+        handleConfigChange,
         selectSemester,
         tableWidth,
         tableHeight,

@@ -20,7 +20,6 @@ import GetAppIcon from '@material-ui/icons/GetApp';
 import TranslateIcon from '@material-ui/icons/Translate';
 import Fab from '@material-ui/core/Fab';
 import Switch from '@material-ui/core/Switch';
-import html2canvas from 'html2canvas';
 import { actions, clearAllUserCourse, updateSetting, loadSavedSettings } from '../../../Redux/Actions/index'
 import { DownloadAsImage } from '../../../Util/dataUtil/imageExport';
 
@@ -158,7 +157,8 @@ class Setting extends React.Component {
                         }
                         let temp = settings.hideOverflowText
                         updateSetting('hideOverflowText', false)
-                        DownloadAsImage(document.getElementById("timetable"))
+                        DownloadAsImage(document.getElementById("timetable"), 
+                            () => updateSetting('hideOverflowText', temp))
                     }}>
                         <ListItemIcon>
                             <GetAppIcon />
