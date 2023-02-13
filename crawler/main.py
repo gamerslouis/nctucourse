@@ -1,81 +1,97 @@
-import os, sys
-import code
+import argparse
+from datetime import datetime
+import json
+import logging
+import os
+import re
+import sys
 import django
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../backend')))
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "nctucourse.settings.development")
-django.setup()
 
-import shutil
-import tempfile
 import fetch
 import build_simdata
-import pack
-from git import Repo
-import logging
-import json
+import migrate_course_table
+
+sys.path.append(os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '../backend')))
+os.environ.setdefault("DJANGO_SETTINGS_MODULE",
+                      "nctucourse.settings.development")
+django.setup()
 
 from simulation.models import SemesterCoursesMapping, SimCollect
 from django.db import transaction
 
+
 FORMAT = '%(asctime)s %(levelname)s: %(message)s'
-logging.basicConfig(level=logging.INFO, filename='crawler.log', format=FORMAT)
+logging.basicConfig(level=logging.DEBUG, filename='crawler.log', format=FORMAT)
 
-if __name__ == "__main__":
+def main(args):
     try:
-        sem = sys.argv[1]
-        root = "workspace"
-        gitroot = 'nctucourse/coursedata/'
-        gitrepo = 'gamerslouis.github.io/'
+        sem = args.semester
 
-        shutil.rmtree(root)
-        os.makedirs(root, exist_ok=True)
-        logging.info("Work directory:" + root)
-        logging.info("Fetch Stage")
-        fetch.work(sem, root)
-        logging.info("Build Stage")
-        build_simdata.work(sem, root)
-        logging.info("Pack Stage")
-        timestamp = pack.work(sem, root)
+        file = ''
+        if args.input:
+            with open(args.input, 'r', encoding="utf-8") as f:
+                builded_data = json.load(f)
+            # use regex to get string '{any word}/{any word}/all.json' from input file
+            file = re.search(r'[\w]+\/[\w-]+\/all.json$', args.input).group(0)
+        else:
+            storage = "storage"
 
-        # ### Upload Stage ###
-        logging.info("Upload Stage")
-        spath = os.path.join(root,'all.json')
-        rdir = os.path.join(gitroot, sem, timestamp)
-        tdir = os.path.join(gitrepo, rdir)
-        os.makedirs(tdir, exist_ok=True)
-        tpath = os.path.join(tdir, 'all.json')
-        shutil.copy(spath, tpath)
-        repo = Repo(gitrepo)
-        repo.index.add(items=[gitroot])
-        repo.index.commit('Nctucourse crawler auto upload')
-        repo.remote().push()
-        logging.info("upload success")
+            logging.info("Fetch Stage")
+            fetch_result = fetch.work(sem)
+            logging.info("Build Stage")
+            builded_data = build_simdata.work(fetch_result)
+            logging.info("Pack Stage")
+            timestamp = datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
 
-        ### Update sql setting ###
-        logging.info("Update sql setting")
-        file = f'{sem}/{timestamp}/all.json'
-        with transaction.atomic():
-            obj, created = SemesterCoursesMapping.objects.get_or_create(semester=sem, defaults={
-                'file': file
-            })
-            if not created:
-                obj.file = file
-                obj.save()
+            tdir = os.path.join(storage, sem, timestamp)
+            os.makedirs(tdir, exist_ok=True)
+            with open(os.path.join(tdir, 'all.json'), 'w', encoding="utf-8") as f:
+                json.dump(builded_data, f)
+            print("Finish timestamp: ", timestamp)
+            file = f'{sem}/{timestamp}/all.json'
 
-                ids = set(SimCollect.objects.filter(semester=sem).values_list('course_id', flat=True).distinct())
-                with open(spath) as f:
-                    dids = set(list(map(lambda v:v[0],json.load(f)['courses'])))
+        if args.type == 'sim':
+            ### Update sql setting ###
+            logging.info("Update sql setting")
+            with transaction.atomic():
+                if file != '':
+                    obj, created = SemesterCoursesMapping.objects.get_or_create(semester=sem, defaults={
+                        'file': file
+                    })
+                    if not created:
+                        obj.file = file
+                        obj.save()
+
+                ids = set(SimCollect.objects.filter(semester=sem).values_list(
+                    'course_id', flat=True).distinct())
+                dids = set(list(map(lambda v: v[0], builded_data['courses'])))
                 deletedIds = ids.difference(dids)
                 if len(deletedIds) > 0:
-                    if len(deletedIds) > 20:
-                        logging.warn("delete courses too many, reject: " + str(len(deletedIds)))
+                    if len(deletedIds) > 20 and not args.force:
+                        logging.warn(
+                            "delete courses too many, reject: " + str(len(deletedIds)))
                         raise Exception("Abort")
                     else:
-                        SimCollect.objects.filter(semester=sem, course_id__in=deletedIds).delete()
+                        SimCollect.objects.filter(
+                            semester=sem, course_id__in=deletedIds).delete()
                         logging.info("delete courses: " + str(deletedIds))
                 else:
                     logging.info("no course deleted")
+        else:
+            migrate_course_table.work(build_simdata['courses'])
 
         logging.info("Finish")
     except:
         logging.error("Crawler fail", exc_info=True)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("semester", help="semester")
+    parser.add_argument("-f", "--force", action="store_true",
+                        help="force update database")
+    parser.add_argument("-i", "--input", help="input file")
+    parser.add_argument('-t', '--type', choices=['sim', 'course'], default='sim')
+    args = parser.parse_args()
+    main(args)

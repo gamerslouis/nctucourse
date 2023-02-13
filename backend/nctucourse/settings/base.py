@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'social_django',
     'rest_framework',
     'django_filters',
@@ -133,7 +134,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = 'static'
 
 SEMESTER = os.environ.get('SEMESTER')
-COURSE_FILE_ROOT = os.environ.get('COURSE_FILE_ROOT', 'https://gamerslouis.github.io/nctucourse/coursedata/')
+COURSE_FILE_ROOT = os.environ.get('COURSE_FILE_ROOT', 'http://127.0.0.1:5000/')
 
 NCTU_OAUTH_CLIENT_ID = os.environ.get('NCTU_OAUTH_CLIENT_ID')
 NCTU_OAUTH_CLIENT_SECRET = os.environ.get('NCTU_OAUTH_CLIENT_SECRET')

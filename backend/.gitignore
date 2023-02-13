@@ -116,3 +116,4 @@ media/
 # !**/migrations/__init__.py
 
 static/
+crawler/storage

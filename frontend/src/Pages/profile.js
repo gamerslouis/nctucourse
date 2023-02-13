@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 import { setNickname } from '../Redux/Actions'
 import { Check, Edit } from '@material-ui/icons';
 import axios from 'axios'
+import { api_url } from '../Util/dev';
 
 const Nickname = withStyles(theme => ({
     root: {
@@ -85,7 +86,7 @@ class Profile extends React.PureComponent {
                                         <Typography style={{ height: '28px' }} align="center">{user.social[0].uid}</Typography>
                                         <Button onClick={() => disconnect(user.social[0].id)} variant="contained">解除綁定</Button>
                                     </>
-                                    : <GoogleButton href="/api/login/google-oauth2">綁定Google帳號</GoogleButton>
+                                    : <GoogleButton href={api_url("/api/login/google-oauth2")}>綁定Google帳號</GoogleButton>
                             }
                         </div>
                     </Hidden>
@@ -107,7 +108,7 @@ class Profile extends React.PureComponent {
                                             <Typography style={{ height: '40px', lineHeight: '40px', verticalAlign: 'center' }}>Google 信箱：&nbsp;&nbsp;&nbsp;&nbsp;{user.social[0].uid}</Typography>
                                             <Button onClick={() => disconnect(user.social[0].id)} variant="contained">解除綁定</Button>
                                         </>
-                                        : <GoogleButton href="/api/login/google-oauth2">綁定Google帳號</GoogleButton>
+                                        : <GoogleButton href={api_url("/api/login/google-oauth2")}>綁定Google帳號</GoogleButton>
                                 }
                             </div>
                         </div>

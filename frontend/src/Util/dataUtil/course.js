@@ -95,7 +95,6 @@ export function getCourseTimesAndRooms(course) {
     for (let i = 0; i < times.length; i++) {
         const element = times[i];
         const key = `${element[0]}_${element[1]}`
-        console.log(key)
         if (newTimes[key] !== undefined) {
             newTimes[key][2] += ',' + element[2]
             newTimes[key][3] += ',' + element[3]

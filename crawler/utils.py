@@ -1,6 +1,7 @@
 import os
 import json
 
+
 class _NewOldTimeConvert:
     new_keys = 'MTWRFSUyz1234n56789abcd'
     oringin_keys = '1234567MNABCDXEFGHYIJKL'
@@ -18,7 +19,20 @@ class _NewOldTimeConvert:
     def time_map_to_origin(self, time_str):
         return ''.join(list(map(lambda c: self.mapp[c], time_str)))
 
+
 def load_json(root, fname):
     with open(os.path.join(root, fname), 'r', encoding="utf-8") as f:
         data = json.load(f)
     return data
+
+
+def save_json_file(root, fname, obj):
+    with open(os.path.join(root, fname), 'w') as f:
+        json.dump(obj, f)
+
+
+def list_to_dict(l, key):
+    d = dict()
+    for e in l:
+        d[e[key]] = e
+    return d

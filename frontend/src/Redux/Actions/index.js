@@ -1,18 +1,9 @@
+import axios from 'axios'
 import { createActions } from 'redux-actions'
-import axios_api from 'axios'
-import fakeData from '../../Resources/fake_data'
 import { makeCourseObject, makeObjFromArray, getCourseTimesAndRooms, filterCommonCourses } from '../../Util/dataUtil/course'
-import { isDev } from '../../Util/dev'
 
-let axiosConfig = {
-    // `xsrfCookieName` is the name of the cookie to use as a value for xsrf token
-    xsrfCookieName: 'csrftoken', // default
-
-    // `xsrfHeaderName` is the name of the http header that carries the xsrf token value
-    xsrfHeaderName: 'X-XSRF-TOKEN', // default
-}
-
-let axios = axios_api.create(axiosConfig)
+const useFakeData = false
+const fakeData = {}
 
 export const FETCH_STATUS = {
     IDLE: 1,
@@ -100,7 +91,7 @@ export const fetchDatabase = (semester) => dispatch => {
         })
         .then(({ url, sem }) => {
             if (url == null) return
-            return axios.get(url).then(res => {
+            return axios.get(url, { withCredentials: false }).then(res => {
                 dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
                     category: res.data.category.map(c => { c[0] = Number(c[0]); return c }),
@@ -114,7 +105,7 @@ export const fetchDatabase = (semester) => dispatch => {
             })
         })
         .catch(err => {
-            if (isDev) {
+            if (useFakeData) {
                 dispatch(actions.courseSim.database.store({
                     status: FETCH_STATUS.SUCCESS,
                     ...fakeData,
@@ -133,12 +124,12 @@ export const fetchDatabase = (semester) => dispatch => {
 
 export const fetchUserInfo = () => dispatch => {
     dispatch(actions.user.store({ status: FETCH_STATUS.FETCHING }))
-    axios.get(`${process.env.REACT_APP_HOST}/api/accounts/me/`)
+    axios.get("/api/accounts/me/")
         .then(res => {
             dispatch(actions.user.store({ ...res.data, status: FETCH_STATUS.SUCCESS }))
         }).catch(err => {
             console.log(err)
-            if (isDev)
+            if (useFakeData)
                 dispatch(actions.user.store({ is_anonymous: false, username: '0716000', status: FETCH_STATUS.SUCCESS, }))
             else
                 dispatch(actions.user.store({ is_anonymous: true, status: FETCH_STATUS.FAIL }))
@@ -170,7 +161,7 @@ export const addCollectCourse = (courseId, visible) => dispatch => {
         dispatch(actions.courseSim.timetable.courseIds.add(courseId))
     }).catch(err => {
         console.log(err)
-        if (isDev) {
+        if (useFakeData) {
             dispatch(actions.courseSim.collect.courseIds.add(courseId))
             dispatch(actions.courseSim.timetable.courseIds.add(courseId))
         }
@@ -183,7 +174,7 @@ export const removeCollectCourse = (courseId) => dispatch => {
         dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
     }).catch(err => {
         console.log(err)
-        if (isDev) {
+        if (useFakeData) {
             dispatch(actions.courseSim.collect.courseIds.remove(courseId))
             dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
         }
@@ -196,7 +187,7 @@ export const toggleCollectCourseVisible = (courseId, visible) => dispatch => {
         else dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
     }).catch(err => {
         console.log(err)
-        if (isDev) {
+        if (useFakeData) {
             if (visible) dispatch(actions.courseSim.timetable.courseIds.add(courseId))
             else dispatch(actions.courseSim.timetable.courseIds.remove(courseId))
         }
@@ -213,7 +204,7 @@ export const clearAllUserCourse = (semester) => dispatch => {
         dispatch(actions.courseSim.collect.courseIds.store([]))
     }).catch(err => {
         console.log(err)
-        if (isDev) {
+        if (useFakeData) {
             dispatch(actions.courseSim.timetable.courseIds.store([]))
             dispatch(actions.courseSim.collect.courseIds.store([]))
         }

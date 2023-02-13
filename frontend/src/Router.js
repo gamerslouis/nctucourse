@@ -21,6 +21,7 @@ import CoursePage from './Pages/courses/single'
 import FeedbackList from './Pages/courses/feedback/list'
 import NewFeedback from './Pages/courses/feedback/new'
 import TutorialPage from './Pages/tutorial'
+import PrettierTable from './Pages/simulation/prettiertable'
 
 const Router = (props) => {
     if (isMaintaining) return <Maintain />
@@ -47,6 +48,7 @@ const Router = (props) => {
                                     return <Simulation />
                                 }
                             }} />
+                            <AuthRoute exact path='/simulation/export' component={PrettierTable} />
                             <AuthRoute exact path='/gpa' component={GPA} />
                             <AuthRoute exact path='/gpa/import' component={GPAImport} />
                             <AuthRoute exact path='/coursehistory' component={CourseHistory} />

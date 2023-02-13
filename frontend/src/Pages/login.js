@@ -8,6 +8,7 @@ import GoogleButton from '../Components/GoogleButton'
 import { connect } from 'react-redux'
 import { FETCH_STATUS } from '../Redux/Actions'
 import { withSnackbar } from 'notistack';
+import { api_url } from '../Util/dev';
 
 
 const styles = (theme) => ({
@@ -127,9 +128,9 @@ class Login extends React.Component {
                                             {/* <Button variant="contained" color="primary"
                                                 className={classes.button} href="/api/accounts/login?mobile=false">NCTU&nbsp;OAuth</Button> */}
                                             <Button variant="contained" color="primary"
-                                                className={classes.button} href="/api/accounts/login/nycu/?mobile=false">單一入口帳號登入</Button>
+                                                className={classes.button} href={api_url("/api/accounts/login/nycu/?mobile=false")}>單一入口帳號登入</Button>
                                             <GoogleButton variant="contained" color="primary"
-                                                href="/api/login/google-oauth2"
+                                                href={api_url("/api/login/google-oauth2")}
                                                 className={classes.button}
                                                 style={{
                                                     padding: '0px 1px',
@@ -164,9 +165,9 @@ class Login extends React.Component {
                                         {/* <Button variant="contained" color="primary"
                                             className={classes.button} href="/api/accounts/login?mobile=true">NCTU&nbsp;OAuth</Button> */}
                                         <Button variant="contained" color="primary"
-                                            className={classes.button} href="/api/accounts/login/nycu/?mobile=true">單一入口帳號登入</Button>
+                                            className={classes.button} href={api_url("/api/accounts/login/nycu/?mobile=true")}>單一入口帳號登入</Button>
                                         <GoogleButton variant="contained" color="primary"
-                                            href="/api/login/google-oauth2"
+                                            href={api_url("/api/login/google-oauth2")}
                                             className={classes.button}
                                             style={{
                                                 padding: '0px 1px',

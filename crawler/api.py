@@ -1,9 +1,21 @@
-import requests
+from enum import Enum
 import json
-import typing
+import requests
 
-headers = {'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
+headers = {
+    'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
 
+from utils import _NewOldTimeConvert
+
+session = requests.Session()
+session.verify = False
+
+
+class Lang(Enum):
+    TW = 'zh-tw'
+    US = 'en-us'
+
+clean_new_time = _NewOldTimeConvert().clean_time
 
 def get_type() -> list:
     """
@@ -14,18 +26,21 @@ def get_type() -> list:
         "ename": "Undergraduate courses"
     }
     """
-    res = requests.get('https://timetable.nycu.edu.tw/?r=main/get_type', headers=headers)
+    res = session.get(
+        'https://timetable.nycu.edu.tw/?r=main/get_type', headers=headers)
     return res.json()
 
 
 def get_category(ftype, flang, acysem):
     """
     param:
-        ftype: D8E6F0E8-126D-4C2F-A0AC-F9A96A5F6D5D
+        ftype: D8E6F0E8-126D-4C2F-A0AC-F9A96A5F6D5D (Timetalble Type uuid)
         flang: zh-tw
         acysem: 1091
+    return:
+        {'3*': '一般學士班'}
     """
-    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_category', data={
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_category', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -35,7 +50,7 @@ def get_category(ftype, flang, acysem):
 
 
 def get_college(ftype, flang, acysem, fcategory):
-    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_college', data={
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_college', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -46,7 +61,7 @@ def get_college(ftype, flang, acysem, fcategory):
 
 
 def get_dep(ftype, flang, acysem, fcategory, fcollege):
-    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_dep', data={
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_dep', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -58,7 +73,7 @@ def get_dep(ftype, flang, acysem, fcategory, fcollege):
 
 
 def get_grade(ftype, flang, acysem, fcategory, fcollege, fdep):
-    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_grade', data={
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_grade', data={
         'ftype': ftype,
         'flang': flang,
         'acysem': acysem,
@@ -72,7 +87,7 @@ def get_grade(ftype, flang, acysem, fcategory, fcollege, fdep):
 
 
 def get_cos_list(acysem, fdepuuid, fgrade='**'):
-    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
         'm_acy': acysem[:-1],
         'm_sem': acysem[-1:],
         'm_acyend': acysem[:-1],
@@ -91,11 +106,27 @@ def get_cos_list(acysem, fdepuuid, fgrade='**'):
         'm_costype': '**',
         'm_selcampus': '**'
     }, headers=headers)
-    return res.json()
+    return parse_course_list(res.json())
 
 
 def get_all_cos(acysem):
-    res = requests.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
+    """
+        response:
+            {
+                "E55D50E2-B13D-4878-89C3-6317098C26CB": {
+                    "1": {...},
+                    "2": {...},
+                    "brief": {...},
+                    "costype": {...},
+                    "dep_cname": "學士班大一大二不分系",
+                    "dep_ename": "Department of Medicine",
+                    "dep_id": "E55D50E2-B13D-4878-89C3-6317098C26CB",
+                    "language": {...}
+                },
+                ...
+            }
+    """
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
         'm_acy': acysem[:-1],
         'm_sem': acysem[-1:],
         'm_acyend': acysem[:-1],
@@ -113,28 +144,56 @@ def get_all_cos(acysem):
         'm_crsoutline': '**',
         'm_costype': '**'
     }, headers=headers)
-    return res.json()
+
+    return parse_course_list(res.json())
 
 
-def course_pipe(_data):
+
+def parse_course_list(_data):
+    """
+    response:
+        cos_id: str
+        brief_code: str
+        lang: str
+        meta: str
+        TURL: str
+        cos_cname: str
+        cos_code: str
+        cos_credit: str
+        cos_ename: str
+        cos_hours: str
+        cos_type: str
+        cos_type_e: str
+        memo: str
+        num_limit: str
+        reg_num: str
+        teacher: str
+        cos_time: str
+    """
     courses = []
+    ids = []
     for did in _data:
         data = _data[did]
-        i = 1
-        while str(i) in data:
-            cs = data[str(i)]
+
+        for dk in data.keys():
+            if not dk.isnumeric():
+                continue
+            cs = data[dk]
+            ids.extend(list(cs))  # key list is id list
+
             keys = ['TURL', 'cos_cname', 'cos_code', 'cos_credit', 'cos_ename',
                     'cos_hours', 'cos_type', 'cos_type_e', 'memo', 'num_limit',
                     'reg_num', 'teacher', 'cos_time']
             for cid in cs:
-                obj = {}
+                obj: Course = {}  # type: ignore
                 meta = {}
                 for k in keys:
                     obj[k] = cs[cid][k]
-                obj['cos_id'] = cs[cid]['acy'] + cs[cid]['sem'] + '_' + cs[cid]['cos_id']
+                obj['cos_id'] = cid
                 obj['brief_code'] = list(data['brief'][cid])[0]
                 obj['lang'] = data['language'][cid]['授課語言代碼']
                 obj['cos_code'] = obj['cos_code'].strip()
+                obj['cos_time'] = clean_new_time(obj['cos_time'])
                 try:
                     geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院']['GECIName']
                     meta['geci'] = geci_name
@@ -142,18 +201,6 @@ def course_pipe(_data):
                     pass
                 meta['cos_ename'] = cs[cid]['cos_ename']
                 obj['meta'] = json.dumps(meta)
-                #
+
                 courses.append(obj)
-            i += 1
-    return courses
-
-
-def course_id_pipe(_data):
-    courses = []
-    for did in _data:
-        data = _data[did]
-        i = 1
-        while str(i) in data:
-            courses.extend(list(data[str(i)]))
-            i += 1
-    return courses
+    return courses, ids

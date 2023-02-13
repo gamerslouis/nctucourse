@@ -4,9 +4,14 @@ import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import axios from 'axios'
+import { isDev, url_base } from './Util/dev';
 
+axios.defaults.baseURL = url_base
 axios.defaults.xsrfCookieName = 'csrftoken'
 axios.defaults.xsrfHeaderName = 'X-XSRF-TOKEN'
+if (isDev) {
+  axios.defaults.withCredentials = true
+}
 
 ReactDOM.render(
   <React.StrictMode>
