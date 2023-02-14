@@ -23,3 +23,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /src/Resources/fake_data/fake_data.js
+
+.env
