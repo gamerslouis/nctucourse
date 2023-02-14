@@ -5,7 +5,7 @@ import { fetchDatabase } from "../../../Redux/Actions";
 import Setting from "./setting";
 import Table from "./table";
 
-const PrettierTable = ({ courseIds, allCourses, fetchDatabase }) => {
+const PrettierTable = ({ courseIds, allCourses, fetchDatabase, classes }) => {
     const [config, setConfig] = React.useState(null);
     const [semester, setSemester] = React.useState(null);
     useEffect(() => {
@@ -29,11 +29,7 @@ const PrettierTable = ({ courseIds, allCourses, fetchDatabase }) => {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     {config && allCourses && (
-                        <Card
-                            style={{
-                                overflow: "scroll",
-                            }}
-                        >
+                        <Card>
                             <Table
                                 {...config}
                                 courseIds={courseIds}

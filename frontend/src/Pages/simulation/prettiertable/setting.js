@@ -3,6 +3,7 @@ import {
     Checkbox,
     FormControlLabel,
     FormGroup,
+    IconButton,
     MenuItem,
     Select,
     TextField,
@@ -14,6 +15,8 @@ import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
 import { DownloadAsImage } from "../../../Util/dataUtil/imageExport";
 import { ConvertToNewCode, newSecs, secs, timeCode } from "../../../Util/style";
 import { themes } from "./theme";
+import { FileCopy } from "@material-ui/icons";
+import { withSnackbar } from "notistack";
 
 const toText = (sem) => {
     let s = sem[sem.length - 1];
@@ -37,7 +40,7 @@ function detectMob() {
     });
 }
 
-const FormRow = ({ title, children, dense }) => {
+const FormRow = ({ title, children, dense, fullWidth }) => {
     return (
         <div
             style={{
@@ -48,7 +51,7 @@ const FormRow = ({ title, children, dense }) => {
             }}
         >
             <span style={{ whiteSpace: "nowrap" }}>{title}</span>
-            <div>{children}</div>
+            <div style={{ flexGrow: fullWidth ? 1 : 0 }}>{children}</div>
         </div>
     );
 };
@@ -104,7 +107,12 @@ const ExtendedCheckbox = ({ code, values, useNewCode, setValues }) => {
     );
 };
 
-const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
+const Setting = ({
+    handleConfigChange,
+    allCourses,
+    courseIds,
+    enqueueSnack,
+}) => {
     let url = `/api/simulation/semesters/`;
     const [{ data, loading, error }] = useAxios(url);
     const [selectSemester, setSelectSemester] = useState("");
@@ -130,6 +138,10 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
         六: false,
         日: false,
     });
+    const [showThemeConfig, setShowThemeConfig] = useState(false);
+    const [userTheme, setUserTheme] = useState(themes[0]);
+    const [invalidUserTheme, setInvalidUserTheme] = useState(false);
+    const [lastAppliedTheme, setLastAppliedTheme] = useState(themes[0]);
 
     useEffect(() => {
         if (!loading && !error) {
@@ -150,7 +162,30 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
     }, []);
 
     useEffect(() => {
-        if (selectSemester !== "")
+        if (selectSemester !== "") {
+            let theme;
+            if (selectTheme === -1) {
+                try {
+                    theme = JSON.parse(userTheme);
+                    theme = {
+                        ...themes[0],
+                        ...theme,
+                        courseBackgroundColor: {
+                            ...themes[0].courseBackgroundColor,
+                            ...theme?.courseBackgroundColor,
+                        },
+                    };
+                    setInvalidUserTheme(false);
+                } catch (e) {
+                    theme = lastAppliedTheme;
+                    setInvalidUserTheme(true);
+                }
+            } else {
+                setInvalidUserTheme(false);
+                theme = themes[selectTheme];
+            }
+            setLastAppliedTheme(theme);
+
             handleConfigChange({
                 semester: selectSemester,
                 tableWidth: tableWidth,
@@ -162,8 +197,9 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
                 newTimeCode: !useOldTimeCode,
                 extendTimetable: extendTimetable,
                 fontSize: fontSize,
-                tableTheme: themes[selectTheme],
+                tableTheme: theme,
             });
+        }
     }, [
         handleConfigChange,
         selectSemester,
@@ -178,6 +214,7 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
         useOldTimeCode,
         extendTimetable,
         fontSize,
+        userTheme,
     ]);
 
     useEffect(() => {
@@ -204,6 +241,16 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allCourses, courseIds, selectSemester]);
+
+    const handleUserThemeChange = useCallback((event) => {
+        setSelectTheme(-1);
+        setUserTheme(event.target.value);
+    });
+
+    const handleCopyClick = useCallback(() => {
+        navigator.clipboard.writeText(userTheme);
+        enqueueSnack("已複製到剪貼簿", { variant: "success" });
+    });
 
     return (
         <div style={{ padding: 20 }}>
@@ -291,8 +338,42 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
                     {themes.map((theme, i) => (
                         <MenuItem value={i} key={i}>{`主題${i + 1}`}</MenuItem>
                     ))}
+                    <MenuItem value={-1} key="自訂主題">
+                        自訂主題
+                    </MenuItem>
                 </Select>
             </FormRow>
+            <FormRow title="顯示主題配置:" dense>
+                <Checkbox
+                    checked={showThemeConfig}
+                    onChange={() => setShowThemeConfig(!showThemeConfig)}
+                />
+                {showThemeConfig && (
+                    <IconButton onClick={handleCopyClick}>
+                        <FileCopy />
+                    </IconButton>
+                )}
+            </FormRow>
+            {showThemeConfig && (
+                <FormRow fullWidth>
+                    <TextField
+                        error={invalidUserTheme}
+                        helperText={
+                            invalidUserTheme ? "無效的主題格式" : undefined
+                        }
+                        multiline
+                        rows={15}
+                        variant="outlined"
+                        fullWidth
+                        onChange={handleUserThemeChange}
+                        value={
+                            selectTheme === -1
+                                ? userTheme
+                                : JSON.stringify(themes[selectTheme], null, 4)
+                        }
+                    />
+                </FormRow>
+            )}
             <FormRow title="字體大小:" dense>
                 <PositiveValidatedTextField
                     style={{ width: "6rem" }}
@@ -369,4 +450,4 @@ const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
     );
 };
 
-export default Setting;
+export default withSnackbar(Setting);

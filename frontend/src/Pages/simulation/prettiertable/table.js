@@ -47,6 +47,8 @@ const styles = (theme) => ({
     td1: (props) => ({
         width: "2.5rem",
         whiteSpace: "nowrap",
+    }),
+    td1Color: (props) => ({
         backgroundColor: props.tableTheme.indexColumnBackgroundColor,
     }),
     tdx: (props) => ({
@@ -214,7 +216,7 @@ const TimeTable = ({
                                     classes.thd
                                 )}
                             >
-                                節數 {cellHeight}
+                                節數
                             </td>
                             {titles.map((text) => (
                                 <td
@@ -233,7 +235,8 @@ const TimeTable = ({
                                     <td
                                         className={clsx(
                                             classes.td,
-                                            classes.td1
+                                            classes.td1,
+                                            classes.td1Color
                                         )}
                                     >
                                         {indexColumn[index]}
