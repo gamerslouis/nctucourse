@@ -8,7 +8,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { getCourseTimesAndRooms } from '../../../Util/dataUtil/course'
 import Tooltip from '@material-ui/core/Tooltip';
-import { CourseTypeColorMap } from '../../../Util/style'
+import { ConvertCourseType2StyleType, CourseTypeColorMap } from '../../../Util/style'
 import { makeInfoPageUrl } from '../../../Util/dataUtil/course'
 import { removeCollectCourse, toggleCollectCourseVisible, searchTimeCourses } from '../../../Redux/Actions/index'
 
@@ -43,28 +43,29 @@ const styles = theme => ({
         whiteSpace: 'nowrap'
     },
     tdx: {
-        padding: 0
-    },
-    courseContainer: {
-        height: "100%",
-        width: "100%",
-        padding: '2px 3px',
-        border: "2px #ffffff solid",
+        padding: 0,
+        
         '&:hover': {
             border: "2px #81C4FF solid",
             boxSizing: "border-box",
             cursor: "pointer",
-            // boxShadow: "rgba(0,0,0,0.4) 3px 3px 3px 0px inset",  
         },
+    },
+    courseContainer: {
+        width: "100%",
+        padding: "4px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: "0.2rem",
     }
 })
 
 const courseStyles = theme => ({
     course: {
         width: '100%',
-        margin: '1px 0',
         padding: '0.2rem 0.1rem',
-        borderRadius: 10
+        borderRadius: 7.5
     },
     textSpan: {
         display: 'inline-block',
@@ -103,7 +104,7 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
             aria-haspopup="true"
         >
             <Tooltip title={`${course.cos_cname} ${course.teacher}/${showRoomCode ? roomCode : roomName}`} arrow>
-                <div className={classes.course} style={{ backgroundColor: CourseTypeColorMap[course.cos_type] }}>
+                <div className={classes.course} style={{ backgroundColor: CourseTypeColorMap[ConvertCourseType2StyleType(course.cos_type)] }}>
                     <span className={clsx(classes.textSpan, hideOverflowText ? classes.textSpanHide : "")}>
                         <Typography display="inline" variant="body2">{course.cos_cname} </Typography>
                         <div className={hideOverflowText ? classes.textTeacherHide : ""}>
@@ -188,9 +189,9 @@ class TimeTable extends React.Component {
                         {courseClasses.map((rowClasses, index) => (<tr key={index}>
                             <td className={clsx(classes.td, classes.td1)}>{newTimeCode ? this.newSecs[index] : this.secs[index]}</td>
                             {rowClasses.slice(0, showWeekend ? 7 : 5).map((cellClasses, index2) => (
-                                <td className={clsx(classes.td, classes.tdx)} key={index2}>
-                                    <div className={classes.courseContainer}
-                                        onClick={e => this.handleCourseSpaceClick(e, [index2 + 1, this.secs[index]])}>
+                                <td className={clsx(classes.td, classes.tdx)} key={index2}
+                                    onClick={e => this.handleCourseSpaceClick(e, [index2 + 1, this.secs[index]])}>
+                                    <div className={classes.courseContainer}>
                                         {cellClasses.map(courseData =>
                                             <TimeTableCourse {...courseData}
                                                 hideOverflowText={hideOverflowText}
