@@ -291,7 +291,12 @@ const Setting = ({
                         ))}
                 </Select>
             </FormRow>
-            <FormRow title="尺寸:">
+            <FormRow
+                title="尺寸:"
+                caption={
+                    '"使用當前設備大小"可以直接將課表大小設置為手機螢幕大小，可以直接用於手機桌布。'
+                }
+            >
                 <div
                     style={{
                         display: "flex",
@@ -326,10 +331,16 @@ const Setting = ({
                     >
                         使用當前設備大小
                     </Button>
-                    <Typography variant="caption" color="textSecondary">
-                        "使用當前設備大小"可以直接將課表大小設置為手機螢幕大小，可以直接用於手機桌布。
-                    </Typography>
+                    <Typography
+                        variant="caption"
+                        color="textSecondary"
+                    ></Typography>
                 </div>
+            </FormRow>
+            <FormRow
+                title="瀏海修正:"
+                caption="避免匯出的課表被iPhone等手機的挖孔螢幕遮住"
+            >
                 <div>
                     <FormControlLabel
                         control={
@@ -340,7 +351,6 @@ const Setting = ({
                                 }
                             />
                         }
-                        label="瀏海修正"
                     />
                     <PositiveValidatedTextField
                         style={{ width: "6rem" }}
@@ -353,9 +363,10 @@ const Setting = ({
                         onChange={setNotchHeight}
                     />
                 </div>
-                <Typography variant="caption" color="textSecondary">
-                    避免匯出的課表被iPhone等手機的挖孔螢幕遮住
-                </Typography>
+                <Typography
+                    variant="caption"
+                    color="textSecondary"
+                ></Typography>
             </FormRow>
             <FormRow title="主題:">
                 <Select
@@ -368,7 +379,7 @@ const Setting = ({
                     }}
                 >
                     {themes.map((theme, i) => (
-                        <MenuItem value={i} key={i}>{`主題${i + 1}`}</MenuItem>
+                        <MenuItem value={i} key={i}>{theme.name}</MenuItem>
                     ))}
                     <MenuItem value={-1} key="自訂主題">
                         自訂主題
