@@ -215,6 +215,7 @@ const Setting = ({
         extendTimetable,
         fontSize,
         userTheme,
+        lastAppliedTheme,
     ]);
 
     useEffect(() => {
@@ -242,15 +243,18 @@ const Setting = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allCourses, courseIds, selectSemester]);
 
-    const handleUserThemeChange = useCallback((event) => {
-        setSelectTheme(-1);
-        setUserTheme(event.target.value);
-    });
+    const handleUserThemeChange = useCallback(
+        (event) => {
+            setSelectTheme(-1);
+            setUserTheme(event.target.value);
+        },
+        [setSelectTheme, setUserTheme]
+    );
 
     const handleCopyClick = useCallback(() => {
         navigator.clipboard.writeText(userTheme);
         enqueueSnack("已複製到剪貼簿", { variant: "success" });
-    });
+    }, [userTheme, enqueueSnack]);
 
     return (
         <div style={{ padding: 20 }}>
