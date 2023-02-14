@@ -7,17 +7,24 @@ import Table from "./table";
 
 const PrettierTable = ({ courseIds, allCourses, fetchDatabase }) => {
     const [config, setConfig] = React.useState(null);
+    const [semester, setSemester] = React.useState(null);
     useEffect(() => {
-        if (config)
-        fetchDatabase(config.semester);
-    }, [fetchDatabase, config]);
+        if (config && config.semester !== semester) {
+            setSemester(config.semester);
+            fetchDatabase(config.semester);
+        }
+    }, [fetchDatabase, config, semester, setSemester]);
 
     return (
         <Container>
             <Grid container spacing={2}>
                 <Grid item xs={12} md={6}>
                     <Card>
-                        <Setting handleConfigChange={setConfig} />
+                        <Setting
+                            handleConfigChange={setConfig}
+                            courseIds={courseIds}
+                            allCourses={allCourses}
+                        />
                     </Card>
                 </Grid>
                 <Grid item xs={12} md={6}>

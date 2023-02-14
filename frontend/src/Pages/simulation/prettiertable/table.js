@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
@@ -123,203 +123,182 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
     );
 });
 
-class TimeTable extends React.Component {
-    constructor(props) {
-        super(props);
-        this.ref = React.createRef();
-        this.state = {
-            cellHeight: 0,
-        };
-    }
+const makeCourseClasses = (
+    courseIds,
+    allCourses,
+    localTimeCode,
+    localSecCode
+) => {
+    let classes = [...Array(localSecCode.length)].map((e) =>
+        [...Array(localTimeCode.length)].map((e2) => Array(0))
+    );
 
-    componentDidMount() {
-        this.resizeObserver = new ResizeObserver((entries) => {
-            this.setState({
-                cellHeight: entries[0].target.clientHeight,
-            });
-        });
-
-        this.resizeObserver.observe(this.ref.current);
-    }
-
-    makeCourseClasses(localTimeCode, localSecCode) {
-        let classes = [...Array(localSecCode.length)].map((e) =>
-            [...Array(localTimeCode.length)].map((e2) => Array(0))
-        );
-
-        let { courseIds, allCourses } = this.props;
-
-        for (let course of Array.from(courseIds).map((id) => allCourses[id])) {
-            let times = getCourseTimesAndRooms(course);
-            let lastSec = "";
-            let lastTime = "";
-            let lastObj = null;
-            for (let time of times) {
-                if (localTimeCode.indexOf(timeCode[time[0] - 1]) === -1)
-                    continue;
-                if (localSecCode.indexOf(time[1]) === -1) continue;
-                if (
-                    localSecCode.indexOf(time[1]) - 1 === lastSec &&
-                    time[0] - 1 === lastTime
-                ) {
-                    lastObj.length += 1;
-                } else {
-                    const secIdx = localSecCode.indexOf(time[1]);
-                    const timeIdx = localTimeCode.indexOf(
-                        timeCode[time[0] - 1]
-                    );
-                    lastObj = {
-                        course: course,
-                        roomCode: time[2],
-                        roomName: time[3],
-                        time: time.slice(0, 2),
-                        length: 1,
-                    };
-                    classes[secIdx][timeIdx].push(lastObj);
-                }
-                lastSec = localSecCode.indexOf(time[1]);
-                lastTime = time[0] - 1;
+    for (let course of Array.from(courseIds).map((id) => allCourses[id])) {
+        let times = getCourseTimesAndRooms(course);
+        let lastSec = "";
+        let lastTime = "";
+        let lastObj = null;
+        for (let time of times) {
+            if (localTimeCode.indexOf(timeCode[time[0] - 1]) === -1) continue;
+            if (localSecCode.indexOf(time[1]) === -1) continue;
+            if (
+                localSecCode.indexOf(time[1]) - 1 === lastSec &&
+                time[0] - 1 === lastTime
+            ) {
+                lastObj.length += 1;
+            } else {
+                const secIdx = localSecCode.indexOf(time[1]);
+                const timeIdx = localTimeCode.indexOf(timeCode[time[0] - 1]);
+                lastObj = {
+                    course: course,
+                    roomCode: time[2],
+                    roomName: time[3],
+                    time: time.slice(0, 2),
+                    length: 1,
+                };
+                classes[secIdx][timeIdx].push(lastObj);
             }
+            lastSec = localSecCode.indexOf(time[1]);
+            lastTime = time[0] - 1;
         }
-        return classes;
+    }
+    return classes;
+};
+
+const TimeTable = ({
+    extendTimetable,
+    classes,
+    hideOverflowText,
+    showRoom,
+    showRoomCode,
+    newTimeCode,
+    tableTheme,
+    showTeacher,
+    courseIds,
+    allCourses,
+    fontSize,
+}) => {
+    const ref = useRef();
+    const [cellHeight, setCellHeight] = useState(0);
+
+    let timeC = timeCode
+        .slice(0, 5)
+        .concat(extendTimetable["六"] ? ["六"] : [])
+        .concat(extendTimetable["日"] ? ["日"] : []);
+    let secC = difference(
+        secs,
+        Object.keys(extendTimetable).filter((e) => !extendTimetable[e])
+    );
+    let courseClasses = makeCourseClasses(courseIds, allCourses, timeC, secC);
+    let titles = newTimeCode ? timeC.map(ConvertToNewCode) : timeC;
+    let indexColumn = newTimeCode ? secC.map(ConvertToNewCode) : secC;
+
+    if (ref.current) {
+        setTimeout(() => {
+            if (ref.current.clientHeight !== cellHeight) {
+                setCellHeight(ref.current.clientHeight);
+            }
+        });
     }
 
-    render() {
-        const {
-            extendTimetable,
-            classes,
-            hideOverflowText,
-            showRoom,
-            showRoomCode,
-            newTimeCode,
-            tableTheme,
-            showTeacher,
-        } = this.props;
-        let timeC = timeCode
-            .slice(0, 5)
-            .concat(extendTimetable["六"] ? ["六"] : [])
-            .concat(extendTimetable["日"] ? ["日"] : []);
-        let secC = difference(
-            secs,
-            Object.keys(extendTimetable).filter((e) => !extendTimetable[e])
-        );
-        let courseClasses = this.makeCourseClasses(timeC, secC);
-        let titles = newTimeCode ? timeC.map(ConvertToNewCode) : timeC;
-        let indexColumn = newTimeCode ? secC.map(ConvertToNewCode) : secC;
-
-        return (
-            <div className={classes.root} id="table">
-                <div className={classes.tablecontainer}>
-                    <table
-                        className={classes.table}
-                        id="prettiertable"
-                        cellpadding="1"
-                        cellspacing="1"
-                    >
-                        <thead>
-                            <tr>
+    return (
+        <div className={classes.root} id="table">
+            <div className={classes.tablecontainer}>
+                <table className={classes.table} id="prettiertable">
+                    <thead>
+                        <tr>
+                            <td
+                                className={clsx(
+                                    classes.td,
+                                    classes.td1,
+                                    classes.thd
+                                )}
+                            >
+                                節數 {cellHeight}
+                            </td>
+                            {titles.map((text) => (
                                 <td
-                                    className={clsx(
-                                        classes.td,
-                                        classes.td1,
-                                        classes.thd
-                                    )}
+                                    className={clsx(classes.td, classes.thd)}
+                                    key={text}
                                 >
-                                    節數
+                                    {text}
                                 </td>
-                                {titles.map((text) => (
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {courseClasses
+                            .map((rowClasses, index) => (
+                                <tr className={classes.tr} key={index}>
                                     <td
                                         className={clsx(
                                             classes.td,
-                                            classes.thd
+                                            classes.td1
                                         )}
-                                        key={text}
                                     >
-                                        {text}
+                                        {indexColumn[index]}
                                     </td>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {courseClasses
-                                .map((rowClasses, index) => (
-                                    <tr className={classes.tr} key={index}>
+                                    {rowClasses.map((cellClasses, index2) => (
                                         <td
                                             className={clsx(
                                                 classes.td,
-                                                classes.td1
+                                                classes.tdx
                                             )}
+                                            key={index2}
+                                            ref={
+                                                index === 0 && index2 === 0
+                                                    ? ref
+                                                    : undefined
+                                            }
                                         >
-                                            {indexColumn[index]}
+                                            <div
+                                                className={
+                                                    classes.courseContainer
+                                                }
+                                            >
+                                                {cellClasses.map(
+                                                    (courseData) => (
+                                                        <TimeTableCourse
+                                                            {...courseData}
+                                                            tableTheme={
+                                                                tableTheme
+                                                            }
+                                                            hideOverflowText={
+                                                                hideOverflowText
+                                                            }
+                                                            showRoom={showRoom}
+                                                            showRoomCode={
+                                                                showRoomCode
+                                                            }
+                                                            key={
+                                                                courseData
+                                                                    .course
+                                                                    .cos_id
+                                                            }
+                                                            cellHeight={
+                                                                cellHeight
+                                                            }
+                                                            showTeacher={
+                                                                showTeacher
+                                                            }
+                                                            fontSize={fontSize}
+                                                        />
+                                                    )
+                                                )}
+                                            </div>
                                         </td>
-                                        {rowClasses.map(
-                                            (cellClasses, index2) => (
-                                                <td
-                                                    className={clsx(
-                                                        classes.td,
-                                                        classes.tdx
-                                                    )}
-                                                    key={index2}
-                                                    ref={this.ref}
-                                                >
-                                                    <div
-                                                        className={
-                                                            classes.courseContainer
-                                                        }
-                                                    >
-                                                        {cellClasses.map(
-                                                            (courseData) => (
-                                                                <TimeTableCourse
-                                                                    {...courseData}
-                                                                    tableTheme={
-                                                                        tableTheme
-                                                                    }
-                                                                    hideOverflowText={
-                                                                        hideOverflowText
-                                                                    }
-                                                                    showRoom={
-                                                                        showRoom
-                                                                    }
-                                                                    showRoomCode={
-                                                                        showRoomCode
-                                                                    }
-                                                                    key={
-                                                                        courseData
-                                                                            .course
-                                                                            .cos_id
-                                                                    }
-                                                                    cellHeight={
-                                                                        this
-                                                                            .state
-                                                                            .cellHeight
-                                                                    }
-                                                                    showTeacher={
-                                                                        showTeacher
-                                                                    }
-                                                                    fontSize={
-                                                                        this
-                                                                            .props
-                                                                            .fontSize
-                                                                    }
-                                                                />
-                                                            )
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            )
-                                        )}
-                                    </tr>
-                                ))
-                                .splice(
-                                    extendTimetable ? 0 : 2,
-                                    secs.length - (extendTimetable ? 0 : 7)
-                                )}
-                        </tbody>
-                    </table>
-                </div>
+                                    ))}
+                                </tr>
+                            ))
+                            .splice(
+                                extendTimetable ? 0 : 2,
+                                secs.length - (extendTimetable ? 0 : 7)
+                            )}
+                    </tbody>
+                </table>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
 export default withStyles(styles)(TimeTable);

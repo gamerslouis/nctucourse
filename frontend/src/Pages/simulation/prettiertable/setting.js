@@ -10,8 +10,9 @@ import {
 } from "@material-ui/core";
 import useAxios from "axios-hooks";
 import React, { useCallback, useEffect, useState } from "react";
+import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
 import { DownloadAsImage } from "../../../Util/dataUtil/imageExport";
-import { ConvertToNewCode, newSecs, secs } from "../../../Util/style";
+import { ConvertToNewCode, newSecs, secs, timeCode } from "../../../Util/style";
 import { themes } from "./theme";
 
 const toText = (sem) => {
@@ -103,7 +104,7 @@ const ExtendedCheckbox = ({ code, values, useNewCode, setValues }) => {
     );
 };
 
-const Setting = ({ handleConfigChange }) => {
+const Setting = ({ handleConfigChange, allCourses, courseIds }) => {
     let url = `/api/simulation/semesters/`;
     const [{ data, loading, error }] = useAxios(url);
     const [selectSemester, setSelectSemester] = useState("");
@@ -178,6 +179,31 @@ const Setting = ({ handleConfigChange }) => {
         extendTimetable,
         fontSize,
     ]);
+
+    useEffect(() => {
+        if (courseIds && courseIds.size > 0 && selectSemester !== "") {
+            const requiredTimes = {};
+            for (let course of Array.from(courseIds).map(
+                (id) => allCourses[id]
+            )) {
+                let times = getCourseTimesAndRooms(course);
+                for (let time of times) {
+                    const exKeys = Object.keys(extendTimetable);
+                    if (exKeys.indexOf(timeCode[time[0] - 1]) !== -1) {
+                        requiredTimes[timeCode[time[0] - 1]] = true;
+                    }
+                    if (exKeys.indexOf(time[1]) !== -1) {
+                        requiredTimes[time[1]] = true;
+                    }
+                }
+            }
+            setExtendTimetable({
+                ...extendTimetable,
+                ...requiredTimes,
+            });
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [allCourses, courseIds, selectSemester]);
 
     return (
         <div style={{ padding: 20 }}>
