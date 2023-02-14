@@ -55,7 +55,7 @@ const styles = (theme) => ({
         verticalAlign: "top",
         padding: 1,
         color: props.tableTheme.courseFontColor,
-        lineHeight: 1.66,
+        lineHeight: 1.4,
     }),
     courseContainer: {
         height: 0,
@@ -73,6 +73,7 @@ const courseStyles = (theme) => ({
         width: "100%",
     }),
     textSpan: {
+        paddingTop: "5px",
         display: "inline-block",
         width: "100%",
         wordBreak: "normal",

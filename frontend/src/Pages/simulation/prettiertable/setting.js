@@ -452,6 +452,7 @@ const Setting = ({
                     {["M", "N", "X", "Y", "I", "J", "K", "L", "六", "日"].map(
                         (code) => (
                             <ExtendedCheckbox
+                                key={code}
                                 code={code}
                                 values={extendTimetable}
                                 setValues={setExtendTimetable}
@@ -506,7 +507,7 @@ const Setting = ({
                                                           JSON.parse(userTheme)
                                                       )
                                                     : "private"
-                                                : selectTheme,
+                                                : selectTheme.toString(),
                                     }
                                 );
 
