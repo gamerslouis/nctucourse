@@ -1,3 +1,5 @@
+import json
+
 from django.views.generic import View
 from django import http
 from django.conf import settings
@@ -76,3 +78,19 @@ class SemesterListView(View):
         sems = models.SemesterCoursesMapping.objects.values(
             'semester').distinct()
         return http.JsonResponse([s['semester'] for s in sems], safe=False)
+
+
+class TimetableExportCollectThemeView(LoginRequiredMixin, View):
+    def post(self, request):
+        theme = request.JSON.get('theme')
+        try:
+            if len(theme) > 30:
+                json.loads(theme)
+            if len(theme) > 500:
+                raise ValueError()
+        except:
+            return http.HttpResponseBadRequest()
+
+        models.UserTimeTableExportTheme.objects.create(
+            user=request.user, theme=theme)
+        return http.HttpResponse('', status=201)

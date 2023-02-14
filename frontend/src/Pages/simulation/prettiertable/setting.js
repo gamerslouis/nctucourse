@@ -17,6 +17,8 @@ import { ConvertToNewCode, newSecs, secs, timeCode } from "../../../Util/style";
 import { themes } from "./theme";
 import { FileCopy } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
+import axios from "axios";
+import { copyToClipboard } from "../../../Util/utils";
 
 const toText = (sem) => {
     let s = sem[sem.length - 1];
@@ -40,18 +42,28 @@ function detectMob() {
     });
 }
 
-const FormRow = ({ title, children, dense, fullWidth }) => {
+const FormRow = ({ title, children, dense, fullWidth, caption }) => {
     return (
-        <div
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-                marginBottom: dense ? 5 : 20,
-            }}
-        >
-            <span style={{ whiteSpace: "nowrap" }}>{title}</span>
-            <div style={{ flexGrow: fullWidth ? 1 : 0 }}>{children}</div>
+        <div style={{ marginBottom: dense ? 5 : 20 }}>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                }}
+            >
+                <span style={{ whiteSpace: "nowrap" }}>{title}</span>
+                <div style={{ flexGrow: fullWidth ? 1 : 0 }}>{children}</div>
+            </div>
+            {caption && (
+                <Typography
+                    variant="caption"
+                    color="textSecondary"
+                    component="div"
+                >
+                    {caption}
+                </Typography>
+            )}
         </div>
     );
 };
@@ -113,7 +125,7 @@ const Setting = ({
     handleConfigChange,
     allCourses,
     courseIds,
-    enqueueSnack,
+    enqueueSnackbar,
 }) => {
     let url = `/api/simulation/semesters/`;
     const [{ data, loading, error }] = useAxios(url);
@@ -141,8 +153,11 @@ const Setting = ({
         日: false,
     });
     const [showThemeConfig, setShowThemeConfig] = useState(false);
-    const [userTheme, setUserTheme] = useState(themes[0]);
+    const [userTheme, setUserTheme] = useState(
+        JSON.stringify(themes[0], null, 4)
+    );
     const [invalidUserTheme, setInvalidUserTheme] = useState(false);
+    const [allowShareUserTheme, setAllowShareUserTheme] = useState(true);
 
     useEffect(() => {
         if (!loading && !error) {
@@ -252,14 +267,16 @@ const Setting = ({
     );
 
     const handleCopyClick = useCallback(() => {
-        navigator.clipboard.writeText(userTheme);
-        enqueueSnack("已複製到剪貼簿", { variant: "success" });
-    }, [userTheme, enqueueSnack]);
+        copyToClipboard(userTheme);
+        enqueueSnackbar("已複製到剪貼簿", { variant: "success" });
+    }, [userTheme, enqueueSnackbar]);
 
     return (
         <div style={{ padding: 20 }}>
             <Typography variant="caption" color="textSecondary" component="div">
                 無法處理重複選修，請先在模擬排課頁面處理好重複選修的課程
+                <br />
+                目前尚無法保存設定，重新整理後設定會消失
             </Typography>
             <FormRow title="學期:">
                 <Select
@@ -309,6 +326,9 @@ const Setting = ({
                     >
                         使用當前設備大小
                     </Button>
+                    <Typography variant="caption" color="textSecondary">
+                        "使用當前設備大小"可以直接將課表大小設置為手機螢幕大小，可以直接用於手機桌布。
+                    </Typography>
                 </div>
                 <div>
                     <FormControlLabel
@@ -333,11 +353,19 @@ const Setting = ({
                         onChange={setNotchHeight}
                     />
                 </div>
+                <Typography variant="caption" color="textSecondary">
+                    避免匯出的課表被iPhone等手機的挖孔螢幕遮住
+                </Typography>
             </FormRow>
             <FormRow title="主題:">
                 <Select
                     value={selectTheme}
-                    onChange={(e) => setSelectTheme(e.target.value)}
+                    onChange={(e) => {
+                        setSelectTheme(e.target.value);
+                        if (e.target.value === -1) {
+                            setShowThemeConfig(true);
+                        }
+                    }}
                 >
                     {themes.map((theme, i) => (
                         <MenuItem value={i} key={i}>{`主題${i + 1}`}</MenuItem>
@@ -413,7 +441,13 @@ const Setting = ({
                     onChange={() => setShowRoomCode(!showRoomCode)}
                 />
             </FormRow>
-            <FormRow title="擴展課表:" dense>
+            <FormRow
+                title="擴展課表:"
+                caption={`為了整體課表美觀，部分不常用的時間段如午餐時間已經隱藏，可以透過該項設定顯示特定時間段。
+                    完整時間表為 ${(useOldTimeCode ? secs : newSecs).join(
+                        ","
+                    )}`}
+            >
                 <FormGroup aria-label="position" row>
                     {["M", "N", "X", "Y", "I", "J", "K", "L", "六", "日"].map(
                         (code) => (
@@ -426,10 +460,10 @@ const Setting = ({
                         )
                     )}
                 </FormGroup>
-                <Typography variant="caption" color="textSecondary">
-                    顯示擴展課表時，將會將課表寬度拉大，以顯示更多課程。
-                    完整時間表為 {(useOldTimeCode ? secs : newSecs).join(",")}
-                </Typography>
+                <Typography
+                    variant="caption"
+                    color="textSecondary"
+                ></Typography>
             </FormRow>
             <FormRow title="使用舊版時間代碼:" dense>
                 <Checkbox
@@ -437,19 +471,60 @@ const Setting = ({
                     onChange={() => setUseOldTimeCode(!useOldTimeCode)}
                 />
             </FormRow>
-
-            <div style={{ display: "flex", justifyContent: "center" }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ width: "8rem" }}
-                    onClick={() =>
-                        DownloadAsImage(document.getElementById("table"))
-                    }
+            {selectTheme === -1 && (
+                <FormRow
+                    title="允許匯出時分享該自定義:"
+                    caption="允許課程助理系統保存該自定義主題，並可能將其作為預設主題，以供其他人使用。"
                 >
-                    匯出
-                </Button>
-            </div>
+                    <div>
+                        <Checkbox
+                            checked={allowShareUserTheme}
+                            onChange={() =>
+                                setAllowShareUserTheme(!allowShareUserTheme)
+                            }
+                        />
+                    </div>
+                </FormRow>
+            )}
+            <FormRow fullWidth>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Button
+                        variant="contained"
+                        color="primary"
+                        style={{ width: "8rem" }}
+                        onClick={() => {
+                            if (invalidUserTheme) {
+                                enqueueSnackbar("無效的主題格式", "error");
+                            } else {
+                                axios.post(
+                                    "/api/simulation/export/collect_theme/",
+                                    {
+                                        theme:
+                                            selectTheme === -1
+                                                ? allowShareUserTheme
+                                                    ? JSON.stringify(
+                                                          JSON.parse(userTheme)
+                                                      )
+                                                    : "private"
+                                                : selectTheme,
+                                    }
+                                );
+
+                                DownloadAsImage(
+                                    document.getElementById("table")
+                                );
+                            }
+                        }}
+                    >
+                        匯出
+                    </Button>
+                </div>
+            </FormRow>
+            <Typography variant="caption" color="textSecondary">
+                目前該服務正處於測試階段，匯出的圖片可能會有跑板等問題，歡迎透過右下角"意見回饋"按鈕回報。
+                <br />
+                在iPhone等手機，以及firefox等部分瀏覽器中，如果匯出的圖片跑板，請嘗試將設定參數於電腦的Chrome或Edge瀏覽器匯出，可能可以得到正常的結果。
+            </Typography>
         </div>
     );
 };

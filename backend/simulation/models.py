@@ -19,3 +19,9 @@ class SimCollect(models.Model):
 class SemesterCoursesMapping(models.Model):
     semester = models.CharField(max_length=5)
     file = models.TextField()
+
+
+class UserTimeTableExportTheme(models.Model):
+    user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE)
+    theme = models.CharField(max_length=600)
+    created_at = models.DateTimeField(auto_now_add=True)
