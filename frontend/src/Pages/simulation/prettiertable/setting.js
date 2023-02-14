@@ -107,6 +107,8 @@ const ExtendedCheckbox = ({ code, values, useNewCode, setValues }) => {
     );
 };
 
+let lastAppliedTheme = null;
+
 const Setting = ({
     handleConfigChange,
     allCourses,
@@ -141,7 +143,6 @@ const Setting = ({
     const [showThemeConfig, setShowThemeConfig] = useState(false);
     const [userTheme, setUserTheme] = useState(themes[0]);
     const [invalidUserTheme, setInvalidUserTheme] = useState(false);
-    const [lastAppliedTheme, setLastAppliedTheme] = useState(themes[0]);
 
     useEffect(() => {
         if (!loading && !error) {
@@ -184,7 +185,7 @@ const Setting = ({
                 setInvalidUserTheme(false);
                 theme = themes[selectTheme];
             }
-            setLastAppliedTheme(theme);
+            lastAppliedTheme = theme;
 
             handleConfigChange({
                 semester: selectSemester,
@@ -215,7 +216,6 @@ const Setting = ({
         extendTimetable,
         fontSize,
         userTheme,
-        lastAppliedTheme,
     ]);
 
     useEffect(() => {
