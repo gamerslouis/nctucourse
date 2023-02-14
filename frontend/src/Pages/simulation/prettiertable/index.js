@@ -8,8 +8,9 @@ import Table from "./table";
 const PrettierTable = ({ courseIds, allCourses, fetchDatabase }) => {
     const [config, setConfig] = React.useState(null);
     useEffect(() => {
-        fetchDatabase();
-    }, [fetchDatabase]);
+        if (config)
+        fetchDatabase(config.semester);
+    }, [fetchDatabase, config]);
 
     return (
         <Container>
@@ -44,8 +45,8 @@ const mapStateToProps = (state) => ({
     allCourses: state.courseSim.database.courses,
 });
 
-const mapDispatchToProps = (dispatch, ownProps) => ({
-    fetchDatabase: () => dispatch(fetchDatabase(ownProps.semester)),
+const mapDispatchToProps = (dispatch) => ({
+    fetchDatabase: (semester) => dispatch(fetchDatabase(semester)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PrettierTable);

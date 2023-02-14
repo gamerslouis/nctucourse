@@ -59,15 +59,18 @@ const PositiveValidatedTextField = ({ value, onChange, ...props }) => {
     }, [value]);
 
     const [errorMessage, setErrorMessage] = React.useState("");
-    const handleChange = useCallback((e) => {
-        setLocalValue(e.target.value);
-        if (/^\d+$/.test(e.target.value)) {
-            onChange(Number(e.target.value));
-            setErrorMessage("");
-        } else {
-            setErrorMessage("無效數值");
-        }
-    }, [setLocalValue, onChange, setErrorMessage]);
+    const handleChange = useCallback(
+        (e) => {
+            setLocalValue(e.target.value);
+            if (/^\d+$/.test(e.target.value)) {
+                onChange(Number(e.target.value));
+                setErrorMessage("");
+            } else {
+                setErrorMessage("無效數值");
+            }
+        },
+        [setLocalValue, onChange, setErrorMessage]
+    );
 
     return (
         <TextField
@@ -129,7 +132,7 @@ const Setting = ({ handleConfigChange }) => {
 
     useEffect(() => {
         if (!loading && !error) {
-            setSelectSemester(data[0]);
+            setSelectSemester(data[data.length - 1]);
         }
     }, [loading, error, data]);
 
@@ -142,7 +145,7 @@ const Setting = ({ handleConfigChange }) => {
         if (detectMob()) {
             handleSetScreenSizeClick();
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {

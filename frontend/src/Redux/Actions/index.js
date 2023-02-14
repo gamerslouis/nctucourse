@@ -48,6 +48,9 @@ export const actions = createActions({
 })
 
 export const fetchDatabase = (semester) => dispatch => {
+    dispatch(actions.courseSim.collect.courseIds.store([]))
+    dispatch(actions.courseSim.timetable.courseIds.store(new Set()))
+
     let url = '/api/simulation/all/'
     if (semester !== undefined) {
         url += `?sem=${semester}`
