@@ -22,7 +22,6 @@ const PrettierTable = ({
     }, [fetchDatabase, config, semester, setSemester]);
 
     useEffect(() => {
-        console.log(allCourses, courseIds);
         if (Object.keys(allCourses).length !== 0 && courseIds.size === 0) {
             enqueueSnackbar("尚未加入任何課程，請至模擬排課頁面添加課程!", {
                 variant: "warning",
@@ -35,6 +34,13 @@ const PrettierTable = ({
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseIds]);
+
+    useEffect(() => {
+        enqueueSnackbar("特別注意: 目前尚無法保存設定，重新整理後設定會消失", {
+            variant: "warning",
+        });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <Container>

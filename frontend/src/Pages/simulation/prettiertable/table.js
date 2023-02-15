@@ -105,6 +105,7 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
         fontSize,
         showTeacher,
         showRoom,
+        courseTypeConfig,
     } = props;
     return (
         <div
@@ -112,7 +113,9 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
             style={{
                 backgroundColor:
                     tableTheme.courseBackgroundColor[
-                        ConvertCourseType2StyleType(course.cos_type)
+                        courseTypeConfig[course.cos_id]
+                            ? courseTypeConfig[course.cos_id]
+                            : ConvertCourseType2StyleType(course.cos_type)
                     ],
             }}
         >
@@ -187,6 +190,7 @@ const TimeTable = ({
     courseIds,
     allCourses,
     fontSize,
+    courseTypeConfig,
 }) => {
     const ref = useRef();
     const [cellHeight, setCellHeight] = useState(0);
@@ -302,6 +306,9 @@ const TimeTable = ({
                                                                     }
                                                                     fontSize={
                                                                         fontSize
+                                                                    }
+                                                                    courseTypeConfig={
+                                                                        courseTypeConfig
                                                                     }
                                                                 />
                                                             )

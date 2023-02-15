@@ -6,6 +6,11 @@ import {
     IconButton,
     MenuItem,
     Select,
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableRow,
     TextField,
     Typography,
 } from "@material-ui/core";
@@ -13,7 +18,13 @@ import useAxios from "axios-hooks";
 import React, { useCallback, useEffect, useState } from "react";
 import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
 import { DownloadAsImage } from "../../../Util/dataUtil/imageExport";
-import { ConvertToNewCode, newSecs, secs, timeCode } from "../../../Util/style";
+import {
+    ConvertCourseType2StyleType,
+    ConvertToNewCode,
+    newSecs,
+    secs,
+    timeCode,
+} from "../../../Util/style";
 import { themes } from "./theme";
 import { FileCopy } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
@@ -119,6 +130,90 @@ const ExtendedCheckbox = ({ code, values, useNewCode, setValues }) => {
     );
 };
 
+function createData(name, calories, fat, carbs, protein) {
+    return { name, calories, fat, carbs, protein };
+}
+
+const rows = [
+    createData("Frozen yoghurt", 159, 6.0, 24, 4.0),
+    createData("Ice cream sandwich", 237, 9.0, 37, 4.3),
+    createData("Eclair", 262, 16.0, 24, 6.0),
+    createData("Cupcake", 305, 3.7, 67, 4.3),
+    createData("Gingerbread", 356, 16.0, 49, 3.9),
+];
+
+const CourseTypeEditor = ({
+    allCourses,
+    courseIds,
+    courseTypeConfig,
+    setCourseTypeConfig,
+}) => {
+    return (
+        <Table style={{ width: "100%" }}>
+            <TableHead>
+                <TableRow>
+                    <TableCell>課名</TableCell>
+                    <TableCell style={{ width: "6rem" }}>預設類別</TableCell>
+                    <TableCell>類別</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {Array.from(courseIds).map((courseId) => (
+                    <TableRow key={courseId}>
+                        <TableCell>{allCourses[courseId].cos_cname}</TableCell>
+                        <TableCell>
+                            {ConvertCourseType2StyleType(
+                                allCourses[courseId].cos_type
+                            )}
+                        </TableCell>
+                        <TableCell>
+                            <Select
+                                value={
+                                    courseTypeConfig[courseId]
+                                        ? courseTypeConfig[courseId]
+                                        : ConvertCourseType2StyleType(
+                                              allCourses[courseId].cos_type
+                                          )
+                                }
+                                onChange={(e) => {
+                                    if (
+                                        e.target.value ===
+                                        ConvertCourseType2StyleType(
+                                            allCourses[courseId].cos_type
+                                        )
+                                    ) {
+                                        let newC = { ...courseTypeConfig };
+                                        delete newC[courseId];
+                                        setCourseTypeConfig(newC);
+                                    } else {
+                                        setCourseTypeConfig({
+                                            ...courseTypeConfig,
+                                            [courseId]: e.target.value,
+                                        });
+                                    }
+                                }}
+                            >
+                                {[
+                                    "必修",
+                                    "選修",
+                                    "體育",
+                                    "通識",
+                                    "外語",
+                                    "軍訓",
+                                ].map((v) => (
+                                    <MenuItem value={v} key={v}>
+                                        {v}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
+};
+
 let lastAppliedTheme = null;
 
 const Setting = ({
@@ -158,6 +253,8 @@ const Setting = ({
     );
     const [invalidUserTheme, setInvalidUserTheme] = useState(false);
     const [allowShareUserTheme, setAllowShareUserTheme] = useState(true);
+    const [showCourseTypeConfig, setShowCourseTypeConfig] = useState(false);
+    const [courseTypeConfig, setCourseTypeConfig] = useState({});
     const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
@@ -215,6 +312,7 @@ const Setting = ({
                 extendTimetable: extendTimetable,
                 fontSize: fontSize + 11,
                 tableTheme: theme,
+                courseTypeConfig: courseTypeConfig,
                 exporting: exporting,
             });
         }
@@ -233,6 +331,7 @@ const Setting = ({
         extendTimetable,
         fontSize,
         userTheme,
+        courseTypeConfig,
         exporting,
     ]);
 
@@ -270,13 +369,16 @@ const Setting = ({
                     }
                 });
             });
-            console.log(classes);
             if (overlapping) {
                 enqueueSnackbar(
                     "課程時間有重疊，請至模擬排課頁面隱藏重疊課程。",
                     {
                         variant: "warning",
-                        action: () => <Button href={`/simulation?sem=${selectSemester}`}>前往</Button>,
+                        action: () => (
+                            <Button href={`/simulation?sem=${selectSemester}`}>
+                                前往
+                            </Button>
+                        ),
                     }
                 );
             }
@@ -414,6 +516,24 @@ const Setting = ({
                     </MenuItem>
                 </Select>
             </FormRow>
+            <FormRow title="顯示課程類別設定" dense>
+                <Checkbox
+                    checked={showCourseTypeConfig}
+                    onChange={() =>
+                        setShowCourseTypeConfig(!showCourseTypeConfig)
+                    }
+                />
+            </FormRow>
+            {showCourseTypeConfig && (
+                <FormRow fullWidth>
+                    <CourseTypeEditor
+                        allCourses={allCourses}
+                        courseIds={courseIds}
+                        courseTypeConfig={courseTypeConfig}
+                        setCourseTypeConfig={setCourseTypeConfig}
+                    />
+                </FormRow>
+            )}
             <FormRow title="顯示主題配置:" dense>
                 <Checkbox
                     checked={showThemeConfig}
