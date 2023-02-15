@@ -237,6 +237,10 @@ const Setting = ({
     ]);
 
     useEffect(() => {
+        let classes = [...Array(secs.length)].map((e) =>
+            [...Array(timeCode.length)].map((e2) => 0)
+        );
+
         if (courseIds && courseIds.size > 0 && selectSemester !== "") {
             const requiredTimes = {};
             for (let course of Array.from(courseIds).map(
@@ -251,12 +255,31 @@ const Setting = ({
                     if (exKeys.indexOf(time[1]) !== -1) {
                         requiredTimes[time[1]] = true;
                     }
+                    classes[secs.indexOf(time[1])][time[0] - 1] += 1;
                 }
             }
             setExtendTimetable({
                 ...extendTimetable,
                 ...requiredTimes,
             });
+            let overlapping = false;
+            classes.forEach((a) => {
+                a.forEach((b) => {
+                    if (b > 1) {
+                        overlapping = true;
+                    }
+                });
+            });
+            console.log(classes);
+            if (overlapping) {
+                enqueueSnackbar(
+                    "課程時間有重疊，請至模擬排課頁面隱藏重疊課程。",
+                    {
+                        variant: "warning",
+                        action: () => <Button href={`/simulation?sem=${selectSemester}`}>前往</Button>,
+                    }
+                );
+            }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [allCourses, courseIds, selectSemester]);
@@ -524,7 +547,12 @@ const Setting = ({
                                     DownloadAsImage(
                                         document.getElementById("table"),
                                         () => setExporting(false),
-                                        ()=>{enqueueSnackbar("IOS匯出失敗，請稍後或重新整理後再嘗試。", "error")}
+                                        () => {
+                                            enqueueSnackbar(
+                                                "IOS匯出失敗，請稍後或重新整理後再嘗試。",
+                                                "error"
+                                            );
+                                        }
                                     );
                                 }, 500);
                             }
