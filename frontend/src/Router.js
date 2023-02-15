@@ -48,7 +48,14 @@ const Router = (props) => {
                                     return <Simulation />
                                 }
                             }} />
-                            <AuthRoute exact path='/simulation/export' component={PrettierTable} />
+                            <AuthRoute exact path='/simulation/export' render={() => {
+                                let urlParams = new URLSearchParams(window.location.search);
+                                if (urlParams.has('sem')) {
+                                    return <PrettierTable semester={urlParams.get('sem')} />
+                                } else {
+                                    return <PrettierTable />
+                                }
+                            }} />
                             <AuthRoute exact path='/gpa' component={GPA} />
                             <AuthRoute exact path='/gpa/import' component={GPAImport} />
                             <AuthRoute exact path='/coursehistory' component={CourseHistory} />

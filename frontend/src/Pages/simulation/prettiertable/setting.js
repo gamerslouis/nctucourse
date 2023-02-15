@@ -221,6 +221,7 @@ const Setting = ({
     allCourses,
     courseIds,
     enqueueSnackbar,
+    defaultSemester,
 }) => {
     let url = `/api/simulation/semesters/`;
     const [{ data, loading, error }] = useAxios(url);
@@ -259,7 +260,8 @@ const Setting = ({
 
     useEffect(() => {
         if (!loading && !error) {
-            setSelectSemester(data[data.length - 1]);
+            if (defaultSemester) setSelectSemester(defaultSemester);
+            else setSelectSemester(data[data.length - 1]);
         }
     }, [loading, error, data]);
 

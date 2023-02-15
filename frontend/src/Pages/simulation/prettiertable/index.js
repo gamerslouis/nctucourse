@@ -11,6 +11,7 @@ const PrettierTable = ({
     allCourses,
     fetchDatabase,
     enqueueSnackbar,
+    semester: defaultSemester
 }) => {
     const [config, setConfig] = React.useState(null);
     const [semester, setSemester] = React.useState(null);
@@ -51,6 +52,7 @@ const PrettierTable = ({
                             handleConfigChange={setConfig}
                             courseIds={courseIds}
                             allCourses={allCourses}
+                            defaultSemester={defaultSemester}
                         />
                     </Card>
                 </Grid>

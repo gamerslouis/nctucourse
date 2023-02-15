@@ -11,6 +11,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { ConvertCourseType2StyleType, CourseTypeColorMap } from '../../../Util/style'
 import { makeInfoPageUrl } from '../../../Util/dataUtil/course'
 import { removeCollectCourse, toggleCollectCourseVisible, searchTimeCourses } from '../../../Redux/Actions/index'
+import { Button } from '@material-ui/core';
 
 const styles = theme => ({
     root: {
@@ -174,9 +175,10 @@ class TimeTable extends React.Component {
 
         return (<div className={classes.root}>
             <div className={classes.tableContainer}>
-                <div>
-                    { this.props.semester && <Typography variant="h4">歷年課程：{this.props.semester}</Typography>}
+                { this.props.semester && <Typography variant="h4">歷年課程：{this.props.semester}</Typography>}
+                <div style={{display: "flex", alignItems: "center", justifyContent: "space-between"}}>
                     <Typography>總計: {credits}學分/{hours}小時</Typography>
+                    <Button href={`/simulation/export/?sem=${this.props.semester}`} style={{display: "inline", "float": "right"}}>匯出課表</Button>
                 </div>
                 <table className={classes.table} border={1} id="timetable">
                     <thead>
