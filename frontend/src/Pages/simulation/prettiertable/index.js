@@ -30,13 +30,11 @@ const PrettierTable = ({ courseIds, allCourses, fetchDatabase, classes }) => {
                 <Grid item xs={12} md={6}>
                     {config && allCourses && (
                         <Card style={{ overflowX: "scroll" }}>
-                            <div>
-                                <Table
-                                    {...config}
-                                    courseIds={courseIds}
-                                    allCourses={allCourses}
-                                />
-                            </div>
+                            <Table
+                                {...config}
+                                courseIds={courseIds}
+                                allCourses={allCourses}
+                            />
                         </Card>
                     )}
                 </Grid>

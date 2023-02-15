@@ -10,20 +10,27 @@ import {
 } from "../../../Util/style";
 import { difference } from "lodash";
 
+const SCALE_RATE = 2;
+
 const styles = (theme) => ({
-    root: (props) => ({
+    rootOuter: (props) => ({
         width: props.tableWidth,
         height: props.tableHeight,
+        margin: "auto",
+    }),
+    root: (props) => ({
+        width: props.tableWidth * SCALE_RATE,
+        height: props.tableHeight * SCALE_RATE,
+        transform: props.exporting ? "" : "scale(0.5) translate(-50%, -50%)",
         backgroundColor: props.tableTheme.mainBackgroundColor,
         position: "relative",
-        fontSize: 12,
-        padding: 20,
-        paddingTop: 20 + props.notchHeight,
-        margin: "0 auto",
+        fontSize: 12 * SCALE_RATE,
+        padding: 20 * SCALE_RATE,
+        paddingTop: (20 + props.notchHeight) * SCALE_RATE,
     }),
     tablecontainer: (props) => ({
-        width: props.tableWidth - 40,
-        height: props.tableHeight - 40 - props.notchHeight,
+        width: (props.tableWidth - 40) * SCALE_RATE,
+        height: (props.tableHeight - 40 - props.notchHeight) * SCALE_RATE,
         border: `1.5px solid ${props.tableTheme.borderColor}`,
     }),
     table: (props) => ({
@@ -40,12 +47,12 @@ const styles = (theme) => ({
         backgroundColor: props.tableTheme.headerBackgroundColor,
     }),
     td: (props) => ({
-        borderWidth: 1,
+        borderWidth: 1 * SCALE_RATE,
         borderColor: props.tableTheme.borderColor,
         borderStyle: "solid",
     }),
     td1: (props) => ({
-        width: "2.5rem",
+        width: 35 * SCALE_RATE,
         whiteSpace: "nowrap",
     }),
     td1Color: (props) => ({
@@ -53,7 +60,7 @@ const styles = (theme) => ({
     }),
     tdx: (props) => ({
         verticalAlign: "top",
-        padding: 1,
+        padding: 2 * SCALE_RATE,
         color: props.tableTheme.courseFontColor,
         lineHeight: 1.4,
     }),
@@ -65,15 +72,15 @@ const styles = (theme) => ({
 
 const courseStyles = (theme) => ({
     course: (props) => ({
-        height: props.cellHeight * props.length - 2,
-        padding: "0.2rem 0.1rem",
+        height: props.cellHeight * props.length - 2 * (SCALE_RATE + 1),
+        padding: 6 * SCALE_RATE,
         borderRadius: 10,
         boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
         display: "inline-table",
         width: "100%",
     }),
     textSpan: {
-        paddingTop: "5px",
+        paddingTop: 5 * SCALE_RATE,
         display: "inline-block",
         width: "100%",
         wordBreak: "normal",
@@ -205,101 +212,113 @@ const TimeTable = ({
     }
 
     return (
-        <div className={classes.root} id="table">
-            <div className={classes.tablecontainer}>
-                <table className={classes.table} id="prettiertable">
-                    <thead>
-                        <tr>
-                            <td
-                                className={clsx(
-                                    classes.td,
-                                    classes.td1,
-                                    classes.thd
-                                )}
-                            >
-                                節數
-                            </td>
-                            {titles.map((text) => (
+        <div className={classes.rootOuter}>
+            <div className={classes.root} id="table">
+                <div className={classes.tablecontainer}>
+                    <table className={classes.table} id="prettiertable">
+                        <thead>
+                            <tr>
                                 <td
-                                    className={clsx(classes.td, classes.thd)}
-                                    key={text}
+                                    className={clsx(
+                                        classes.td,
+                                        classes.td1,
+                                        classes.thd
+                                    )}
                                 >
-                                    {text}
+                                    節數
                                 </td>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {courseClasses
-                            .map((rowClasses, index) => (
-                                <tr className={classes.tr} key={index}>
+                                {titles.map((text) => (
                                     <td
                                         className={clsx(
                                             classes.td,
-                                            classes.td1,
-                                            classes.td1Color
+                                            classes.thd
                                         )}
+                                        key={text}
                                     >
-                                        {indexColumn[index]}
+                                        {text}
                                     </td>
-                                    {rowClasses.map((cellClasses, index2) => (
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {courseClasses
+                                .map((rowClasses, index) => (
+                                    <tr className={classes.tr} key={index}>
                                         <td
                                             className={clsx(
                                                 classes.td,
-                                                classes.tdx
+                                                classes.td1,
+                                                classes.td1Color
                                             )}
-                                            key={index2}
-                                            ref={
-                                                index === 0 && index2 === 0
-                                                    ? ref
-                                                    : undefined
-                                            }
                                         >
-                                            <div
-                                                className={
-                                                    classes.courseContainer
-                                                }
-                                            >
-                                                {cellClasses.map(
-                                                    (courseData) => (
-                                                        <TimeTableCourse
-                                                            {...courseData}
-                                                            tableTheme={
-                                                                tableTheme
-                                                            }
-                                                            hideOverflowText={
-                                                                hideOverflowText
-                                                            }
-                                                            showRoom={showRoom}
-                                                            showRoomCode={
-                                                                showRoomCode
-                                                            }
-                                                            key={
-                                                                courseData
-                                                                    .course
-                                                                    .cos_id
-                                                            }
-                                                            cellHeight={
-                                                                cellHeight
-                                                            }
-                                                            showTeacher={
-                                                                showTeacher
-                                                            }
-                                                            fontSize={fontSize}
-                                                        />
-                                                    )
-                                                )}
-                                            </div>
+                                            {indexColumn[index]}
                                         </td>
-                                    ))}
-                                </tr>
-                            ))
-                            .splice(
-                                extendTimetable ? 0 : 2,
-                                secs.length - (extendTimetable ? 0 : 7)
-                            )}
-                    </tbody>
-                </table>
+                                        {rowClasses.map(
+                                            (cellClasses, index2) => (
+                                                <td
+                                                    className={clsx(
+                                                        classes.td,
+                                                        classes.tdx
+                                                    )}
+                                                    key={index2}
+                                                    ref={
+                                                        index === 0 &&
+                                                        index2 === 0
+                                                            ? ref
+                                                            : undefined
+                                                    }
+                                                >
+                                                    <div
+                                                        className={
+                                                            classes.courseContainer
+                                                        }
+                                                    >
+                                                        {cellClasses.map(
+                                                            (courseData) => (
+                                                                <TimeTableCourse
+                                                                    {...courseData}
+                                                                    tableTheme={
+                                                                        tableTheme
+                                                                    }
+                                                                    hideOverflowText={
+                                                                        hideOverflowText
+                                                                    }
+                                                                    showRoom={
+                                                                        showRoom
+                                                                    }
+                                                                    showRoomCode={
+                                                                        showRoomCode
+                                                                    }
+                                                                    key={
+                                                                        courseData
+                                                                            .course
+                                                                            .cos_id
+                                                                    }
+                                                                    cellHeight={
+                                                                        cellHeight
+                                                                    }
+                                                                    showTeacher={
+                                                                        showTeacher
+                                                                    }
+                                                                    fontSize={
+                                                                        fontSize
+                                                                    }
+                                                                />
+                                                            )
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            )
+                                        )}
+                                    </tr>
+                                ))
+                                .splice(
+                                    extendTimetable ? 0 : 2,
+                                    secs.length - (extendTimetable ? 0 : 7)
+                                )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

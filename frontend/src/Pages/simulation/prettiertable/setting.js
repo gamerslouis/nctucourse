@@ -135,7 +135,7 @@ const Setting = ({
     const [enableNotchFix, setEnableNotchFix] = useState(false);
     const [notchHeight, setNotchHeight] = useState(44);
     const [selectTheme, setSelectTheme] = useState(0);
-    const [fontSize, setFontSize] = useState(14);
+    const [fontSize, setFontSize] = useState(12);
     const [showTeacher, setShowTeacher] = useState(false);
     const [showRoom, setShowRoom] = useState(true);
     const [showRoomCode, setShowRoomCode] = useState(false);
@@ -158,6 +158,7 @@ const Setting = ({
     );
     const [invalidUserTheme, setInvalidUserTheme] = useState(false);
     const [allowShareUserTheme, setAllowShareUserTheme] = useState(true);
+    const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
         if (!loading && !error) {
@@ -212,8 +213,9 @@ const Setting = ({
                 showRoomCode: showRoomCode,
                 newTimeCode: !useOldTimeCode,
                 extendTimetable: extendTimetable,
-                fontSize: fontSize,
+                fontSize: fontSize + 11,
                 tableTheme: theme,
+                exporting: exporting,
             });
         }
     }, [
@@ -231,6 +233,7 @@ const Setting = ({
         extendTimetable,
         fontSize,
         userTheme,
+        exporting,
     ]);
 
     useEffect(() => {
@@ -379,7 +382,9 @@ const Setting = ({
                     }}
                 >
                     {themes.map((theme, i) => (
-                        <MenuItem value={i} key={i}>{theme.name}</MenuItem>
+                        <MenuItem value={i} key={i}>
+                            {theme.name}
+                        </MenuItem>
                     ))}
                     <MenuItem value={-1} key="自訂主題">
                         自訂主題
@@ -426,13 +431,6 @@ const Setting = ({
                     value={fontSize}
                     onChange={setFontSize}
                 />
-                <Typography
-                    variant="caption"
-                    color="textSecondary"
-                    component="div"
-                >
-                    最小值為 12。
-                </Typography>
             </FormRow>
             <FormRow title="顯示授課教師:" dense>
                 <Checkbox
@@ -508,6 +506,7 @@ const Setting = ({
                             if (invalidUserTheme) {
                                 enqueueSnackbar("無效的主題格式", "error");
                             } else {
+                                setExporting(true);
                                 axios.post(
                                     "/api/simulation/export/collect_theme/",
                                     {
@@ -521,10 +520,13 @@ const Setting = ({
                                                 : selectTheme.toString(),
                                     }
                                 );
-
-                                DownloadAsImage(
-                                    document.getElementById("table")
-                                );
+                                setTimeout(() => {
+                                    DownloadAsImage(
+                                        document.getElementById("table"),
+                                        () => setExporting(false),
+                                        ()=>{enqueueSnackbar("IOS匯出失敗，請稍後或重新整理後再嘗試。", "error")}
+                                    );
+                                }, 500);
                             }
                         }}
                     >
