@@ -15,12 +15,27 @@ const PrettierTable = ({
 }) => {
     const [config, setConfig] = React.useState(null);
     const [semester, setSemester] = React.useState(null);
+    const [mergedAllCourses, setMergedAllCourses] = React.useState({});
+    const [mergedCourseIds, setMergedCourseIds] = React.useState(new Set());
+
     useEffect(() => {
         if (config && config.semester !== semester) {
             setSemester(config.semester);
             fetchDatabase(config.semester);
         }
     }, [fetchDatabase, config, semester, setSemester]);
+
+    useEffect(() => {
+        if (allCourses && courseIds && config) {
+            let userCourses = {};
+            config.userAddCourseConfig.forEach((course) => {
+                userCourses[course.cos_id] = course;
+            });
+
+            setMergedAllCourses({ ...allCourses, ...userCourses });
+            setMergedCourseIds(new Set([...courseIds, ...config.userAddCourseConfig.map((course) => course.cos_id)]));
+        }
+    }, [allCourses, courseIds, config]);
 
     useEffect(() => {
         if (Object.keys(allCourses).length !== 0 && courseIds.size === 0) {
@@ -61,8 +76,8 @@ const PrettierTable = ({
                         <Card style={{ overflowX: "scroll" }}>
                             <Table
                                 {...config}
-                                courseIds={courseIds}
-                                allCourses={allCourses}
+                                courseIds={mergedCourseIds}
+                                allCourses={mergedAllCourses}
                             />
                         </Card>
                     )}

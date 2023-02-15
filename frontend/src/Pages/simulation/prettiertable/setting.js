@@ -21,12 +21,13 @@ import { DownloadAsImage } from "../../../Util/dataUtil/imageExport";
 import {
     ConvertCourseType2StyleType,
     ConvertToNewCode,
+    ConvertToOldCode,
     newSecs,
     secs,
     timeCode,
 } from "../../../Util/style";
 import { themes } from "./theme";
-import { FileCopy } from "@material-ui/icons";
+import { Add, FileCopy } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
 import axios from "axios";
 import { copyToClipboard } from "../../../Util/utils";
@@ -202,6 +203,61 @@ const CourseTypeEditor = ({
     );
 };
 
+const UserAddCourseEditor = ({
+    userAddCourseConfig,
+    setUserAddCourseConfig,
+}) => {
+    return (
+        <Table style={{ width: "100%" }}>
+            <TableHead>
+                <TableRow>
+                    <TableCell>項目說明</TableCell>
+                    <TableCell>時間</TableCell>
+                    <TableCell>動作</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {userAddCourseConfig.map((v, i) => (
+                    <TableRow key={v.cos_id}>
+                        <TableCell>
+                            <TextField
+                                multiline
+                                value={v.cos_cname}
+                                onChange={(e) => {
+                                    let newConfig = [...userAddCourseConfig];
+                                    newConfig[i].cos_cname = e.target.value;
+                                    setUserAddCourseConfig(newConfig);
+                                }}
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <TextField
+                                value={v.cos_time}
+                                onChange={(e) => {
+                                    let newConfig = [...userAddCourseConfig];
+                                    newConfig[i].cos_time = e.target.value;
+                                    setUserAddCourseConfig(newConfig);
+                                }}
+                            />
+                        </TableCell>
+                        <TableCell>
+                            <Button
+                                onClick={(e) => {
+                                    let newConfig = [...userAddCourseConfig];
+                                    newConfig.splice(i, 1);
+                                    setUserAddCourseConfig(newConfig);
+                                }}
+                            >
+                                刪除
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
+};
+
 let lastAppliedTheme = null;
 
 const Setting = ({
@@ -244,6 +300,9 @@ const Setting = ({
     const [allowShareUserTheme, setAllowShareUserTheme] = useState(true);
     const [showCourseTypeConfig, setShowCourseTypeConfig] = useState(false);
     const [courseTypeConfig, setCourseTypeConfig] = useState({});
+    const [showUserAddCourceConfig, setShowUserAddCourceConfig] =
+        useState(false);
+    const [userAddCourseConfig, setUserAddCourseConfig] = useState([]);
     const [exporting, setExporting] = useState(false);
 
     useEffect(() => {
@@ -290,6 +349,16 @@ const Setting = ({
             }
             lastAppliedTheme = theme;
 
+            const fixTimeUserAddCourseConfig = userAddCourseConfig.map((v) => {
+                let newConfig = { ...v };
+                let old = "";
+                for (let i = 0; i < v.cos_time.length; i++) {
+                    old += ConvertToOldCode(v.cos_time[i]);
+                }
+                newConfig.cos_time = old;
+                return newConfig;
+            });
+
             handleConfigChange({
                 semester: selectSemester,
                 tableWidth: tableWidth,
@@ -303,6 +372,7 @@ const Setting = ({
                 fontSize: fontSize + 11,
                 tableTheme: theme,
                 courseTypeConfig: courseTypeConfig,
+                userAddCourseConfig: fixTimeUserAddCourseConfig,
                 exporting: exporting,
             });
         }
@@ -322,6 +392,7 @@ const Setting = ({
         fontSize,
         userTheme,
         courseTypeConfig,
+        userAddCourseConfig,
         exporting,
     ]);
 
@@ -388,6 +459,18 @@ const Setting = ({
         copyToClipboard(userTheme);
         enqueueSnackbar("已複製到剪貼簿", { variant: "success" });
     }, [userTheme, enqueueSnackbar]);
+
+    const handleAddUserAddCource = useCallback(() => {
+        setUserAddCourseConfig([
+            ...userAddCourseConfig,
+            {
+                cos_id: Math.random().toString(36).substring(2),
+                cos_cname: "",
+                cos_type: "自訂",
+                cos_time: "",
+            },
+        ]);
+    }, [userAddCourseConfig, setUserAddCourseConfig]);
 
     return (
         <div style={{ padding: 20 }}>
@@ -521,6 +604,27 @@ const Setting = ({
                         courseIds={courseIds}
                         courseTypeConfig={courseTypeConfig}
                         setCourseTypeConfig={setCourseTypeConfig}
+                    />
+                </FormRow>
+            )}
+            <FormRow title="顯示手動添加課程設定" dense>
+                <Checkbox
+                    checked={showUserAddCourceConfig}
+                    onChange={() =>
+                        setShowUserAddCourceConfig(!showUserAddCourceConfig)
+                    }
+                />
+                {showUserAddCourceConfig && (
+                    <IconButton onClick={handleAddUserAddCource}>
+                        <Add />
+                    </IconButton>
+                )}
+            </FormRow>
+            {showUserAddCourceConfig && (
+                <FormRow fullWidth caption="僅支援使用新版時間代碼。Ex. W1256,R8y。完整時間表為 y,z,1,2,3,4,n,5,6,7,8,9,a,b,c,d。星期為M,T,W,R,F,S,U">
+                    <UserAddCourseEditor
+                        userAddCourseConfig={userAddCourseConfig}
+                        setUserAddCourseConfig={setUserAddCourseConfig}
                     />
                 </FormRow>
             )}

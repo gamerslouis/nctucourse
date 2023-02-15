@@ -21,6 +21,9 @@ export const ConvertCourseType2StyleType = (courseType) => {
     if (courseType === "核心") return "通識";
 
     if (courseType === "選修") return "選修";
+
+    if (courseType === "自訂") return "自訂";
+
     return "選修";
 };
 
@@ -62,7 +65,7 @@ export const newSecs = [
     "d",
 ];
 
-export const timeCode =["一", "二", "三", "四", "五", "六", "日"];
+export const timeCode =["1", "2", "3", "4", "5", "6", "7"];
 export const newTimeCode = ["M", "T", "W", "R", "F", "S", "U"];
 
 export const ConvertToNewCode = (code) => {
@@ -74,3 +77,13 @@ export const ConvertToNewCode = (code) => {
     }
     return code;
 };
+
+export const ConvertToOldCode = (code) => {
+    if (newSecs.includes(code)) {
+        return secs[newSecs.indexOf(code)];
+    }
+    if (newTimeCode.includes(code)) {
+        return timeCode[newTimeCode.indexOf(code)];
+    }
+    return code;
+}

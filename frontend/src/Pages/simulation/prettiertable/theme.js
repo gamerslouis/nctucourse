@@ -15,6 +15,7 @@ export const themes = [
             外語: "#a1a9a3",
             通識: "#c2cfc6",
             選修: "#e3cda0",
+            自訂: "#aebed1",
         },
     },
     {
@@ -33,6 +34,7 @@ export const themes = [
             外語: "#dad2c5",
             通識: "#c1b59d",
             選修: "#b1b3a6",
+            自訂: "#a8b7a7",
         },
     },
     {
@@ -51,6 +53,7 @@ export const themes = [
             外語: "#c5c5d1",
             通識: "#c9c0bc",
             選修: "#979aac",
+            自訂: "#919faf",
         },
     },
     {
@@ -69,6 +72,7 @@ export const themes = [
             外語: "#babdb4",
             通識: "#cdc0a6",
             選修: "#e0d9bd",
+            自訂: "#d3d1c8",
         },
     },
 ];

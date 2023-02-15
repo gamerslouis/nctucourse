@@ -87,6 +87,7 @@ const courseStyles = (theme) => ({
         width: "100%",
         wordBreak: "normal",
         wordWrap: "break-word",
+        whiteSpace: "pre-wrap",
     },
     teacher: (props) => ({
         display: props.showTeacher ? "inline" : "none",
@@ -122,6 +123,7 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
             }}
         >
             <div className={classes.textSpan} style={{ fontSize: fontSize }}>
+                
                 {course.cos_cname}
                 {showTeacher && (
                     <Fragment>
