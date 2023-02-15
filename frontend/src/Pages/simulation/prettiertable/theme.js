@@ -2,7 +2,9 @@ export const themes = [
     {
         name: "繽紛色",
         headerBackgroundColor: "#b6bbbb",
+        headerFontColor: "#000000",
         indexColumnBackgroundColor: "#cad2d2",
+        indexColumnFontColor: "#000000",
         mainBackgroundColor: "#ffffff",
         borderColor: "#000000",
         courseFontColor: "#000000",
@@ -18,7 +20,9 @@ export const themes = [
     {
         name: "自然綠",
         headerBackgroundColor: "#eaeae8",
+        headerFontColor: "#000000",
         indexColumnBackgroundColor: "#eaeae8",
+        indexColumnFontColor: "#000000",
         mainBackgroundColor: "#ffffff",
         borderColor: "#000000",
         courseFontColor: "#000000",
@@ -34,7 +38,9 @@ export const themes = [
     {
         name: "煙霧藍",
         headerBackgroundColor: "#b6bbbb",
+        headerFontColor: "#000000",
         indexColumnBackgroundColor: "#cad2d2",
+        indexColumnFontColor: "#000000",
         mainBackgroundColor: "#f4f4f2",
         borderColor: "#000000",
         courseFontColor: "#000000",
@@ -50,7 +56,9 @@ export const themes = [
     {
         name: "原野綠",
         headerBackgroundColor: "#e0ddd6",
+        headerFontColor: "#000000",
         indexColumnBackgroundColor: "#e0ddd6",
+        indexColumnFontColor: "#000000",
         mainBackgroundColor: "#ffffff",
         borderColor: "#4b3728",
         courseFontColor: "#000000",

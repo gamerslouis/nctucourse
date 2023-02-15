@@ -45,6 +45,7 @@ const styles = (theme) => ({
     },
     thd: (props) => ({
         backgroundColor: props.tableTheme.headerBackgroundColor,
+        color: props.tableTheme.headerFontColor,
     }),
     td: (props) => ({
         borderWidth: 1 * SCALE_RATE,
@@ -57,6 +58,7 @@ const styles = (theme) => ({
     }),
     td1Color: (props) => ({
         backgroundColor: props.tableTheme.indexColumnBackgroundColor,
+        color: props.tableTheme.indexColumnFontColor,
     }),
     tdx: (props) => ({
         verticalAlign: "top",
