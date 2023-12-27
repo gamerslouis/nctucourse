@@ -263,8 +263,8 @@ const Navbar = (props) => {
                         <Divider />
                         <List>
                             <ListItem disabled >外部連結</ListItem>
-                            <ListItem button onClick={() => window.location.href = "https://timetable.nctu.edu.tw/"}>交大課程時間表</ListItem>
-                            <ListItem button onClick={() => window.location.href = "https://course.nctu.edu.tw/"}>交大選課系統</ListItem>
+                            <ListItem button onClick={() => window.location.href = "https://timetable.nycu.edu.tw/"}>交大課程時間表</ListItem>
+                            <ListItem button onClick={() => window.location.href = "https://course.nycu.edu.tw/"}>交大選課系統</ListItem>
                         </List>
                         <Divider />
                         <List>
