@@ -65,7 +65,7 @@ export default (props) => {
           </Typography>
           <Typography>
             1. 登入交大註冊組{" "}
-            <Link href="https://regist.nctu.edu.tw/" target="_blank">
+            <Link href="https://regist.nycu.edu.tw/" target="_blank">
               學籍成績系統
             </Link>
             <br />

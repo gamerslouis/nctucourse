@@ -112,7 +112,7 @@ export function makeInfoPageUrl(courseId) {
     let [time, no] = courseId.split('_')
     let acy = time.slice(0, time.length - 1)
     let sem = time.slice(time.length - 1)
-    return `https://timetable.nctu.edu.tw/?r=main/crsoutline&Acy=${acy}&Sem=${sem}&CrsNo=${no}&lang=zh-tw`
+    return `https://timetable.nycu.edu.tw/?r=main/crsoutline&Acy=${acy}&Sem=${sem}&CrsNo=${no}&lang=zh-tw`
 }
 
 export function filterCommonCourses(allCourses, categoryMap, category) {
