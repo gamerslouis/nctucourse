@@ -9,7 +9,7 @@ urlpatterns = [
 
 router = routers.SimpleRouter()
 router.register('courses', views.CourseViewSet)
-router.register('feedbacks/my', views.MyFeedBackViewSet)
-router.register('feedbacks', views.FeedBackViewSet)
+router.register('feedbacks/my', views.MyFeedBackViewSet, basename='my-feedback')
+router.register('feedbacks', views.FeedBackViewSet, basename='feedback')
 print(router.urls)
 urlpatterns += router.urls
