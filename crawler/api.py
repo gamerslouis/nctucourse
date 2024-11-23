@@ -3,7 +3,9 @@ import json
 import requests
 
 headers = {
-    'user-agent': 'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'}
+    'user-agent':
+    'Mozilla/5.0 (Macintosh Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
+}
 
 from utils import _NewOldTimeConvert
 
@@ -15,7 +17,18 @@ class Lang(Enum):
     TW = 'zh-tw'
     US = 'en-us'
 
+
 clean_new_time = _NewOldTimeConvert().clean_time
+
+
+def get_acysem() -> list:
+    """
+    [{T: "1131"}, {T: "112X"}, {T: "1122"}, {T: "1121"}, {T: "111X"}]
+    """
+    res = session.get('https://timetable.nycu.edu.tw/?r=main/get_acysem',
+                      headers=headers)
+    return list(map(lambda row: row['T'], res.json()))
+
 
 def get_type() -> list:
     """
@@ -26,8 +39,8 @@ def get_type() -> list:
         "ename": "Undergraduate courses"
     }
     """
-    res = session.get(
-        'https://timetable.nycu.edu.tw/?r=main/get_type', headers=headers)
+    res = session.get('https://timetable.nycu.edu.tw/?r=main/get_type',
+                      headers=headers)
     return res.json()
 
 
@@ -40,72 +53,82 @@ def get_category(ftype, flang, acysem):
     return:
         {'3*': '一般學士班'}
     """
-    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_category', data={
-        'ftype': ftype,
-        'flang': flang,
-        'acysem': acysem,
-        'acysemend': acysem
-    }, headers=headers)
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_category',
+                       data={
+                           'ftype': ftype,
+                           'flang': flang,
+                           'acysem': acysem,
+                           'acysemend': acysem
+                       },
+                       headers=headers)
     return res.json()
 
 
 def get_college(ftype, flang, acysem, fcategory):
-    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_college', data={
-        'ftype': ftype,
-        'flang': flang,
-        'acysem': acysem,
-        'acysemend': acysem,
-        'fcategory': fcategory
-    }, headers=headers)
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_college',
+                       data={
+                           'ftype': ftype,
+                           'flang': flang,
+                           'acysem': acysem,
+                           'acysemend': acysem,
+                           'fcategory': fcategory
+                       },
+                       headers=headers)
     return res.json()
 
 
 def get_dep(ftype, flang, acysem, fcategory, fcollege):
-    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_dep', data={
-        'ftype': ftype,
-        'flang': flang,
-        'acysem': acysem,
-        'acysemend': acysem,
-        'fcategory': fcategory,
-        'fcollege': fcollege
-    }, headers=headers)
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_dep',
+                       data={
+                           'ftype': ftype,
+                           'flang': flang,
+                           'acysem': acysem,
+                           'acysemend': acysem,
+                           'fcategory': fcategory,
+                           'fcollege': fcollege
+                       },
+                       headers=headers)
     return res.json()
 
 
 def get_grade(ftype, flang, acysem, fcategory, fcollege, fdep):
-    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_grade', data={
-        'ftype': ftype,
-        'flang': flang,
-        'acysem': acysem,
-        'acysemend': acysem,
-        'fcategory': fcategory,
-        'fcollege': fcollege,
-        'fdep': fdep,
-        'fgroup': '**'
-    }, headers=headers)
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_grade',
+                       data={
+                           'ftype': ftype,
+                           'flang': flang,
+                           'acysem': acysem,
+                           'acysemend': acysem,
+                           'fcategory': fcategory,
+                           'fcollege': fcollege,
+                           'fdep': fdep,
+                           'fgroup': '**'
+                       },
+                       headers=headers)
     return res.json()
 
 
 def get_cos_list(acysem, fdepuuid, fgrade='**'):
-    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
-        'm_acy': acysem[:-1],
-        'm_sem': acysem[-1:],
-        'm_acyend': acysem[:-1],
-        'm_semend': acysem[-1:],
-        'm_dep_uid': fdepuuid,
-        'm_grade': fgrade,
-        'm_group': '**',
-        'm_class': '**',
-        'm_option': '**',
-        'm_crsname': '**',
-        'm_teaname': '**',
-        'm_cos_id': '**',
-        'm_cos_code': '**',
-        'm_crstime': '**',
-        'm_crsoutline': '**',
-        'm_costype': '**',
-        'm_selcampus': '**'
-    }, headers=headers)
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list',
+                       data={
+                           'm_acy': acysem[:-1],
+                           'm_sem': acysem[-1:],
+                           'm_acyend': acysem[:-1],
+                           'm_semend': acysem[-1:],
+                           'm_dep_uid': fdepuuid,
+                           'm_grade': fgrade,
+                           'm_group': '**',
+                           'm_class': '**',
+                           'm_option': '**',
+                           'm_crsname': '**',
+                           'm_teaname': '**',
+                           'm_cos_id': '**',
+                           'm_cos_code': '**',
+                           'm_crstime': '**',
+                           'm_crsoutline': '**',
+                           'm_costype': '**',
+                           'm_selcampus': '**'
+                       },
+                       headers=headers)
     return parse_course_list(res.json())
 
 
@@ -126,27 +149,28 @@ def get_all_cos(acysem):
                 ...
             }
     """
-    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list', data={
-        'm_acy': acysem[:-1],
-        'm_sem': acysem[-1:],
-        'm_acyend': acysem[:-1],
-        'm_semend': acysem[-1:],
-        'm_dep_uid': '**',
-        'm_grade': '**',
-        'm_group': '**',
-        'm_class': '**',
-        'm_option': '**',
-        'm_crsname': '**',
-        'm_teaname': '**',
-        'm_cos_id': '**',
-        'm_cos_code': '**',
-        'm_crstime': '**',
-        'm_crsoutline': '**',
-        'm_costype': '**'
-    }, headers=headers)
+    res = session.post('https://timetable.nycu.edu.tw/?r=main/get_cos_list',
+                       data={
+                           'm_acy': acysem[:-1],
+                           'm_sem': acysem[-1:],
+                           'm_acyend': acysem[:-1],
+                           'm_semend': acysem[-1:],
+                           'm_dep_uid': '**',
+                           'm_grade': '**',
+                           'm_group': '**',
+                           'm_class': '**',
+                           'm_option': '**',
+                           'm_crsname': '**',
+                           'm_teaname': '**',
+                           'm_cos_id': '**',
+                           'm_cos_code': '**',
+                           'm_crstime': '**',
+                           'm_crsoutline': '**',
+                           'm_costype': '**'
+                       },
+                       headers=headers)
 
     return parse_course_list(res.json())
-
 
 
 def parse_course_list(_data):
@@ -181,9 +205,11 @@ def parse_course_list(_data):
             cs = data[dk]
             ids.extend(list(cs))  # key list is id list
 
-            keys = ['TURL', 'cos_cname', 'cos_code', 'cos_credit', 'cos_ename',
-                    'cos_hours', 'cos_type', 'cos_type_e', 'memo', 'num_limit',
-                    'reg_num', 'teacher', 'cos_time']
+            keys = [
+                'TURL', 'cos_cname', 'cos_code', 'cos_credit', 'cos_ename',
+                'cos_hours', 'cos_type', 'cos_type_e', 'memo', 'num_limit',
+                'reg_num', 'teacher', 'cos_time'
+            ]
             for cid in cs:
                 obj: Course = {}  # type: ignore
                 meta = {}
@@ -195,7 +221,8 @@ def parse_course_list(_data):
                 obj['cos_code'] = obj['cos_code'].strip()
                 obj['cos_time'] = clean_new_time(obj['cos_time'])
                 try:
-                    geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院']['GECIName']
+                    geci_name = data['costype'][cid]['通識跨院基本素養_通識跨院'][
+                        'GECIName']
                     meta['geci'] = geci_name
                 except KeyError:
                     pass
