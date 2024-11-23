@@ -9,7 +9,6 @@ import django
 
 import fetch
 import build_simdata
-import migrate_course_table
 
 sys.path.append(os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../backend')))
@@ -51,35 +50,32 @@ def main(args):
             print("Finish timestamp: ", timestamp)
             file = f'{sem}/{timestamp}/all.json'
 
-        if args.type == 'sim':
-            ### Update sql setting ###
-            logging.info("Update sql setting")
-            with transaction.atomic():
-                if file != '':
-                    obj, created = SemesterCoursesMapping.objects.get_or_create(semester=sem, defaults={
-                        'file': file
-                    })
-                    if not created:
-                        obj.file = file
-                        obj.save()
+        ### Update sql setting ###
+        logging.info("Update sql setting")
+        with transaction.atomic():
+            if file != '':
+                obj, created = SemesterCoursesMapping.objects.get_or_create(semester=sem, defaults={
+                    'file': file
+                })
+                if not created:
+                    obj.file = file
+                    obj.save()
 
-                ids = set(SimCollect.objects.filter(semester=sem).values_list(
-                    'course_id', flat=True).distinct())
-                dids = set(list(map(lambda v: v[0], builded_data['courses'])))
-                deletedIds = ids.difference(dids)
-                if len(deletedIds) > 0:
-                    if len(deletedIds) > 20 and not args.force:
-                        logging.warn(
-                            "delete courses too many, reject: " + str(len(deletedIds)))
-                        raise Exception("Abort")
-                    else:
-                        SimCollect.objects.filter(
-                            semester=sem, course_id__in=deletedIds).delete()
-                        logging.info("delete courses: " + str(deletedIds))
+            ids = set(SimCollect.objects.filter(semester=sem).values_list(
+                'course_id', flat=True).distinct())
+            dids = set(list(map(lambda v: v[0], builded_data['courses'])))
+            deletedIds = ids.difference(dids)
+            if len(deletedIds) > 0:
+                if len(deletedIds) > 20 and not args.force:
+                    logging.warn(
+                        "delete courses too many, reject: " + str(len(deletedIds)))
+                    raise Exception("Abort")
                 else:
-                    logging.info("no course deleted")
-        else:
-            migrate_course_table.work(build_simdata['courses'])
+                    SimCollect.objects.filter(
+                        semester=sem, course_id__in=deletedIds).delete()
+                    logging.info("delete courses: " + str(deletedIds))
+            else:
+                logging.info("no course deleted")
 
         logging.info("Finish")
     except:
@@ -92,6 +88,5 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--force", action="store_true",
                         help="force update database")
     parser.add_argument("-i", "--input", help="input file")
-    parser.add_argument('-t', '--type', choices=['sim', 'course'], default='sim')
     args = parser.parse_args()
     main(args)

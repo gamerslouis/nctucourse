@@ -23,7 +23,6 @@ INSTALLED_APPS = [
     'core',
     'accounts.apps.AccountsConfig',
     'simulation',
-    'courses',
 ]
 
 MIDDLEWARE = [
