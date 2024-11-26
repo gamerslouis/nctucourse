@@ -11,6 +11,7 @@ import {
 import { difference } from "lodash";
 
 const SCALE_RATE = 2;
+const TD_BORDER = 1 * SCALE_RATE;
 
 const styles = (theme) => ({
     rootOuter: (props) => ({
@@ -27,11 +28,19 @@ const styles = (theme) => ({
         fontSize: 12 * SCALE_RATE,
         padding: 20 * SCALE_RATE,
         paddingTop: (20 + props.notchHeight) * SCALE_RATE,
+        backgroundImage: props.backgroundImage
+            ? `url(${props.backgroundImage})`
+            : "none",
+        backgroundSize: "cover",
     }),
     tablecontainer: (props) => ({
         width: (props.tableWidth - 40) * SCALE_RATE,
         height: (props.tableHeight - 40 - props.notchHeight) * SCALE_RATE,
-        border: `1.5px solid ${props.tableTheme.borderColor}`,
+        border: `1.5px solid ${
+            props.enableGrid
+                ? props.tableTheme.borderColor
+                : props.tableTheme.mainBackgroundColor
+        }`,
     }),
     table: (props) => ({
         width: "100%",
@@ -46,25 +55,31 @@ const styles = (theme) => ({
     thd: (props) => ({
         backgroundColor: props.tableTheme.headerBackgroundColor,
         color: props.tableTheme.headerFontColor,
+        borderColor: props.enableGrid
+            ? props.tableTheme.borderColor
+            : props.tableTheme.headerBackgroundColor,
     }),
     td: (props) => ({
-        borderWidth: 1 * SCALE_RATE,
-        borderColor: props.tableTheme.borderColor,
+        borderWidth: TD_BORDER,
         borderStyle: "solid",
     }),
     td1: (props) => ({
         width: 35 * SCALE_RATE,
         whiteSpace: "nowrap",
-    }),
-    td1Color: (props) => ({
+        borderColor: props.enableGrid
+            ? props.tableTheme.borderColor
+            : props.tableTheme.indexColumnBackgroundColor,
         backgroundColor: props.tableTheme.indexColumnBackgroundColor,
         color: props.tableTheme.indexColumnFontColor,
     }),
     tdx: (props) => ({
         verticalAlign: "top",
-        padding: 2 * SCALE_RATE,
+        padding: props.enableFlatStyle ? 0 : 2 * SCALE_RATE,
         color: props.tableTheme.courseFontColor,
         lineHeight: 1.4,
+        borderColor: props.enableGrid
+            ? props.tableTheme.borderColor
+            : props.tableTheme.mainBackgroundColor,
     }),
     courseContainer: {
         height: 0,
@@ -73,22 +88,48 @@ const styles = (theme) => ({
 });
 
 const courseStyles = (theme) => ({
-    course: (props) => ({
-        height: props.cellHeight * props.length - 2 * (SCALE_RATE + 1),
-        padding: 6 * SCALE_RATE,
-        borderRadius: 10,
-        boxShadow: "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
-        display: "inline-table",
+    course: (props) => {
+        const cellHeight = props.cellHeight;
+        const courseLength = props.length;
+        const border = TD_BORDER;
+        const padding = 2 * (SCALE_RATE + 1);
+
+        let height = 0;
+        if (props.enableFlatStyle) {
+            height = cellHeight * courseLength + (courseLength - 1) * border;
+        } else {
+            height = cellHeight * courseLength - padding;
+        }
+
+        return {
+            height: height,
+            padding: 6 * SCALE_RATE,
+            borderRadius: props.enableFlatStyle ? undefined : 10,
+            boxShadow: props.enableFlatStyle
+                ? ""
+                : "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
+            display: "inline-table",
+            width: "100%",
+        };
+    },
+    textContainer: {
+        height: "100%",
         width: "100%",
-    }),
-    textSpan: {
-        paddingTop: 5 * SCALE_RATE,
         display: "inline-block",
+        position: "relative",
+    },
+    textSpan: (props) => ({
+        paddingTop: 5 * SCALE_RATE,
         width: "100%",
         wordBreak: "normal",
         wordWrap: "break-word",
         whiteSpace: "pre-wrap",
-    },
+        top: props.alignCourseTextCenter ? "50%" : undefined,
+        position: "absolute",
+        transform: props.alignCourseTextCenter
+            ? "translate(0, -50%)"
+            : undefined,
+    }),
     teacher: (props) => ({
         display: props.showTeacher ? "inline" : "none",
     }),
@@ -122,19 +163,23 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
                     ],
             }}
         >
-            <div className={classes.textSpan} style={{ fontSize: fontSize }}>
-                
-                {course.cos_cname}
-                {showTeacher && (
-                    <Fragment>
-                        <br /> {course.teacher}
-                    </Fragment>
-                )}
-                {showRoom && (
-                    <Fragment>
-                        <br /> {showRoomCode ? roomCode : roomName}
-                    </Fragment>
-                )}
+            <div className={classes.textContainer}>
+                <div
+                    className={classes.textSpan}
+                    style={{ fontSize: fontSize }}
+                >
+                    {course.cos_cname}
+                    {showTeacher && (
+                        <Fragment>
+                            <br /> {course.teacher}
+                        </Fragment>
+                    )}
+                    {showRoom && (
+                        <Fragment>
+                            <br /> {showRoomCode ? roomCode : roomName}
+                        </Fragment>
+                    )}
+                </div>
             </div>
         </div>
     );
@@ -195,6 +240,8 @@ const TimeTable = ({
     allCourses,
     fontSize,
     courseTypeConfig,
+    enableFlatStyle,
+    alignCourseTextCenter,
 }) => {
     const ref = useRef();
     const [cellHeight, setCellHeight] = useState(0);
@@ -255,8 +302,7 @@ const TimeTable = ({
                                         <td
                                             className={clsx(
                                                 classes.td,
-                                                classes.td1,
-                                                classes.td1Color
+                                                classes.td1
                                             )}
                                         >
                                             {indexColumn[index]}
@@ -313,6 +359,12 @@ const TimeTable = ({
                                                                     }
                                                                     courseTypeConfig={
                                                                         courseTypeConfig
+                                                                    }
+                                                                    enableFlatStyle={
+                                                                        enableFlatStyle
+                                                                    }
+                                                                    alignCourseTextCenter={
+                                                                        alignCourseTextCenter
                                                                     }
                                                                 />
                                                             )

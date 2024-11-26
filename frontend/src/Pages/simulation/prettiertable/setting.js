@@ -276,6 +276,9 @@ const Setting = ({
     const [notchHeight, setNotchHeight] = useState(44);
     const [selectTheme, setSelectTheme] = useState(0);
     const [fontSize, setFontSize] = useState(12);
+    const [enableFlatStyle, setEnableFlatStyle] = useState(false);
+    const [enableGrid, setEnableGrid] = useState(true);
+    const [alignCourseTextCenter, setalignCourseTextCenter] = useState(false);
     const [showTeacher, setShowTeacher] = useState(false);
     const [showRoom, setShowRoom] = useState(true);
     const [showRoomCode, setShowRoomCode] = useState(false);
@@ -304,6 +307,7 @@ const Setting = ({
         useState(false);
     const [userAddCourseConfig, setUserAddCourseConfig] = useState([]);
     const [exporting, setExporting] = useState(false);
+    const [backgroundImage, setBackgroundImage] = useState("");
 
     useEffect(() => {
         if (!loading && !error) {
@@ -370,10 +374,14 @@ const Setting = ({
                 newTimeCode: !useOldTimeCode,
                 extendTimetable: extendTimetable,
                 fontSize: fontSize + 11,
+                enableFlatStyle: enableFlatStyle,
+                enableGrid: enableGrid,
+                alignCourseTextCenter,
                 tableTheme: theme,
                 courseTypeConfig: courseTypeConfig,
                 userAddCourseConfig: fixTimeUserAddCourseConfig,
                 exporting: exporting,
+                backgroundImage: backgroundImage
             });
         }
     }, [
@@ -390,10 +398,14 @@ const Setting = ({
         useOldTimeCode,
         extendTimetable,
         fontSize,
+        enableFlatStyle,
+        enableGrid,
+        alignCourseTextCenter,
         userTheme,
         courseTypeConfig,
         userAddCourseConfig,
         exporting,
+        backgroundImage,
     ]);
 
     useEffect(() => {
@@ -471,6 +483,18 @@ const Setting = ({
             },
         ]);
     }, [userAddCourseConfig, setUserAddCourseConfig]);
+
+    const handleFileChange = useCallback((e) => {
+        if (e.target.files === undefined) {
+            setBackgroundImage("");
+        } else {
+            const file = e.target.files[0];
+            if (file) {
+                const imageUrl = URL.createObjectURL(file);
+                setBackgroundImage(imageUrl);
+            }
+        }
+    });
 
     return (
         <div style={{ padding: 20 }}>
@@ -621,7 +645,10 @@ const Setting = ({
                 )}
             </FormRow>
             {showUserAddCourceConfig && (
-                <FormRow fullWidth caption="僅支援使用新版時間代碼。Ex. W1256,R8y。完整時間表為 y,z,1,2,3,4,n,5,6,7,8,9,a,b,c,d。星期為M,T,W,R,F,S,U">
+                <FormRow
+                    fullWidth
+                    caption="僅支援使用新版時間代碼。Ex. W1256,R8y。完整時間表為 y,z,1,2,3,4,n,5,6,7,8,9,a,b,c,d。星期為M,T,W,R,F,S,U"
+                >
                     <UserAddCourseEditor
                         userAddCourseConfig={userAddCourseConfig}
                         setUserAddCourseConfig={setUserAddCourseConfig}
@@ -667,6 +694,26 @@ const Setting = ({
                     size="small"
                     value={fontSize}
                     onChange={setFontSize}
+                />
+            </FormRow>
+            <FormRow title="扁平化:" dense>
+                <Checkbox
+                    checked={enableFlatStyle}
+                    onChange={() => setEnableFlatStyle(!enableFlatStyle)}
+                />
+            </FormRow>
+            <FormRow title="顯示格線:" dense>
+                <Checkbox
+                    checked={enableGrid}
+                    onChange={() => setEnableGrid(!enableGrid)}
+                />
+            </FormRow>
+            <FormRow title="課程文字置中:" dense>
+                <Checkbox
+                    checked={alignCourseTextCenter}
+                    onChange={() =>
+                        setalignCourseTextCenter(!alignCourseTextCenter)
+                    }
                 />
             </FormRow>
             <FormRow title="顯示授課教師:" dense>
@@ -733,6 +780,41 @@ const Setting = ({
                     </div>
                 </FormRow>
             )}
+            <FormRow
+                dense
+                title="背景圖片:"
+                caption="目前不提供圖片裁切功能，請將圖片調整成合適大小後上傳"
+            >
+                <input
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    id="button-background-file"
+                    type="file"
+                    onChange={handleFileChange}
+                />
+                <label htmlFor="button-background-file">
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        style={{ marginRight: 5 }}
+                    >
+                        上傳
+                    </Button>
+                </label>
+                {backgroundImage && (
+                    <Button
+                        size="small"
+                        variant="contained"
+                        color="primary"
+                        component="span"
+                        onClick={handleFileChange}
+                    >
+                        取消
+                    </Button>
+                )}
+            </FormRow>
             <FormRow fullWidth>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <Button
