@@ -87,3 +87,19 @@ export const ConvertToOldCode = (code) => {
     }
     return code;
 }
+
+export const ConvertToNewCodeStr = (str) => {
+    let newStr = "";
+    for (let i = 0; i < str.length; i++) {
+        newStr += ConvertToNewCode(str[i]);
+    }
+    return newStr;
+}
+
+export const ConvertToOldCodeStr = (str) => {
+    let newStr = "";
+    for (let i = 0; i < str.length; i++) {
+        newStr += ConvertToOldCode(str[i]);
+    }
+    return newStr;
+}

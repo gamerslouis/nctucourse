@@ -1,6 +1,7 @@
 import {
     Button,
     Checkbox,
+    Divider,
     FormControlLabel,
     FormGroup,
     IconButton,
@@ -14,31 +15,27 @@ import {
     TextField,
     Typography,
 } from "@material-ui/core";
-import useAxios from "axios-hooks";
 import React, { useCallback, useEffect, useState } from "react";
-import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
-import { DownloadAsImage } from "../../../Util/dataUtil/imageExport";
 import {
     ConvertCourseType2StyleType,
     ConvertToNewCode,
-    ConvertToOldCode,
+    ConvertToNewCodeStr,
+    ConvertToOldCodeStr,
     newSecs,
     secs,
-    timeCode,
 } from "../../../Util/style";
 import { themes } from "./theme";
 import { Add, FileCopy } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
-import axios from "axios";
 import { copyToClipboard } from "../../../Util/utils";
 
-const toText = (sem) => {
+const toSemesterText = (sem) => {
     let s = sem[sem.length - 1];
     let mapp = { 1: "上學期", 2: "下學期", X: "暑期" };
     return `${sem.substr(0, 3)}學年度${mapp[s]}`;
 };
 
-function detectMob() {
+function detectMobile() {
     const toMatch = [
         /Android/i,
         /webOS/i,
@@ -203,261 +200,151 @@ const CourseTypeEditor = ({
     );
 };
 
-const UserAddCourseEditor = ({
-    userAddCourseConfig,
-    setUserAddCourseConfig,
-}) => {
-    return (
-        <Table style={{ width: "100%" }}>
-            <TableHead>
-                <TableRow>
-                    <TableCell>項目說明</TableCell>
-                    <TableCell>時間</TableCell>
-                    <TableCell>動作</TableCell>
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {userAddCourseConfig.map((v, i) => (
-                    <TableRow key={v.cos_id}>
-                        <TableCell>
-                            <TextField
-                                multiline
-                                value={v.cos_cname}
-                                onChange={(e) => {
-                                    let newConfig = [...userAddCourseConfig];
-                                    newConfig[i].cos_cname = e.target.value;
-                                    setUserAddCourseConfig(newConfig);
-                                }}
-                            />
-                        </TableCell>
-                        <TableCell>
-                            <TextField
-                                value={v.cos_time}
-                                onChange={(e) => {
-                                    let newConfig = [...userAddCourseConfig];
-                                    newConfig[i].cos_time = e.target.value;
-                                    setUserAddCourseConfig(newConfig);
-                                }}
-                            />
-                        </TableCell>
-                        <TableCell>
-                            <Button
-                                onClick={(e) => {
-                                    let newConfig = [...userAddCourseConfig];
-                                    newConfig.splice(i, 1);
-                                    setUserAddCourseConfig(newConfig);
-                                }}
-                            >
-                                刪除
-                            </Button>
-                        </TableCell>
+const UserAddCourseEditor = React.memo(
+    ({ userAddCourseConfig, setUserAddCourseConfig }) => {
+        return (
+            <Table style={{ width: "100%" }}>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>項目說明</TableCell>
+                        <TableCell>時間</TableCell>
+                        <TableCell>動作</TableCell>
                     </TableRow>
-                ))}
-            </TableBody>
-        </Table>
-    );
-};
+                </TableHead>
+                <TableBody>
+                    {userAddCourseConfig.map((v, i) => (
+                        <TableRow key={v.cos_id}>
+                            <TableCell>
+                                <TextField
+                                    multiline
+                                    value={v.cos_cname}
+                                    onChange={(e) => {
+                                        let newConfig = [
+                                            ...userAddCourseConfig,
+                                        ];
+                                        newConfig[i].cos_cname = e.target.value;
+                                        setUserAddCourseConfig(newConfig);
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <TextField
+                                    value={ConvertToNewCodeStr(v.cos_time)}
+                                    onChange={(e) => {
+                                        let newConfig = [
+                                            ...userAddCourseConfig,
+                                        ];
+                                        newConfig[i].cos_time =
+                                            ConvertToOldCodeStr(e.target.value);
+                                        setUserAddCourseConfig(newConfig);
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Button
+                                    onClick={(e) => {
+                                        let newConfig = [
+                                            ...userAddCourseConfig,
+                                        ];
+                                        newConfig.splice(i, 1);
+                                        setUserAddCourseConfig(newConfig);
+                                    }}
+                                >
+                                    刪除
+                                </Button>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        );
+    }
+);
 
 let lastAppliedTheme = null;
 
 const Setting = ({
-    handleConfigChange,
-    allCourses,
+    semesters,
+    semester,
+    handleSemesterChange,
+    handleExport,
+    courseOptions,
+    setCourseOptions,
+    tableOptions,
+    setTableOptions,
+    setTheme,
     courseIds,
+    allCourses,
     enqueueSnackbar,
-    defaultSemester,
 }) => {
-    let url = `/api/simulation/semesters/`;
-    const [{ data, loading, error }] = useAxios(url);
-    const [selectSemester, setSelectSemester] = useState("");
-    const [tableWidth, setTableWidth] = useState(414);
-    const [tableHeight, setTableHeight] = useState(818);
-    const [enableNotchFix, setEnableNotchFix] = useState(false);
-    const [notchHeight, setNotchHeight] = useState(44);
-    const [selectTheme, setSelectTheme] = useState(0);
-    const [fontSize, setFontSize] = useState(12);
-    const [enableFlatStyle, setEnableFlatStyle] = useState(false);
-    const [enableGrid, setEnableGrid] = useState(true);
-    const [alignCourseTextCenter, setalignCourseTextCenter] = useState(false);
-    const [showTeacher, setShowTeacher] = useState(false);
-    const [showRoom, setShowRoom] = useState(true);
-    const [showRoomCode, setShowRoomCode] = useState(false);
-    const [useOldTimeCode, setUseOldTimeCode] = useState(false);
-    const [extendTimetable, setExtendTimetable] = useState({
-        M: false,
-        N: false,
-        X: false,
-        Y: false,
-        I: false,
-        J: false,
-        K: false,
-        L: false,
-        六: false,
-        日: false,
-    });
     const [showThemeConfig, setShowThemeConfig] = useState(false);
+    const [showCourseTypeConfig, setShowCourseTypeConfig] = useState(false);
+    const [showExtraCourceConfig, setShowExtraCourceConfig] = useState(false);
+    const [allowShareUserTheme, setAllowShareUserTheme] = useState(true);
+    const [selectTheme, setSelectTheme] = useState(0);
     const [userTheme, setUserTheme] = useState(
         JSON.stringify(themes[0], null, 4)
     );
     const [invalidUserTheme, setInvalidUserTheme] = useState(false);
-    const [allowShareUserTheme, setAllowShareUserTheme] = useState(true);
-    const [showCourseTypeConfig, setShowCourseTypeConfig] = useState(false);
-    const [courseTypeConfig, setCourseTypeConfig] = useState({});
-    const [showUserAddCourceConfig, setShowUserAddCourceConfig] =
-        useState(false);
-    const [userAddCourseConfig, setUserAddCourseConfig] = useState([]);
-    const [exporting, setExporting] = useState(false);
-    const [backgroundImage, setBackgroundImage] = useState("");
+    const [showMore, setShowMore] = useState(false);
+
+    const updateTableOptions = useCallback(
+        (key, val) => {
+            setTableOptions((prev) => ({
+                ...prev,
+                [key]: val,
+            }));
+        },
+        [setTableOptions]
+    );
+    const toggleTableOptions = useCallback(
+        (key) => {
+            setTableOptions((prev) => ({
+                ...prev,
+                [key]: !prev[key],
+            }));
+        },
+        [setTableOptions]
+    );
+
+    const setTableToScreenSize = useCallback(() => {
+        updateTableOptions("tableWidth", window.screen.width);
+        updateTableOptions("tableHeight", window.screen.height);
+    }, [updateTableOptions]);
 
     useEffect(() => {
-        if (!loading && !error) {
-            if (defaultSemester) setSelectSemester(defaultSemester);
-            else setSelectSemester(data[data.length - 1]);
-        }
-    }, [loading, error, data, defaultSemester]);
-
-    const handleSetScreenSizeClick = useCallback(() => {
-        setTableWidth(window.screen.width);
-        setTableHeight(window.screen.height);
-    }, [setTableWidth, setTableHeight]);
-
-    useEffect(() => {
-        if (detectMob()) {
-            handleSetScreenSizeClick();
+        if (detectMobile()) {
+            setTableToScreenSize();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
-        if (selectSemester !== "") {
-            let theme;
-            if (selectTheme === -1) {
-                try {
-                    theme = JSON.parse(userTheme);
-                    theme = {
-                        ...themes[0],
-                        ...theme,
-                        courseBackgroundColor: {
-                            ...themes[0].courseBackgroundColor,
-                            ...theme?.courseBackgroundColor,
-                        },
-                    };
-                    setInvalidUserTheme(false);
-                } catch (e) {
-                    theme = lastAppliedTheme;
-                    setInvalidUserTheme(true);
-                }
-            } else {
+        let theme;
+        if (selectTheme === -1) {
+            try {
+                theme = JSON.parse(userTheme);
+                theme = {
+                    ...themes[0],
+                    ...theme,
+                    courseBackgroundColor: {
+                        ...themes[0].courseBackgroundColor,
+                        ...theme?.courseBackgroundColor,
+                    },
+                };
                 setInvalidUserTheme(false);
-                theme = themes[selectTheme];
+            } catch (e) {
+                theme = lastAppliedTheme;
+                setInvalidUserTheme(true);
             }
-            lastAppliedTheme = theme;
-
-            const fixTimeUserAddCourseConfig = userAddCourseConfig.map((v) => {
-                let newConfig = { ...v };
-                let old = "";
-                for (let i = 0; i < v.cos_time.length; i++) {
-                    old += ConvertToOldCode(v.cos_time[i]);
-                }
-                newConfig.cos_time = old;
-                return newConfig;
-            });
-
-            handleConfigChange({
-                semester: selectSemester,
-                tableWidth: tableWidth,
-                tableHeight: tableHeight,
-                notchHeight: enableNotchFix ? notchHeight : 0,
-                showTeacher: showTeacher,
-                showRoom: showRoom,
-                showRoomCode: showRoomCode,
-                newTimeCode: !useOldTimeCode,
-                extendTimetable: extendTimetable,
-                fontSize: fontSize + 11,
-                enableFlatStyle: enableFlatStyle,
-                enableGrid: enableGrid,
-                alignCourseTextCenter,
-                tableTheme: theme,
-                courseTypeConfig: courseTypeConfig,
-                userAddCourseConfig: fixTimeUserAddCourseConfig,
-                exporting: exporting,
-                backgroundImage: backgroundImage
-            });
+        } else {
+            setInvalidUserTheme(false);
+            theme = themes[selectTheme];
         }
-    }, [
-        handleConfigChange,
-        selectSemester,
-        tableWidth,
-        tableHeight,
-        enableNotchFix,
-        notchHeight,
-        selectTheme,
-        showTeacher,
-        showRoom,
-        showRoomCode,
-        useOldTimeCode,
-        extendTimetable,
-        fontSize,
-        enableFlatStyle,
-        enableGrid,
-        alignCourseTextCenter,
-        userTheme,
-        courseTypeConfig,
-        userAddCourseConfig,
-        exporting,
-        backgroundImage,
-    ]);
+        lastAppliedTheme = theme;
 
-    useEffect(() => {
-        let classes = [...Array(secs.length)].map((e) =>
-            [...Array(timeCode.length)].map((e2) => 0)
-        );
-
-        if (courseIds && courseIds.size > 0 && selectSemester !== "") {
-            const requiredTimes = {};
-            for (let course of Array.from(courseIds).map(
-                (id) => allCourses[id]
-            )) {
-                let times = getCourseTimesAndRooms(course);
-                for (let time of times) {
-                    const exKeys = Object.keys(extendTimetable);
-                    if (exKeys.indexOf(timeCode[time[0] - 1]) !== -1) {
-                        requiredTimes[timeCode[time[0] - 1]] = true;
-                    }
-                    if (exKeys.indexOf(time[1]) !== -1) {
-                        requiredTimes[time[1]] = true;
-                    }
-                    classes[secs.indexOf(time[1])][time[0] - 1] += 1;
-                }
-            }
-            setExtendTimetable({
-                ...extendTimetable,
-                ...requiredTimes,
-            });
-            let overlapping = false;
-            classes.forEach((a) => {
-                a.forEach((b) => {
-                    if (b > 1) {
-                        overlapping = true;
-                    }
-                });
-            });
-            if (overlapping) {
-                enqueueSnackbar(
-                    "課程時間有重疊，請至模擬排課頁面隱藏重疊課程。",
-                    {
-                        variant: "warning",
-                        action: () => (
-                            <Button href={`/simulation?sem=${selectSemester}`}>
-                                前往
-                            </Button>
-                        ),
-                    }
-                );
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [allCourses, courseIds, selectSemester]);
+        setTheme(theme);
+    }, [setTheme, selectTheme, userTheme, tableOptions, courseOptions]);
 
     const handleUserThemeChange = useCallback(
         (event) => {
@@ -473,28 +360,35 @@ const Setting = ({
     }, [userTheme, enqueueSnackbar]);
 
     const handleAddUserAddCource = useCallback(() => {
-        setUserAddCourseConfig([
-            ...userAddCourseConfig,
-            {
-                cos_id: Math.random().toString(36).substring(2),
-                cos_cname: "",
-                cos_type: "自訂",
-                cos_time: "",
-            },
-        ]);
-    }, [userAddCourseConfig, setUserAddCourseConfig]);
+        setCourseOptions((prev) => ({
+            ...prev,
+            userAddCourseConfig: [
+                ...prev.userAddCourseConfig,
+                {
+                    cos_id: Math.random().toString(36).substring(2),
+                    cos_cname: "",
+                    cos_type: "自訂",
+                    cos_time: "",
+                },
+            ],
+        }));
+    }, [setCourseOptions]);
 
     const handleFileChange = useCallback((e) => {
         if (e.target.files === undefined) {
-            setBackgroundImage("");
+            updateTableOptions("backgroundImage", "");
         } else {
             const file = e.target.files[0];
             if (file) {
-                const imageUrl = URL.createObjectURL(file);
-                setBackgroundImage(imageUrl);
+                // const imageUrl = URL.createObjectURL(file);
+                // updateTableOptions("backgroundImage", imageUrl);
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () =>
+                    updateTableOptions("backgroundImage", reader.result);
             }
         }
-    });
+    }, [updateTableOptions]);
 
     return (
         <div style={{ padding: 20 }}>
@@ -505,17 +399,129 @@ const Setting = ({
             </Typography>
             <FormRow title="學期:">
                 <Select
-                    value={selectSemester}
-                    onChange={(e) => setSelectSemester(e.target.value)}
+                    value={semester}
+                    onChange={(e) => handleSemesterChange(e.target.value)}
                 >
-                    {data &&
-                        data.map((sem) => (
-                            <MenuItem value={sem} key={sem}>
-                                {toText(sem)}
-                            </MenuItem>
-                        ))}
+                    {semesters.map((sem) => (
+                        <MenuItem value={sem} key={sem}>
+                            {toSemesterText(sem)}
+                        </MenuItem>
+                    ))}
                 </Select>
             </FormRow>
+            <FormRow title="顯示課程類別設定" dense>
+                <Checkbox
+                    checked={showCourseTypeConfig}
+                    onChange={() =>
+                        setShowCourseTypeConfig(!showCourseTypeConfig)
+                    }
+                />
+            </FormRow>
+            {showCourseTypeConfig && (
+                <FormRow fullWidth>
+                    <CourseTypeEditor
+                        allCourses={allCourses}
+                        courseIds={courseIds}
+                        courseTypeConfig={courseOptions.courseTypeConfig}
+                        setCourseTypeConfig={(c) =>
+                            setCourseOptions({
+                                ...courseOptions,
+                                courseTypeConfig: c,
+                            })
+                        }
+                    />
+                </FormRow>
+            )}
+            <FormRow title="顯示手動添加課程設定" dense>
+                <Checkbox
+                    checked={showExtraCourceConfig}
+                    onChange={() =>
+                        setShowExtraCourceConfig(!showExtraCourceConfig)
+                    }
+                />
+                {showExtraCourceConfig && (
+                    <IconButton onClick={handleAddUserAddCource}>
+                        <Add />
+                    </IconButton>
+                )}
+            </FormRow>
+            {showExtraCourceConfig && (
+                <FormRow
+                    fullWidth
+                    caption="僅支援使用新版時間代碼。Ex. W1256,R8y。完整時間表為 y,z,1,2,3,4,n,5,6,7,8,9,a,b,c,d。星期為M,T,W,R,F,S,U"
+                >
+                    <UserAddCourseEditor
+                        userAddCourseConfig={courseOptions.userAddCourseConfig}
+                        setUserAddCourseConfig={(c) =>
+                            setCourseOptions({
+                                ...courseOptions,
+                                userAddCourseConfig: c,
+                            })
+                        }
+                    />
+                </FormRow>
+            )}
+            <FormRow title="顯示授課教師:" dense>
+                <Checkbox
+                    checked={tableOptions.showTeacher}
+                    onChange={() => toggleTableOptions("showTeacher")}
+                />
+            </FormRow>
+            <FormRow title="顯示教室:" dense>
+                <Checkbox
+                    checked={tableOptions.showRoom}
+                    onChange={() => toggleTableOptions("showRoom")}
+                />
+            </FormRow>
+            <FormRow title="僅顯示教室代碼:" dense>
+                <Checkbox
+                    checked={tableOptions.showRoomCode}
+                    onChange={() => toggleTableOptions("showRoomCode")}
+                />
+            </FormRow>
+            <FormRow
+                title="擴展課表:"
+                caption={`為了整體課表美觀，部分不常用的時間段如午餐時間已經隱藏，可以透過該項設定顯示特定時間段。
+                    完整時間表為 ${(courseOptions.useNewTimeCode
+                        ? newSecs
+                        : secs
+                    ).join(",")}`}
+            >
+                <FormGroup aria-label="position" row>
+                    {["M", "N", "X", "Y", "I", "J", "K", "L", "六", "日"].map(
+                        (code) => (
+                            <ExtendedCheckbox
+                                key={code}
+                                code={code}
+                                values={courseOptions.extendTimetable}
+                                setValues={(v) =>
+                                    setCourseOptions({
+                                        ...courseOptions,
+                                        extendTimetable: v,
+                                    })
+                                }
+                                useNewCode={!courseOptions.useNewTimeCode}
+                            />
+                        )
+                    )}
+                </FormGroup>
+                <Typography
+                    variant="caption"
+                    color="textSecondary"
+                ></Typography>
+            </FormRow>
+            <FormRow title="顯示舊版時間代碼:">
+                <Checkbox
+                    checked={!courseOptions.useNewTimeCode}
+                    onChange={() =>
+                        setCourseOptions({
+                            ...courseOptions,
+                            useNewTimeCode: !courseOptions.useNewTimeCode,
+                        })
+                    }
+                />
+            </FormRow>
+            <Divider style={{ marginBottom: 20 }} />
             <FormRow
                 title="尺寸:"
                 caption={
@@ -536,8 +542,8 @@ const Setting = ({
                         label="寬"
                         inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                         size="small"
-                        value={tableWidth}
-                        onChange={setTableWidth}
+                        value={tableOptions.tableWidth}
+                        onChange={(e) => updateTableOptions("tableWidth", e)}
                     />
                     <PositiveValidatedTextField
                         style={{ width: "6rem" }}
@@ -545,14 +551,14 @@ const Setting = ({
                         label="高"
                         inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                         size="small"
-                        value={tableHeight}
-                        onChange={setTableHeight}
+                        value={tableOptions.tableHeight}
+                        onChange={(e) => updateTableOptions("tableHeight", e)}
                     />
                     <Button
                         variant="outlined"
                         style={{ whiteSpace: "nowrap" }}
                         size="small"
-                        onClick={handleSetScreenSizeClick}
+                        onClick={setTableToScreenSize}
                     >
                         使用當前設備大小
                     </Button>
@@ -570,9 +576,9 @@ const Setting = ({
                     <FormControlLabel
                         control={
                             <Checkbox
-                                checked={enableNotchFix}
+                                checked={tableOptions.enableNotchFix}
                                 onChange={() =>
-                                    setEnableNotchFix(!enableNotchFix)
+                                    toggleTableOptions("enableNotchFix")
                                 }
                             />
                         }
@@ -583,9 +589,9 @@ const Setting = ({
                         label="瀏海高度"
                         inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                         size="small"
-                        disabled={!enableNotchFix}
-                        value={notchHeight}
-                        onChange={setNotchHeight}
+                        disabled={!tableOptions.enableNotchFix}
+                        value={tableOptions.notchHeight}
+                        onChange={(e) => updateTableOptions("notchHeight", e)}
                     />
                 </div>
                 <Typography
@@ -613,48 +619,6 @@ const Setting = ({
                     </MenuItem>
                 </Select>
             </FormRow>
-            <FormRow title="顯示課程類別設定" dense>
-                <Checkbox
-                    checked={showCourseTypeConfig}
-                    onChange={() =>
-                        setShowCourseTypeConfig(!showCourseTypeConfig)
-                    }
-                />
-            </FormRow>
-            {showCourseTypeConfig && (
-                <FormRow fullWidth>
-                    <CourseTypeEditor
-                        allCourses={allCourses}
-                        courseIds={courseIds}
-                        courseTypeConfig={courseTypeConfig}
-                        setCourseTypeConfig={setCourseTypeConfig}
-                    />
-                </FormRow>
-            )}
-            <FormRow title="顯示手動添加課程設定" dense>
-                <Checkbox
-                    checked={showUserAddCourceConfig}
-                    onChange={() =>
-                        setShowUserAddCourceConfig(!showUserAddCourceConfig)
-                    }
-                />
-                {showUserAddCourceConfig && (
-                    <IconButton onClick={handleAddUserAddCource}>
-                        <Add />
-                    </IconButton>
-                )}
-            </FormRow>
-            {showUserAddCourceConfig && (
-                <FormRow
-                    fullWidth
-                    caption="僅支援使用新版時間代碼。Ex. W1256,R8y。完整時間表為 y,z,1,2,3,4,n,5,6,7,8,9,a,b,c,d。星期為M,T,W,R,F,S,U"
-                >
-                    <UserAddCourseEditor
-                        userAddCourseConfig={userAddCourseConfig}
-                        setUserAddCourseConfig={setUserAddCourseConfig}
-                    />
-                </FormRow>
-            )}
             <FormRow title="顯示主題配置:" dense>
                 <Checkbox
                     checked={showThemeConfig}
@@ -667,14 +631,17 @@ const Setting = ({
                 )}
             </FormRow>
             {showThemeConfig && (
-                <FormRow fullWidth>
+                <FormRow
+                    fullWidth
+                    caption="可以使用 #rrggbbaa 來將顏色設置為半透明"
+                >
                     <TextField
                         error={invalidUserTheme}
                         helperText={
                             invalidUserTheme ? "無效的主題格式" : undefined
                         }
                         multiline
-                        rows={15}
+                        minRows={15}
                         variant="outlined"
                         fullWidth
                         onChange={handleUserThemeChange}
@@ -692,98 +659,26 @@ const Setting = ({
                     variant="outlined"
                     inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
                     size="small"
-                    value={fontSize}
-                    onChange={setFontSize}
+                    value={tableOptions.courseFontSize}
+                    onChange={(e) => updateTableOptions("courseFontSize", e)}
                 />
             </FormRow>
             <FormRow title="扁平化:" dense>
                 <Checkbox
-                    checked={enableFlatStyle}
-                    onChange={() => setEnableFlatStyle(!enableFlatStyle)}
+                    checked={tableOptions.enableFlatStyle}
+                    onChange={() => toggleTableOptions("enableFlatStyle")}
                 />
             </FormRow>
             <FormRow title="顯示格線:" dense>
                 <Checkbox
-                    checked={enableGrid}
-                    onChange={() => setEnableGrid(!enableGrid)}
+                    checked={tableOptions.enableGrid}
+                    onChange={() => toggleTableOptions("enableGrid")}
                 />
             </FormRow>
-            <FormRow title="課程文字置中:" dense>
-                <Checkbox
-                    checked={alignCourseTextCenter}
-                    onChange={() =>
-                        setalignCourseTextCenter(!alignCourseTextCenter)
-                    }
-                />
-            </FormRow>
-            <FormRow title="顯示授課教師:" dense>
-                <Checkbox
-                    checked={showTeacher}
-                    onChange={() => setShowTeacher(!showTeacher)}
-                />
-            </FormRow>
-            <FormRow title="顯示教室:" dense>
-                <Checkbox
-                    checked={showRoom}
-                    onChange={() => setShowRoom(!showRoom)}
-                />
-            </FormRow>
-            <FormRow title="顯示教室代碼:" dense>
-                <Checkbox
-                    checked={showRoomCode}
-                    onChange={() => setShowRoomCode(!showRoomCode)}
-                />
-            </FormRow>
-            <FormRow
-                title="擴展課表:"
-                caption={`為了整體課表美觀，部分不常用的時間段如午餐時間已經隱藏，可以透過該項設定顯示特定時間段。
-                    完整時間表為 ${(useOldTimeCode ? secs : newSecs).join(
-                        ","
-                    )}`}
-            >
-                <FormGroup aria-label="position" row>
-                    {["M", "N", "X", "Y", "I", "J", "K", "L", "六", "日"].map(
-                        (code) => (
-                            <ExtendedCheckbox
-                                key={code}
-                                code={code}
-                                values={extendTimetable}
-                                setValues={setExtendTimetable}
-                                useNewCode={!useOldTimeCode}
-                            />
-                        )
-                    )}
-                </FormGroup>
-                <Typography
-                    variant="caption"
-                    color="textSecondary"
-                ></Typography>
-            </FormRow>
-            <FormRow title="使用舊版時間代碼:" dense>
-                <Checkbox
-                    checked={useOldTimeCode}
-                    onChange={() => setUseOldTimeCode(!useOldTimeCode)}
-                />
-            </FormRow>
-            {selectTheme === -1 && (
-                <FormRow
-                    title="允許匯出時分享該自定義:"
-                    caption="允許課程助理系統保存該自定義主題，並可能將其作為預設主題，以供其他人使用。"
-                >
-                    <div>
-                        <Checkbox
-                            checked={allowShareUserTheme}
-                            onChange={() =>
-                                setAllowShareUserTheme(!allowShareUserTheme)
-                            }
-                        />
-                    </div>
-                </FormRow>
-            )}
             <FormRow
                 dense
                 title="背景圖片:"
-                caption="目前不提供圖片裁切功能，請將圖片調整成合適大小後上傳"
+                caption="目前不提供圖片裁切功能，請將圖片調整成合適比例後上傳"
             >
                 <input
                     accept="image/*"
@@ -803,7 +698,7 @@ const Setting = ({
                         上傳
                     </Button>
                 </label>
-                {backgroundImage && (
+                {tableOptions.backgroundImage && (
                     <Button
                         size="small"
                         variant="contained"
@@ -815,46 +710,109 @@ const Setting = ({
                     </Button>
                 )}
             </FormRow>
+            <FormRow title="課程文字置中:" dense>
+                <Checkbox
+                    checked={tableOptions.alignCourseTextCenter}
+                    onChange={() => toggleTableOptions("alignCourseTextCenter")}
+                />
+            </FormRow>
+            <FormRow title="更多選項:"dense>
+                <Checkbox
+                    checked={showMore}
+                    onChange={() => setShowMore(!showMore)}
+                />
+            </FormRow>
+            {showMore && (
+                <>
+                    <FormRow title="標頭字體大小:" dense>
+                        <PositiveValidatedTextField
+                            style={{ width: "6rem" }}
+                            variant="outlined"
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                            }}
+                            size="small"
+                            value={tableOptions.headerFontSize}
+                            onChange={(e) =>
+                                updateTableOptions("headerFontSize", e)
+                            }
+                        />
+                    </FormRow>
+                    <FormRow title="索引字體大小:" dense>
+                        <PositiveValidatedTextField
+                            style={{ width: "6rem" }}
+                            variant="outlined"
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                            }}
+                            size="small"
+                            value={tableOptions.indexFontSize}
+                            onChange={(e) =>
+                                updateTableOptions("indexFontSize", e)
+                            }
+                        />
+                    </FormRow>
+                    <FormRow title="索引欄位寬度:" dense>
+                        <PositiveValidatedTextField
+                            style={{ width: "6rem" }}
+                            variant="outlined"
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                            }}
+                            size="small"
+                            value={tableOptions.indexColumnWidth}
+                            onChange={(e) =>
+                                updateTableOptions("indexColumnWidth", e)
+                            }
+                        />
+                    </FormRow>
+                    <FormRow title="課程文字內距:" dense>
+                        <PositiveValidatedTextField
+                            style={{ width: "6rem" }}
+                            variant="outlined"
+                            inputProps={{
+                                inputMode: "numeric",
+                                pattern: "[0-9]*",
+                            }}
+                            size="small"
+                            value={tableOptions.coursePaddingX}
+                            onChange={(e) =>
+                                updateTableOptions("coursePaddingX", e)
+                            }
+                        />
+                    </FormRow>
+                </>
+            )}
+
+            {selectTheme === -1 && (
+                <FormRow
+                    title="允許匯出時分享該自定義:"
+                    caption="允許課程助理系統保存該自定義主題，並可能將其作為預設主題，以供其他人使用。"
+                >
+                    <div>
+                        <Checkbox
+                            checked={allowShareUserTheme}
+                            onChange={() =>
+                                setAllowShareUserTheme(!allowShareUserTheme)
+                            }
+                        />
+                    </div>
+                </FormRow>
+            )}
             <FormRow fullWidth>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <Button
                         variant="contained"
                         color="primary"
                         style={{ width: "8rem" }}
-                        onClick={() => {
-                            if (invalidUserTheme) {
-                                enqueueSnackbar("無效的主題格式", "error");
-                            } else {
-                                setExporting(true);
-                                axios.post(
-                                    "/api/simulation/export/collect_theme/",
-                                    {
-                                        theme:
-                                            selectTheme === -1
-                                                ? allowShareUserTheme
-                                                    ? JSON.stringify(
-                                                          JSON.parse(userTheme)
-                                                      )
-                                                    : "private"
-                                                : selectTheme.toString(),
-                                    }
-                                );
-                                setTimeout(() => {
-                                    DownloadAsImage(
-                                        document.getElementById("table"),
-                                        () => setExporting(false),
-                                        () => {
-                                            enqueueSnackbar(
-                                                "IOS匯出失敗，請稍後或重新整理後再嘗試。",
-                                                "error"
-                                            );
-                                        }
-                                    );
-                                }, 500);
-                            }
-                        }}
+                        onClick={() =>
+                            handleExport({ allowShareUserTheme, selectTheme })
+                        }
                     >
-                        匯出
+                        匯出課表
                     </Button>
                 </div>
             </FormRow>

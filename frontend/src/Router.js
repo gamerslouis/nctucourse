@@ -42,7 +42,7 @@ const Router = (props) => {
                             <AuthRoute exact path='/simulation/export' render={() => {
                                 let urlParams = new URLSearchParams(window.location.search);
                                 if (urlParams.has('sem')) {
-                                    return <PrettierTable semester={urlParams.get('sem')} />
+                                    return <PrettierTable defaultSemester={urlParams.get('sem')} />
                                 } else {
                                     return <PrettierTable />
                                 }
