@@ -10,6 +10,59 @@ import {
 const useFakeData = false;
 const fakeData = {};
 
+class CustomLocalStorage {
+    constructor(options = {}) {
+        this.storage = window.localStorage;
+        this.maxStorageSize = options.maxStorageSize || 7 * 1024 * 1024; // 8MB
+        this.cacheKeyPrefix = "db_cache_";
+    }
+
+    enabled() {
+        return Boolean(window.localStorage)
+    }
+
+    getItem(key) {
+        return this.storage.getItem(key);
+    }
+
+    setItem(key, value) {
+        try {
+            this.storage.setItem(key, value);
+        } catch (error) {
+            if (error instanceof DOMException && error.name === "QuotaExceededError") {
+                this.clearOldCaches();
+                this.setItem(key, value); // 再次嘗試
+            } else {
+                throw error;
+            }
+        }
+    }
+
+    clearOldCaches() {
+        const keys = Object.keys(this.storage);
+        const cacheKeys = keys.filter((key) =>
+            key.startsWith(this.cacheKeyPrefix)
+        );
+        cacheKeys.sort().forEach((key) => {
+            if (this.getUsedStorage() < this.maxStorageSize) {
+                return;
+            }
+            this.storage.removeItem(key);
+        });
+    }
+
+    getUsedStorage() {
+        let size = 0;
+        const keys = Object.keys(this.storage);
+        keys.forEach((key) => {
+            size += this.storage.getItem(key).length;
+        });
+        return size * 2;
+    }
+}
+
+const localStorage = new CustomLocalStorage()
+
 export const FETCH_STATUS = {
     IDLE: 1,
     FETCHING: 2,
@@ -72,12 +125,12 @@ export const fetchDatabase = (semester) => (dispatch) => {
         .get(url)
         .then((res) => res.data)
         .then(({ url, sem }) => {
-            if (!window.localStorage) return { url, sem };
+            if (!localStorage.enabled()) return { url, sem };
             let mapp;
-            if (window.localStorage.getItem("database_map") != null) {
+            if (localStorage.getItem("database_map") != null) {
                 try {
                     mapp = JSON.parse(
-                        window.localStorage.getItem("database_map")
+                        localStorage.getItem("database_map")
                     );
                 } catch {
                     mapp = { [sem]: 0 };
@@ -89,7 +142,7 @@ export const fetchDatabase = (semester) => (dispatch) => {
             if (cacheUrl === url) {
                 try {
                     let cache = JSON.parse(
-                        window.localStorage.getItem(`db_cache_${sem}`)
+                        localStorage.getItem(`db_cache_${sem}`)
                     );
                     dispatch(
                         actions.courseSim.database.store({
@@ -110,7 +163,7 @@ export const fetchDatabase = (semester) => (dispatch) => {
             }
             mapp[sem] = url;
 
-            window.localStorage.setItem("database_map", JSON.stringify(mapp));
+            localStorage.setItem("database_map", JSON.stringify(mapp));
             return { url, sem };
         })
         .then(({ url, sem }) => {
@@ -129,8 +182,8 @@ export const fetchDatabase = (semester) => (dispatch) => {
                         categoryMap: res.data.category_map,
                     })
                 );
-                if (window.localStorage) {
-                    window.localStorage.setItem(
+                if (localStorage.enabled()) {
+                    localStorage.setItem(
                         `db_cache_${sem}`,
                         JSON.stringify(res.data)
                     );
@@ -302,25 +355,25 @@ export const clearAllUserCourse = (semester) => (dispatch) => {
 
 export const loadSavedSettings = () => (dispatch, getState) => {
     if (
-        window.localStorage &&
-        window.localStorage.getItem("course_setting") != null
+        localStorage.enabled() &&
+        localStorage.getItem("course_setting") != null
     ) {
         let defaults = getState().courseSim.settings;
         try {
             let saved = JSON.parse(
-                window.localStorage.getItem("course_setting")
+                localStorage.getItem("course_setting")
             );
             for (let key in defaults) {
                 if (saved[key] !== undefined) {
                     defaults[key] = saved[key];
                 }
             }
-            window.localStorage.setItem(
+            localStorage.setItem(
                 "course_setting",
                 JSON.stringify(defaults)
             );
         } catch {
-            window.localStorage.setItem("course_setting", JSON.stringify({}));
+            localStorage.setItem("course_setting", JSON.stringify({}));
         }
         dispatch(actions.courseSim.settings.store(defaults));
     }
@@ -328,24 +381,24 @@ export const loadSavedSettings = () => (dispatch, getState) => {
 
 export const updateSetting = (key, value) => (dispatch) => {
     dispatch(actions.courseSim.settings.store({ [key]: value }));
-    if (window.localStorage) {
+    if (localStorage.enabled()) {
         try {
-            if (window.localStorage.getItem("course_setting") == null) {
-                window.localStorage.setItem(
+            if (localStorage.getItem("course_setting") == null) {
+                localStorage.setItem(
                     "course_setting",
                     JSON.stringify({})
                 );
             }
             let settings = JSON.parse(
-                window.localStorage.getItem("course_setting")
+                localStorage.getItem("course_setting")
             );
             settings[key] = value;
-            window.localStorage.setItem(
+            localStorage.setItem(
                 "course_setting",
                 JSON.stringify(settings)
             );
         } catch {
-            window.localStorage.setItem("course_setting", JSON.stringify({}));
+            localStorage.setItem("course_setting", JSON.stringify({}));
         }
     }
 };
