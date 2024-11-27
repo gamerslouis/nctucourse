@@ -15,7 +15,7 @@ import CourseListItem from '../../../Components/CourseListItem'
 import { addCollectCourse, removeCollectCourse, setSearchCourseList } from '../../../Redux/Actions/index'
 import SearchBar from '../../../Components/SearchBar'
 import PlaceIcon from '@material-ui/icons/Place';
-import { Checkbox, FormGroup, Menu } from '@material-ui/core';
+import { Checkbox, FormGroup, Menu, Typography } from '@material-ui/core';
 
 const styles = (theme) => ({
     root: {
@@ -50,6 +50,10 @@ const styles = (theme) => ({
         flex: 1,
         display: 'flex',
         marginRight: 10
+    },
+    hint: {
+      paddingLeft: theme.spacing(2),
+      paddingRight: theme.spacing(2),
     }
 });
 
@@ -245,6 +249,12 @@ class Index extends React.Component {
                                             </IconButton>
                                         )}
                             />)} />
+                    <div className={classes.hint}>
+                        <Typography variant="caption" color="textSecondary">
+                            本系統課程資料來源於學校課程時間表網站，於每日凌晨五點更新，若查無課程代碼，可能是學校或系統尚未更新。
+                            部分課程分類，如研究所-在職專班等未收入。
+                        </Typography>
+                    </div>
                 </div>
             </div >)
     }
