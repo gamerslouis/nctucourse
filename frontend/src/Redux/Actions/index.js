@@ -139,6 +139,7 @@ export const fetchDatabase = (semester) => (dispatch) => {
             });
         })
         .catch((err) => {
+            console.log(err);
             if (useFakeData) {
                 dispatch(
                     actions.courseSim.database.store({
