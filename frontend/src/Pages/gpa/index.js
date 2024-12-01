@@ -70,7 +70,7 @@ class Index extends React.Component {
             </div>
             <div style={{ paddingTop: 20 }}>
                 <Typography variant="caption">
-                    註：此計算參考 <a href={nctu_gpa_rule} target='_blank' rel='noopener noreferrer'>等級制與百分制及GP對照表-交通大學</a> 與 <a href='http://intra.tpml.edu.tw/study/upload/downloads/GPA.htm' target='_blank'  rel='noopener noreferrer'> 美國大學四點制的算法</a>，採計百分法評分方式成績計算，Last 60 Credits 採由後往前計算至大於等於 60 學分為止，也就是可能超過 60 學分 (呈現於括號內)，實際成績以學校成績單為準。
+                    註：此計算參考 <a href={nctu_gpa_rule} target='_blank' rel='noopener noreferrer'>等級制與百分制及GP對照表-交通大學</a> 與 <a href='http://intra.tpml.edu.tw/study/upload/downloads/GPA.htm' target='_blank'  rel='noopener noreferrer'> 美國大學四點制的算法</a>，採計百分法評分方式成績計算，Last 60 Credits 採由後往前計算至大於等於 60 學分為止，也就是可能超過 60 學分 (呈現於括號內)，實際成績以學校成績單為準。不及格及重修之課程均會計入。
                 </Typography>
             </div >
         </Container >

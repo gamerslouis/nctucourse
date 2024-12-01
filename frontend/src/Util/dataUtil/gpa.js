@@ -144,11 +144,17 @@ export const courseTo40Point = (course) => {
     return 0
 }
 
+export const filterEffectiveCourse = (course) => {
+    return course.cos_credit > 0 && 
+    course.levelScore !== 'W' && 
+    course.state === '已送註冊組'
+}
+
 export const filterEffectiveCreditCourse = (course) => {
     return course.cos_credit > 0 && 
         course.levelScore !== 'W' && 
-        (course.scoreType === '百分法' || (course.scoreType === '等第制' && ['A', 'B', 'C', 'D', 'E', 'X'].includes(course.levelScore[0]))) 
-        && course.state === '已送註冊組'
+        (course.scoreType === '百分法' || (course.scoreType === '等第制' && ['A', 'B', 'C', 'D', 'E', 'X'].includes(course.levelScore[0]))) &&
+        course.state === '已送註冊組'
 }
 
 export const filterTransCourse = (course) => {
