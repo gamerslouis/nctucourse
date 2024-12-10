@@ -1,4 +1,4 @@
-import React, { Fragment, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { withStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
@@ -163,18 +163,19 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
         <div className={classes.course} style={{}}>
             <div className={classes.textContainer}>
                 <div className={classes.textSpan}>
-                    {course.cos_cname}
-                    {tableOptions.showTeacher && (
-                        <Fragment>
-                            <br /> {course.teacher}
-                        </Fragment>
-                    )}
-                    {tableOptions.showRoom && (
-                        <Fragment>
-                            <br />{" "}
-                            {tableOptions.showRoomCode ? roomCode : roomName}
-                        </Fragment>
-                    )}
+                    <div>{course.cos_cname}</div>
+                    <div>
+                        {tableOptions.showTeacher && (
+                            <div>{course.teacher}</div>
+                        )}
+                        {tableOptions.showRoom && (
+                            <div>
+                                {tableOptions.showRoomCode
+                                    ? roomCode
+                                    : roomName}
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>
