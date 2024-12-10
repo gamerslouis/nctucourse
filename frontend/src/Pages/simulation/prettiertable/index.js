@@ -12,6 +12,7 @@ import { DownloadAsImage } from "../../../Util/dataUtil/imageExport";
 import { themes } from "./theme";
 import { getCourseTimesAndRooms } from "../../../Util/dataUtil/course";
 import { secs, timeCode } from "../../../Util/style";
+import { initTableOptions } from "./constants";
 
 const PrettierTable = ({
     courseIds,
@@ -44,24 +45,7 @@ const PrettierTable = ({
         },
     });
 
-    const [tableOptions, setTableOptions] = useState({
-        tableWidth: 414,
-        tableHeight: 818,
-        notchHeight: 44,
-        enableNotchFix: false,
-        headerFontSize: 24,
-        indexFontSize: 24,
-        courseFontSize: 24,
-        indexColumnWidth: 35,
-        coursePaddingX: 5,
-        enableFlatStyle: false,
-        enableGrid: true,
-        alignCourseTextCenter: false,
-        showTeacher: false,
-        showRoom: true,
-        showRoomCode: false,
-        backgroundImage: "",
-    });
+    const [tableOptions, setTableOptions] = useState(initTableOptions);
 
     const url = `/api/simulation/semesters/`;
     const [{ data: semesters, loading, error }] = useAxios(url);
@@ -160,11 +144,11 @@ const PrettierTable = ({
                 );
             }
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [courseIds]);
 
     useEffect(() => {
-        enqueueSnackbar("特別注意: 目前尚無法保存設定，重新整理後設定會消失", {
+        enqueueSnackbar("特別注意: 目前尚無法保存設定，重新整理後設定會消失，請點擊匯出外觀設定保存。", {
             variant: "warning",
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps

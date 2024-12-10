@@ -1,0 +1,18 @@
+export const initTableOptions = {
+    tableWidth: 414,
+    tableHeight: 818,
+    notchHeight: 44,
+    enableNotchFix: false,
+    headerFontSize: 24,
+    indexFontSize: 24,
+    courseFontSize: 24,
+    indexColumnWidth: 35,
+    coursePaddingX: 5,
+    enableFlatStyle: false,
+    enableGrid: true,
+    alignCourseTextCenter: false,
+    showTeacher: false,
+    showRoom: true,
+    showRoomCode: false,
+    backgroundImage: "",
+};

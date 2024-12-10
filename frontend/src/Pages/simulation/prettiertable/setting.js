@@ -28,6 +28,8 @@ import { themes } from "./theme";
 import { Add, FileCopy } from "@material-ui/icons";
 import { withSnackbar } from "notistack";
 import { copyToClipboard } from "../../../Util/utils";
+import { initTableOptions } from "./constants";
+import { pick } from "lodash";
 
 const toSemesterText = (sem) => {
     let s = sem[sem.length - 1];
@@ -287,6 +289,7 @@ const Setting = ({
     );
     const [invalidUserTheme, setInvalidUserTheme] = useState(false);
     const [showMore, setShowMore] = useState(false);
+    const [exportBgImage, setExportBgImage] = useState(false);
 
     const updateTableOptions = useCallback(
         (key, val) => {
@@ -374,21 +377,86 @@ const Setting = ({
         }));
     }, [setCourseOptions]);
 
-    const handleFileChange = useCallback((e) => {
-        if (e.target.files === undefined) {
-            updateTableOptions("backgroundImage", "");
-        } else {
+    const handleFileChange = useCallback(
+        (e) => {
+            if (e.target.files === undefined) {
+                updateTableOptions("backgroundImage", "");
+            } else {
+                const file = e.target.files[0];
+                if (file) {
+                    // const imageUrl = URL.createObjectURL(file);
+                    // updateTableOptions("backgroundImage", imageUrl);
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+                    reader.onload = () =>
+                        updateTableOptions("backgroundImage", reader.result);
+                }
+            }
+        },
+        [updateTableOptions]
+    );
+
+    const exportAppearanceConfig = useCallback(() => {
+        const data = {
+            tableOptions,
+            theme: lastAppliedTheme,
+        };
+
+        if (!exportBgImage) {
+            delete data.tableOptions.backgroundImage;
+        }
+
+        const blob = new Blob([JSON.stringify(data, null, 4)], {
+            type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "appearanceConfig.json";
+        a.click();
+        URL.revokeObjectURL(url);
+    }, [tableOptions, exportBgImage]);
+
+    const importAppearanceConfig = useCallback(() => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "application/json";
+        input.onchange = (e) => {
             const file = e.target.files[0];
             if (file) {
-                // const imageUrl = URL.createObjectURL(file);
-                // updateTableOptions("backgroundImage", imageUrl);
                 const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () =>
-                    updateTableOptions("backgroundImage", reader.result);
+                reader.readAsText(file);
+                reader.onload = () => {
+                    try {
+                        const data = JSON.parse(reader.result);
+                        if (data.tableOptions) {
+                            setTableOptions({
+                                ...initTableOptions,
+                                ...pick(
+                                    data.tableOptions,
+                                    Object.keys(initTableOptions)
+                                ),
+                            });
+                        }
+                        if (data.theme) {
+                            setSelectTheme(-1);
+                            setUserTheme(JSON.stringify({
+                                ...themes[0],
+                                ...data.theme,
+                                courseBackgroundColor: {
+                                    ...themes[0].courseBackgroundColor,
+                                    ...data.theme.courseBackgroundColor,
+                                },
+                            }));
+                        }
+                    } catch (error) {
+                        enqueueSnackbar("無效的配置文件", { variant: "error" });
+                    }
+                };
             }
-        }
-    }, [updateTableOptions]);
+        };
+        input.click();
+    }, [setTableOptions, setSelectTheme, setUserTheme, enqueueSnackbar]);
 
     return (
         <div style={{ padding: 20 }}>
@@ -397,6 +465,7 @@ const Setting = ({
                 <br />
                 目前尚無法保存設定，重新整理後設定會消失
             </Typography>
+            <Typography variant="h6" style={{ marginBottom: 5 }}>課程設定</Typography>
             <FormRow title="學期:">
                 <Select
                     value={semester}
@@ -521,7 +590,8 @@ const Setting = ({
                     }
                 />
             </FormRow>
-            <Divider style={{ marginBottom: 20 }} />
+            <Divider style={{ marginBottom: 5 }} />
+            <Typography variant="h6" style={{ marginBottom: 15 }} >外觀設定</Typography>
             <FormRow
                 title="尺寸:"
                 caption={
@@ -716,7 +786,7 @@ const Setting = ({
                     onChange={() => toggleTableOptions("alignCourseTextCenter")}
                 />
             </FormRow>
-            <FormRow title="更多選項:"dense>
+            <FormRow title="更多選項:" dense>
                 <Checkbox
                     checked={showMore}
                     onChange={() => setShowMore(!showMore)}
@@ -802,6 +872,47 @@ const Setting = ({
                     </div>
                 </FormRow>
             )}
+            <div
+                style={{
+                    display: "flex",
+                    gap: "5px",
+                    flexWrap: "wrap",
+                    marginBottom: 10,
+                }}
+            >
+                {tableOptions.backgroundImage && (
+                    <FormControlLabel
+                        control={
+                            <Checkbox
+                                checked={tableOptions.includeBackgroundImage}
+                                onChange={() =>
+                                    setExportBgImage(!exportBgImage)
+                                }
+                            />
+                        }
+                        label="包含背景圖片"
+                    />
+                )}
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Button 
+                        variant="contained"
+                        style={{ width: "8rem" }}
+                        onClick={exportAppearanceConfig}
+                    >
+                        匯出外觀設置
+                    </Button>
+                </div>
+                <div style={{ display: "flex", justifyContent: "center" }}>
+                    <Button
+                        variant="contained"
+                        style={{ width: "8rem" }}
+                        onClick={importAppearanceConfig}
+                    >
+                        載入外觀設置
+                    </Button>
+                </div>
+            </div>
+            <Divider style={{ marginBottom: 10 }} />
             <FormRow fullWidth>
                 <div style={{ display: "flex", justifyContent: "center" }}>
                     <Button
