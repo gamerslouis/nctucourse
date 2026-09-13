@@ -119,12 +119,10 @@ const courseStyles = (theme) => ({
                 : "rgba(100, 100, 111, 0.2) 0px 7px 29px 0px",
             display: "inline-table",
             width: "100%",
-            backgroundColor:
-                tableTheme.courseBackgroundColor[
-                    courseOptions.courseTypeConfig[course.cos_id]
-                        ? courseOptions.courseTypeConfig[course.cos_id]
-                        : ConvertCourseType2StyleType(course.cos_type)
-                ],
+            backgroundColor: courseOptions.courseTypeConfig[course.cos_id]
+                ? tableTheme.courseBackgroundColor[courseOptions.courseTypeConfig[course.cos_id]]
+                : course.color ||
+                  tableTheme.courseBackgroundColor[ConvertCourseType2StyleType(course.cos_type)],
         };
     },
     textContainer: {

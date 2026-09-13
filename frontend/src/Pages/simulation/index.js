@@ -131,7 +131,7 @@ class Index extends React.Component {
                                             <QueryPage />
                                         </TabPanel>
                                         <TabPanel className={classes.switchTab} value={tabIndex} index={1}>
-                                            <CollectList />
+                                            <CollectList semester={this.props.semester} />
                                         </TabPanel>
                                     </SwipeableViews>
                                 </Paper>
@@ -147,7 +147,7 @@ class Index extends React.Component {
                 <Hidden lgUp>
                     <div className={classes.mobileRoot} style={{ backgroundColor: 'white' }}>
                         <Hidden xlDown={mobileIndex !== 0}><QueryPage /></Hidden>
-                        <Hidden xlDown={mobileIndex !== 1}><CollectList /></Hidden>
+                        <Hidden xlDown={mobileIndex !== 1}><CollectList semester={this.props.semester} /></Hidden>
                         <Hidden xlDown={mobileIndex !== 2}>
                             <TimeTable 
                                 semester={this.props.semester}

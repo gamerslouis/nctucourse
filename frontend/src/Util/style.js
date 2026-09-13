@@ -5,6 +5,7 @@ export const CourseTypeColorMap = {
     外語: "#55efc4",
     通識: "#a29bfe",
     選修: "#81ecec",
+    自訂: "#aebed1",
 };
 
 export const ConvertCourseType2StyleType = (courseType) => {

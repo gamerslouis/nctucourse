@@ -178,7 +178,7 @@ class Index extends React.Component {
     searchText() {
         if (this.state.searchText === '') return
         let regString = '^.*' + this.state.searchText.split('').reduce((s, v) => s + '.*' + v) + '.*$'
-        this.props.setCourses(Object.values(this.props.allCourses).filter(course => (
+        this.props.setCourses(Object.values(this.props.allCourses).filter(course => !course.custom && (
             course.cos_cname.indexOf(this.state.searchText) !== -1 ||
             (course['meta'] !== undefined && course['meta']['cos_ename'] !== undefined &&
                 course['meta']['cos_ename'].toLowerCase().indexOf(this.state.searchText.toLowerCase()) !== -1) ||

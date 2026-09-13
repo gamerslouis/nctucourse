@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createActions } from "redux-actions";
+import { batch } from "react-redux";
 import {
     makeCourseObject,
     makeObjFromArray,
@@ -255,7 +256,7 @@ export const fetchUserCollect = (semester) => (dispatch) => {
     if (semester !== undefined) {
         url += `?sem=${semester}`;
     }
-    axios
+    return axios
         .get(url)
         .then((res) => {
             const { courses } = res.data;
@@ -270,7 +271,10 @@ export const fetchUserCollect = (semester) => (dispatch) => {
             dispatch(actions.courseSim.collect.courseIds.store(collect));
             dispatch(actions.courseSim.timetable.courseIds.store(timetable));
         })
-        .catch((err) => console.log);
+        .catch((err) => console.log)
+        // storing the collect above replaces both id sets wholesale, so the
+        // custom courses have to be merged back in afterwards, not in parallel.
+        .then(() => dispatch(fetchCustomCourses(semester)));
 };
 
 export const addCollectCourse = (courseId, visible) => (dispatch) => {
@@ -333,7 +337,7 @@ export const toggleCollectCourseVisible = (courseId, visible) => (dispatch) => {
         });
 };
 
-export const clearAllUserCourse = (semester) => (dispatch) => {
+export const clearAllUserCourse = (semester) => (dispatch, getState) => {
     let url = "/api/simulation/user/clear/";
     if (semester !== undefined) {
         url += `?sem=${semester}`;
@@ -343,6 +347,8 @@ export const clearAllUserCourse = (semester) => (dispatch) => {
         .then(() => {
             dispatch(actions.courseSim.timetable.courseIds.store([]));
             dispatch(actions.courseSim.collect.courseIds.store([]));
+            // the backend deleted this semester's custom courses as well
+            mergeCustomCourses(dispatch, getState, []);
         })
         .catch((err) => {
             console.log(err);
@@ -405,7 +411,9 @@ export const updateSetting = (key, value) => (dispatch) => {
 
 export const searchTimeCourses = (time, commonOnly) => (dispatch, getState) => {
     const { category, categoryMap } = getState().courseSim.database;
-    let allCourses = Object.values(getState().courseSim.database.courses);
+    let allCourses = Object.values(getState().courseSim.database.courses).filter(
+        (c) => !c.custom
+    );
     if (commonOnly)
         allCourses = filterCommonCourses(allCourses, categoryMap, category);
     const courses = allCourses.filter((course) =>
@@ -425,3 +433,111 @@ export const setNickname = (nick) => (dispatch) => {
         dispatch(actions.user.store({ nickname: nick }));
     });
 };
+
+// Custom courses are ordinary course objects that happen to come from the
+// user rather than the crawler, so they are merged into the course database
+// and the timetable picks them up with no further plumbing.
+const CUSTOM_PREFIX = "custom_";
+
+const customScopeQuery = (semester) =>
+    semester !== undefined ? `?sem=${semester}` : "";
+
+// cos_time carries a room on every comma-separated segment, as crawled courses do
+const timeWithRoom = (time, room) =>
+    time && room ? time.split(",").map((seg) => `${seg}-${room}`).join(",") : time;
+
+export const customCourseToCourse = (c) => ({
+    cos_id: CUSTOM_PREFIX + c.id,
+    cos_cname: c.name,
+    cos_code: "",
+    cos_credit: String(c.credit || 0),
+    cos_hours: "0",
+    cos_type: "自訂",
+    memo: "",
+    num_limit: "",
+    reg_num: "",
+    teacher: c.teacher || "",
+    cos_time: timeWithRoom(c.time, c.room),
+    brief_code: "",
+    lang: 0,
+    meta: {},
+    color: c.color,
+    custom: c,
+});
+
+export const isCustomCourseId = (courseId) =>
+    typeof courseId === "string" && courseId.startsWith(CUSTOM_PREFIX);
+
+const mergeCustomCourses = (dispatch, getState, list) => {
+    const courses = { ...getState().courseSim.database.courses };
+    // drop the previous generation before merging, so edits and deletes stick
+    for (const id of Object.keys(courses)) {
+        if (isCustomCourseId(id)) delete courses[id];
+    }
+    for (const c of list) {
+        const course = customCourseToCourse(c);
+        courses[course.cos_id] = course;
+    }
+    const collect = new Set(
+        [...getState().courseSim.collect.courseIds].filter(
+            (id) => !isCustomCourseId(id)
+        )
+    );
+    const timetable = new Set(
+        [...getState().courseSim.timetable.courseIds].filter(
+            (id) => !isCustomCourseId(id)
+        )
+    );
+    for (const c of list) {
+        collect.add(CUSTOM_PREFIX + c.id);
+        if (c.visible) timetable.add(CUSTOM_PREFIX + c.id);
+    }
+    // one render for all three stores, so no consumer ever sees an id
+    // whose course has already been dropped (or not yet added)
+    batch(() => {
+        dispatch(actions.courseSim.database.store({ courses }));
+        dispatch(actions.courseSim.collect.courseIds.store(collect));
+        dispatch(actions.courseSim.timetable.courseIds.store(timetable));
+    });
+};
+
+export const fetchCustomCourses = (semester) => (dispatch, getState) =>
+    axios
+        .get(`/api/simulation/custom/${customScopeQuery(semester)}`)
+        .then((res) => mergeCustomCourses(dispatch, getState, res.data.courses))
+        .catch((err) => console.log(err));
+
+const currentCustomCourses = (getState) =>
+    Object.values(getState().courseSim.database.courses)
+        .filter((c) => c.custom)
+        .map((c) => c.custom);
+
+// The API answers with the saved course, so apply it locally instead of refetching the list.
+export const addCustomCourse = (course, semester) => (dispatch, getState) =>
+    axios
+        .post(`/api/simulation/custom/${customScopeQuery(semester)}`, course)
+        .then((res) =>
+            mergeCustomCourses(dispatch, getState, [...currentCustomCourses(getState), res.data])
+        );
+
+export const updateCustomCourse = (id, course) => (dispatch, getState) =>
+    axios
+        .patch(`/api/simulation/custom/${id}/`, course)
+        .then((res) =>
+            mergeCustomCourses(
+                dispatch,
+                getState,
+                currentCustomCourses(getState).map((c) => (c.id === id ? res.data : c))
+            )
+        );
+
+export const removeCustomCourse = (id) => (dispatch, getState) =>
+    axios
+        .delete(`/api/simulation/custom/${id}/`)
+        .then(() =>
+            mergeCustomCourses(
+                dispatch,
+                getState,
+                currentCustomCourses(getState).filter((c) => c.id !== id)
+            )
+        );
