@@ -403,6 +403,15 @@ export const updateSetting = (key, value) => (dispatch) => {
     }
 };
 
+export const hoverCourse = (courseId) => actions.courseSim.hoverCourse(courseId);
+
+export const cancelHoverCourse = () => actions.courseSim.cancelHoverCourse();
+
+// Touch screens fire hover on tap, which would make the timetable flicker
+export const canHover =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(hover: hover)").matches;
+
 export const searchTimeCourses = (time, commonOnly) => (dispatch, getState) => {
     const { category, categoryMap } = getState().courseSim.database;
     let allCourses = Object.values(getState().courseSim.database.courses);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { makeStyles } from '@material-ui/core/styles';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
@@ -8,6 +8,7 @@ import Chip from '@material-ui/core/Chip';
 import Typography from '@material-ui/core/Typography';
 import GradeIcon from '@material-ui/icons/Grade';
 import { makeInfoPageUrl, origin_time_key_to_new } from '../Util/dataUtil/course'
+import { canHover, cancelHoverCourse, hoverCourse } from '../Redux/Actions/index'
 import { CourseTypeColorMap } from '../Util/style'
 
 
@@ -61,7 +62,24 @@ const CourseListItem = (props) => {
     let realOnClick
     if (!onClick) realOnClick = (courseId) => { window.open(makeInfoPageUrl(courseId)) }
     else { realOnClick = onClick }
-    return (<ListItem dense button onClick={e => realOnClick(course.cos_id)}
+    const dispatch = useDispatch()
+    const hovering = React.useRef(false)
+    // removing an item from under the cursor unmounts it without a mouseleave
+    React.useEffect(() => () => {
+        if (hovering.current) dispatch(cancelHoverCourse())
+    }, [dispatch])
+    // on the container rather than the item, so moving onto the action buttons keeps the preview
+    const hoverProps = canHover ? {
+        onMouseEnter: () => {
+            hovering.current = true
+            dispatch(hoverCourse(course.cos_id))
+        },
+        onMouseLeave: () => {
+            hovering.current = false
+            dispatch(cancelHoverCourse())
+        },
+    } : {}
+    return (<ListItem dense button onClick={e => realOnClick(course.cos_id)} ContainerProps={hoverProps}
         className={multiAction === 2 ? classes.twoAction : multiAction === 3 ? classes.threeAction : undefined}
     >
         <ListItemText
