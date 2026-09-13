@@ -24,6 +24,9 @@ const useStyles = makeStyles((theme) => ({
     twoAction: {
         paddingRight: 96
     },
+    threeAction: {
+        paddingRight: 144
+    },
     cardRoot: {
         marginRight: theme.spacing(1),
         marginBottom: 1
@@ -59,7 +62,7 @@ const CourseListItem = (props) => {
         'Z108': [2,'領域課程-社會中的科技與自然'], 
     }
     let realOnClick
-    if (!onClick) realOnClick = (courseId) => { window.open(makeInfoPageUrl(courseId)) }
+    if (!onClick) realOnClick = (courseId) => { if (!course.custom) window.open(makeInfoPageUrl(courseId)) }
     else { realOnClick = onClick }
     return (<ListItem dense button onClick={e => realOnClick(course.cos_id)}
         className={multiAction === 2 ? classes.twoAction : multiAction === 3 ? classes.threeAction : undefined}
@@ -73,7 +76,7 @@ const CourseListItem = (props) => {
                     </div>
                     <div>
                         <div className={classes.subtext}>
-                            <Typography variant='body2' display='inline'>{course.cos_id.split('_')[1]}|</Typography>
+                            {!course.custom && <Typography variant='body2' display='inline'>{course.cos_id.split('_')[1]}|</Typography>}
                             <Typography variant='body2' display='inline'>{
                             newTimeCode ? origin_time_key_to_new(course.cos_time) : course.cos_time
                             }|</Typography>

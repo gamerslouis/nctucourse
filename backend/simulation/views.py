@@ -54,6 +54,8 @@ class ClearUserCoursesView(LoginRequiredMixin, View):
         courses = models.SimCollect.objects.filter(user=request.user,
                                                    semester=semester)
         courses.delete()
+        models.SimCustomCourse.objects.filter(user=request.user,
+                                              semester=semester).delete()
         return http.HttpResponse('', status=200)
 
 
@@ -94,3 +96,61 @@ class TimetableExportCollectThemeView(LoginRequiredMixin, View):
         models.UserTimeTableExportTheme.objects.create(
             user=request.user, theme=theme)
         return http.HttpResponse('', status=201)
+
+
+class CustomCourseListView(LoginRequiredMixin, View):
+    def get(self, request):
+        semester = request.GET.get('sem', settings.SEMESTER)
+        if semester is None:
+            return http.HttpResponseBadRequest()
+        courses = models.SimCustomCourse.objects.filter(user=request.user,
+                                                        semester=semester)
+        return http.JsonResponse(
+            {'courses': serializers.CustomCourseSerializer(courses, many=True).data})
+
+    def post(self, request):
+        semester = request.GET.get('sem', settings.SEMESTER)
+        if semester is None:
+            return http.HttpResponseBadRequest()
+
+        parser = serializers.CustomCourseSerializer(data=request.JSON)
+        if not parser.is_valid():
+            return http.HttpResponseBadRequest()
+        if not parser.validated_data['name'].strip():
+            return http.HttpResponseBadRequest()
+
+        course = models.SimCustomCourse.objects.create(
+            user=request.user, semester=semester, **parser.validated_data)
+        return http.JsonResponse(
+            serializers.CustomCourseSerializer(course).data, status=201)
+
+
+class CustomCourseDetailView(LoginRequiredMixin, View):
+    def _get(self, request, pk):
+        try:
+            return models.SimCustomCourse.objects.get(pk=pk, user=request.user)
+        except ObjectDoesNotExist:
+            return None
+
+    def patch(self, request, pk):
+        course = self._get(request, pk)
+        if course is None:
+            return http.HttpResponseNotFound()
+
+        parser = serializers.CustomCourseSerializer(data=request.JSON, partial=True)
+        if not parser.is_valid():
+            return http.HttpResponseBadRequest()
+        if 'name' in parser.validated_data and not parser.validated_data['name'].strip():
+            return http.HttpResponseBadRequest()
+
+        for key, value in parser.validated_data.items():
+            setattr(course, key, value)
+        course.save()
+        return http.JsonResponse(serializers.CustomCourseSerializer(course).data)
+
+    def delete(self, request, pk):
+        course = self._get(request, pk)
+        if course is None:
+            return http.HttpResponseNotFound()
+        course.delete()
+        return http.HttpResponse('')

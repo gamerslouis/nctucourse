@@ -10,7 +10,7 @@ import { getCourseTimesAndRooms } from '../../../Util/dataUtil/course'
 import Tooltip from '@material-ui/core/Tooltip';
 import { ConvertCourseType2StyleType, CourseTypeColorMap } from '../../../Util/style'
 import { makeInfoPageUrl } from '../../../Util/dataUtil/course'
-import { removeCollectCourse, toggleCollectCourseVisible, searchTimeCourses } from '../../../Redux/Actions/index'
+import { removeCollectCourse, toggleCollectCourseVisible, searchTimeCourses, removeCustomCourse, updateCustomCourse } from '../../../Redux/Actions/index'
 import { Button } from '@material-ui/core';
 
 const styles = theme => ({
@@ -105,7 +105,7 @@ const TimeTableCourse = withStyles(courseStyles)((props) => {
             aria-haspopup="true"
         >
             <Tooltip title={`${course.cos_cname} ${course.teacher}/${showRoomCode ? roomCode : roomName}`} arrow>
-                <div className={classes.course} style={{ backgroundColor: CourseTypeColorMap[ConvertCourseType2StyleType(course.cos_type)] }}>
+                <div className={classes.course} style={{ backgroundColor: course.color || CourseTypeColorMap[ConvertCourseType2StyleType(course.cos_type)] }}>
                     <span className={clsx(classes.textSpan, hideOverflowText ? classes.textSpanHide : "")}>
                         <Typography display="inline" variant="body2">{course.cos_cname} </Typography>
                         <div className={hideOverflowText ? classes.textTeacherHide : ""}>
@@ -142,10 +142,12 @@ class TimeTable extends React.Component {
         for (let course of Array.from(courseIds).map(id => allCourses[id])) {
             credits += Number(course['cos_credit'])
             let times = getCourseTimesAndRooms(course)
-            hours += times.length
             for (let time of times) {
                 const secIdx = this.secs.indexOf(time[1])
                 const timeIdx = time[0] - 1
+                // skip malformed slots (unknown section or missing weekday) instead of crashing the page
+                if (secIdx === -1 || timeIdx < 0 || timeIdx > 6) continue
+                hours += 1
                 classes[secIdx][timeIdx].push({
                     course: course,
                     roomCode: time[2],
@@ -220,16 +222,20 @@ class TimeTable extends React.Component {
                 {this.state.menuTargetIsCourse &&
                     <MenuItem onClick={() => {
                         this.closeMenu()
-                        this.props.setTimetableVisible(this.state.menuTarget, false)
+                        const custom = (this.props.allCourses[this.state.menuTarget] || {}).custom
+                        custom ? this.props.updateCustom(custom.id, { visible: false })
+                            : this.props.setTimetableVisible(this.state.menuTarget, false)
                     }}>隱藏</MenuItem>
                 }
                 {this.state.menuTargetIsCourse &&
                     <MenuItem onClick={() => {
                         this.closeMenu()
-                        this.props.removeCourse(this.state.menuTarget)
+                        const custom = (this.props.allCourses[this.state.menuTarget] || {}).custom
+                        custom ? this.props.removeCustom(custom.id)
+                            : this.props.removeCourse(this.state.menuTarget)
                     }}>移除</MenuItem>
                 }
-                {this.state.menuTargetIsCourse &&
+                {this.state.menuTargetIsCourse && !(this.props.allCourses[this.state.menuTarget] || {}).custom &&
                     <MenuItem onClick={() => {
                         this.closeMenu()
                         window.open(makeInfoPageUrl(this.state.menuTarget))
@@ -259,6 +265,8 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch, props) => ({
+    updateCustom: (id, course) => dispatch(updateCustomCourse(id, course)).catch((err) => console.log(err)),
+    removeCustom: (id) => dispatch(removeCustomCourse(id)).catch((err) => console.log(err)),
     removeCourse: (courseId) => {
         dispatch(removeCollectCourse(courseId))
     },
